@@ -1,0 +1,9 @@
+module-name: image-pull-reverse-proxy
+# rc-tag: 0.0.0
+protecode: []
+whitesource:
+  language: golang-mod
+  subprojects: false
+  exclude:
+    - "**/test/**"
+    - "**/*_test.go"

@@ -1,0 +1,5 @@
+# These are the default owners for the whole content of the `serverless-manager` repository. The default owners are automatically added as reviewers when you open a pull request unless different owners are specified in the file.
+* @kyma/otters
+
+# All .md files
+*.md @kyma/technical-writers

@@ -1,0 +1,23 @@
+run:
+  modules-download-mode: readonly
+  timeout: 15m
+  allow-parallel-runners: true
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - copyloopvar
+    - gofmt
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - unparam
+    - unused
+linters-settings:
+  revive:
+    rules:
+      - name: comment-spacings
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0

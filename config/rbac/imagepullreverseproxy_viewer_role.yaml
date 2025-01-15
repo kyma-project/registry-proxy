@@ -1,0 +1,23 @@
+# permissions for end users to view imagepullreverseproxies.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: image-pull-reverse-proxy
+    app.kubernetes.io/managed-by: kustomize
+  name: imagepullreverseproxy-viewer-role
+rules:
+  - apiGroups:
+      - operator.kyma-project.io
+    resources:
+      - imagepullreverseproxies
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - operator.kyma-project.io
+    resources:
+      - imagepullreverseproxies/status
+    verbs:
+      - get

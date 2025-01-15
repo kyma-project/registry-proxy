@@ -1,4 +1,7 @@
-kind: component
+# Hyperspace portal component metadata file
+# For more information, please see:
+# https://portal.hyperspace.tools.sap/projects/dxp/documentation/User-Guide/Manage-Metadata
+kind: Component
 metadata:
   name: image-pull-request-proxy
   displayName: Image Pull Request Proxy
@@ -10,6 +13,7 @@ spec:
     name: operator
   team:
     name: otters
+    productOwner: I303803
   ci:
     pipelineLinks:
       - name: Azure DevOps pipelne

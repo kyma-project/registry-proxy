@@ -6,7 +6,8 @@ metadata:
   tags:
     - kyma
 spec:
-  type: operator
+  type:
+    name: operator
   team:
     name: otters
   ci:

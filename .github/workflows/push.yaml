@@ -1,0 +1,9 @@
+name: push
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+
+jobs:
+  builds:
+    uses: ./.github/workflows/_build.yaml

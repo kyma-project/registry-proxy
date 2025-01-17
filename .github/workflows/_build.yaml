@@ -11,7 +11,7 @@ on:
 
 jobs:
   compute-tags:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, solinas]
     outputs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:

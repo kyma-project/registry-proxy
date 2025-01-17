@@ -3,7 +3,7 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.4-alpi
 ARG TARGETOS
 ARG TARGETARCH
 
-WORKDIR /workspace
+WORKDIR /workdir
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum

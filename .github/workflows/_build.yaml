@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: 'Additional tag for built images'
+        description: "Additional tag for built images"
         required: false
         type: string
         default: ""
@@ -40,4 +40,4 @@ jobs:
       dockerfile: Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
-      use-go-interal-sap-modules: true
+      use-go-internal-sap-modules: true

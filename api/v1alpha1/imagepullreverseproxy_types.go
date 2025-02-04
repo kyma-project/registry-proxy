@@ -1,6 +1,8 @@
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -11,7 +13,8 @@ type ImagePullReverseProxySpec struct {
 
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:MinLength=1
-	TargetHost string `json:"targetHost"`
+	TargetHost string                       `json:"targetHost"`
+	Resources  *corev1.ResourceRequirements `json:"resources,omitempty"`
 }
 
 // ImagePullReverseProxyStatus defines the observed state of ImagePullReverseProxy.
@@ -31,6 +34,8 @@ type ConditionType string
 const (
 	ConditionDeployment      ConditionType = "Deployment"
 	ConditionTargetReachable ConditionType = "TargetReachable"
+	ConditionRunning         ConditionType = "Running"
+	ConditionReady           ConditionType = "Ready"
 )
 
 type ConditionReason string
@@ -41,6 +46,14 @@ const (
 	ConditionReasonDeploymentFailed  ConditionReason = "DeploymentFailed"
 	ConditionReasonDeploymentWaiting ConditionReason = "DeploymentWaiting"
 	ConditionReasonDeploymentReady   ConditionReason = "DeploymentReady"
+	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
+)
+
+const ( // TODO ZASTANOWIC SIE NAD LABELKAMI
+	LabelModuleName = "kyma-project.io/module"
+	LabelManagedBy  = "image-pull-reverse-proxy.kyma-project.io/managed-by"
+	LabelResource   = "image-pull-reverse-proxy.kyma-project.io/resource"
+	LabelName       = "app.kubernetes.io/name"
 )
 
 // +kubebuilder:object:root=true
@@ -67,4 +80,15 @@ type ImagePullReverseProxyList struct {
 
 func init() {
 	SchemeBuilder.Register(&ImagePullReverseProxy{}, &ImagePullReverseProxyList{})
+}
+
+func (rp *ImagePullReverseProxy) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
+	condition := metav1.Condition{
+		Type:               string(c),
+		Status:             s,
+		LastTransitionTime: metav1.Now(),
+		Reason:             string(r),
+		Message:            msg,
+	}
+	meta.SetStatusCondition(&rp.Status.Conditions, condition)
 }

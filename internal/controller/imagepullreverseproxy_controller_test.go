@@ -5,6 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -13,6 +14,8 @@ import (
 
 	operatorkymaprojectiov1alpha1 "github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
 )
+
+// TODO: rework
 
 var _ = Describe("ImagePullReverseProxy Controller", func() {
 	Context("When reconciling a resource", func() {
@@ -57,6 +60,7 @@ var _ = Describe("ImagePullReverseProxy Controller", func() {
 			controllerReconciler := &ImagePullReverseProxyReconciler{
 				Client: k8sClient,
 				Scheme: k8sClient.Scheme(),
+				Log:    zap.NewNop().Sugar(),
 			}
 
 			_, err := controllerReconciler.Reconcile(ctx, reconcile.Request{

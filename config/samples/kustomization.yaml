@@ -1,4 +1,4 @@
 ## Append samples of your project ##
 resources:
-- operator.kyma-project.io_v1alpha1_imagepullreverseproxy.yaml
+- default-imagePullReverseProxy-cr.yaml
 # +kubebuilder:scaffold:manifestskustomizesamples

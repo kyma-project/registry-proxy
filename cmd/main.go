@@ -7,14 +7,16 @@ import (
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+	"github.com/go-logr/zapr"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
@@ -53,13 +55,27 @@ func main() {
 		"If set, the metrics endpoint is served securely via HTTPS. Use --metrics-secure=false to use HTTP instead.")
 	flag.BoolVar(&enableHTTP2, "enable-http2", false,
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
-	opts := zap.Options{
-		Development: true,
-	}
-	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	if os.Getenv("PROXY_IMAGE") == "" {
+		// error, empty env var
+		setupLog.Error(nil, "PROXY_IMAGE env var is empty")
+		os.Exit(1)
+	}
+
+	if os.Getenv("PROXY_COMMAND") == "" {
+		// todo: should we hardcode the command?
+		setupLog.Error(nil, "PROXY_COMMAND env var is empty")
+		os.Exit(1)
+	}
+
+	// TODO: adjust
+	controllerLogger, err := zap.NewProduction()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+	ctrl.SetLogger(zapr.NewLogger(controllerLogger))
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
@@ -103,7 +119,8 @@ func main() {
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 scheme,
+		Scheme: scheme,
+		// TODO: cache
 		Metrics:                metricsServerOptions,
 		WebhookServer:          webhookServer,
 		HealthProbeBindAddress: probeAddr,
@@ -126,9 +143,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	logConfig := zap.NewDevelopmentConfig()
+	logConfig.EncoderConfig.TimeKey = "timestamp"
+	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	// logConfig.DisableCaller = true
+
+	reconcilerLogger, err := logConfig.Build()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+
 	if err = (&controller.ImagePullReverseProxyReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    reconcilerLogger.Sugar(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ImagePullReverseProxy")
 		os.Exit(1)

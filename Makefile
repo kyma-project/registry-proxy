@@ -44,8 +44,9 @@ help: ## Display this help.
 ##@ Development
 
 .PHONY: manifests
-manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+	$(KUBEBUILDER) edit --plugins=helm/v1-alpha
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
@@ -165,12 +166,14 @@ $(LOCALBIN):
 ## Tool Binaries
 KUBECTL ?= kubectl
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
+KUBEBUILDER ?= $(LOCALBIN)/kubebuilder
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
 KUSTOMIZE_VERSION ?= v5.6.0
+KUBEBUILDER_VERSION ?= v4.5.0
 CONTROLLER_TOOLS_VERSION ?= v0.16.4
 ENVTEST_VERSION ?= release-0.19
 GOLANGCI_LINT_VERSION ?= v1.61.0
@@ -179,6 +182,13 @@ GOLANGCI_LINT_VERSION ?= v1.61.0
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
 $(KUSTOMIZE): $(LOCALBIN)
 	$(call go-install-tool,$(KUSTOMIZE),sigs.k8s.io/kustomize/kustomize/v5,$(KUSTOMIZE_VERSION))
+
+.PHONY: kubebuilder
+kubebuilder: $(KUBEBUILDER) ## Download controller-gen locally if necessary.
+$(KUBEBUILDER): $(LOCALBIN)
+	GOBIN=$(LOCALBIN) go install sigs.k8s.io/kubebuilder/v4/cmd@$(KUBEBUILDER_VERSION)
+	mv $(LOCALBIN)/cmd $(KUBEBUILDER)
+	ln -sf $(KUBEBUILDER) $(KUBEBUILDER)-$(KUBEBUILDER_VERSION)
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.

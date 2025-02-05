@@ -5,6 +5,8 @@
 domain: kyma-project.io
 layout:
 - go.kubebuilder.io/v4
+plugins:
+  helm.kubebuilder.io/v1-alpha: {}
 projectName: image-pull-reverse-proxy
 repo: github.tools.sap/kyma/image-pull-reverse-proxy
 resources:

@@ -34,7 +34,8 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 		// without stopping processing
 		require.Nil(t, result)
 		// with expected next state
-		require.Nil(t, next)
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnHandleDeployment, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
 	})

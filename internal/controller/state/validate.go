@@ -21,5 +21,5 @@ func sFnValidateReverseProxyURL(_ context.Context, m *fsm.StateMachine) (fsm.Sta
 			fmt.Sprintf("Invalid Connectivity Proxy URL: %s", err.Error()))
 		return stop()
 	}
-	return nextState(nil)
+	return nextState(sFnHandleDeployment)
 }

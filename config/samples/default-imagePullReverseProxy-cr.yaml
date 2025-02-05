@@ -1,8 +1,0 @@
-apiVersion: operator.kyma-project.io/v1alpha1
-kind: ImagePullReverseProxy
-metadata:
-  name: imagepullreverseproxy-sample
-spec:
-  # TODO: update
-  proxyURL: "http://proxy.sap.com"
-  targetHost: "exampleHost"

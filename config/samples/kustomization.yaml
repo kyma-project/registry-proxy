@@ -1,4 +1,0 @@
-## Append samples of your project ##
-resources:
-- default-imagePullReverseProxy-cr.yaml
-# +kubebuilder:scaffold:manifestskustomizesamples

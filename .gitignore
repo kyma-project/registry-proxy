@@ -30,6 +30,9 @@ go.work
 *.swo
 *~
 
+# automatically generated config
+config/*
+
 module-chart
 module-chart-test
 mod

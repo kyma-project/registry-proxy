@@ -1,14 +1,14 @@
 package state
 
 import (
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

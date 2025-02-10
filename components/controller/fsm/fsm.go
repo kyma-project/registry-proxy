@@ -3,11 +3,11 @@ package fsm
 import (
 	"context"
 	"fmt"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"reflect"
 	"runtime"
 	"strings"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"

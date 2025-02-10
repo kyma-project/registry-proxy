@@ -3,13 +3,13 @@ package state
 import (
 	"context"
 	"errors"
+	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/resources"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -40,12 +40,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha1.ImagePullReverseProxy{
+				ReverseProxy: v1alpha2.ImagePullReverseProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha1.ImagePullReverseProxySpec{
+					Spec: v1alpha2.ImagePullReverseProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -64,9 +64,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.False(t, updateWasCalled)
 
 		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
-			v1alpha1.ConditionReasonDeploymentCreated,
+			v1alpha2.ConditionReasonDeploymentCreated,
 			"Deployment rp created")
 
 		appliedDeployment := &appsv1.Deployment{}
@@ -99,12 +99,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha1.ImagePullReverseProxy{
+				ReverseProxy: v1alpha2.ImagePullReverseProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha1.ImagePullReverseProxySpec{
+					Spec: v1alpha2.ImagePullReverseProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -133,12 +133,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha1.ImagePullReverseProxy{
+				ReverseProxy: v1alpha2.ImagePullReverseProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha1.ImagePullReverseProxySpec{
+					Spec: v1alpha2.ImagePullReverseProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -155,18 +155,18 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonDeploymentFailed,
+			v1alpha2.ConditionReasonDeploymentFailed,
 			"Deployment rp create failed: funny error message")
 	})
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
-		rp := v1alpha1.ImagePullReverseProxy{
+		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha1.ImagePullReverseProxySpec{
+			Spec: v1alpha2.ImagePullReverseProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -205,12 +205,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, m.State.Deployment)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
-		rp := v1alpha1.ImagePullReverseProxy{
+		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha1.ImagePullReverseProxySpec{
+			Spec: v1alpha2.ImagePullReverseProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -243,9 +243,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
-			v1alpha1.ConditionReasonDeploymentUpdated,
+			v1alpha2.ConditionReasonDeploymentUpdated,
 			"Deployment rp updated")
 		require.False(t, createWasCalled)
 		updatedDeployment := &appsv1.Deployment{}
@@ -259,12 +259,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "TARGET_HOST", Value: "fresh"})
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha1.ImagePullReverseProxy{
+		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha1.ImagePullReverseProxySpec{
+			Spec: v1alpha2.ImagePullReverseProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -294,16 +294,16 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonDeploymentFailed,
+			v1alpha2.ConditionReasonDeploymentFailed,
 			"Deployment rp update failed: sad error message")
 	})
 }
 
 func minimalScheme(t *testing.T) *runtime.Scheme {
 	scheme := runtime.NewScheme()
-	require.NoError(t, v1alpha1.AddToScheme(scheme))
+	require.NoError(t, v1alpha2.AddToScheme(scheme))
 	require.NoError(t, appsv1.AddToScheme(scheme))
 	return scheme
 }

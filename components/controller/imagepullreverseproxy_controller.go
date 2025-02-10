@@ -3,11 +3,12 @@ package controller
 import (
 	"context"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/state"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/state"
+
 	"go.uber.org/zap"
 
-	operatorkymaprojectiov1alpha1 "github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -37,7 +38,7 @@ func (r *ImagePullReverseProxyReconciler) Reconcile(ctx context.Context, req ctr
 	log := r.Log.With("request", req)
 	log.Info("reconciliation started")
 
-	var reverseProxy operatorkymaprojectiov1alpha1.ImagePullReverseProxy
+	var reverseProxy v1alpha1.ImagePullReverseProxy
 	if err := r.Get(ctx, req.NamespacedName, &reverseProxy); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
@@ -49,7 +50,7 @@ func (r *ImagePullReverseProxyReconciler) Reconcile(ctx context.Context, req ctr
 // SetupWithManager sets up the controller with the Manager.
 func (r *ImagePullReverseProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&operatorkymaprojectiov1alpha1.ImagePullReverseProxy{}).
+		For(&v1alpha1.ImagePullReverseProxy{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

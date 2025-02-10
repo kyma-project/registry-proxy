@@ -3,6 +3,8 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -20,9 +22,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
-	operatorkymaprojectiov1alpha1 "github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -34,7 +33,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
-	utilruntime.Must(operatorkymaprojectiov1alpha1.AddToScheme(scheme))
+	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
 }
 

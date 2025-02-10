@@ -2,8 +2,8 @@ package state
 
 import (
 	"context"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 

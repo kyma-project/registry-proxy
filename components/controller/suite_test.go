@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"testing"
 
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -17,8 +19,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	operatorkymaprojectiov1alpha1 "github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -43,7 +43,7 @@ var _ = BeforeSuite(func() {
 	ctx, cancel = context.WithCancel(context.TODO())
 
 	By("bootstrapping test environment")
-	os.Setenv("PROXY_IMAGE", "test-image-proxy:latest")
+	os.Setenv("PROXY_IMAGE", "test-image-proxy:main")
 	os.Setenv("PROXY_COMMAND", "test-command")
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
@@ -64,7 +64,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
-	err = operatorkymaprojectiov1alpha1.AddToScheme(scheme.Scheme)
+	err = v1alpha1.AddToScheme(scheme.Scheme)
 	Expect(err).NotTo(HaveOccurred())
 
 	// +kubebuilder:scaffold:scheme

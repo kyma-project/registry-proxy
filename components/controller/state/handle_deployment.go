@@ -3,12 +3,12 @@ package state
 import (
 	"context"
 	"fmt"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
 	"reflect"
 	"time"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

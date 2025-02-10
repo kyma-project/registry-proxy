@@ -3,10 +3,10 @@ package state
 import (
 	"context"
 	"fmt"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"net/url"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/internal/controller/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )

@@ -5,14 +5,13 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	operatorkymaprojectiov1alpha1 "github.tools.sap/kyma/image-pull-reverse-proxy/api/v1alpha1"
 )
 
 // TODO: rework
@@ -27,18 +26,18 @@ var _ = Describe("ImagePullReverseProxy Controller", func() {
 			Name:      resourceName,
 			Namespace: "default", // TODO(user):Modify as needed
 		}
-		imagepullreverseproxy := &operatorkymaprojectiov1alpha1.ImagePullReverseProxy{}
+		imagepullreverseproxy := &v1alpha1.ImagePullReverseProxy{}
 
 		BeforeEach(func() {
 			By("creating the custom resource for the Kind ImagePullReverseProxy")
 			err := k8sClient.Get(ctx, typeNamespacedName, imagepullreverseproxy)
 			if err != nil && errors.IsNotFound(err) {
-				resource := &operatorkymaprojectiov1alpha1.ImagePullReverseProxy{
+				resource := &v1alpha1.ImagePullReverseProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      resourceName,
 						Namespace: "default",
 					},
-					Spec: operatorkymaprojectiov1alpha1.ImagePullReverseProxySpec{
+					Spec: v1alpha1.ImagePullReverseProxySpec{
 						TargetHost: "dummy",
 					},
 				}
@@ -48,7 +47,7 @@ var _ = Describe("ImagePullReverseProxy Controller", func() {
 
 		AfterEach(func() {
 			// TODO(user): Cleanup logic after each test, like removing the resource instance.
-			resource := &operatorkymaprojectiov1alpha1.ImagePullReverseProxy{}
+			resource := &v1alpha1.ImagePullReverseProxy{}
 			err := k8sClient.Get(ctx, typeNamespacedName, resource)
 			Expect(err).NotTo(HaveOccurred())
 

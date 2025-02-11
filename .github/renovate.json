@@ -4,5 +4,17 @@
     "automergeStrategy": "squash",
     "automergeType": "pr",
     "platformAutomerge": false,
-    "rebaseWhen": "behind-base-branch"
+    "rebaseWhen": "behind-base-branch",
+    "schedule": [
+        "* * * * 1"
+    ],
+    "packageRules": [
+        {
+            "matchDepNames": [
+                "^k8s.io/.*",
+                "sigs.k8s.io/*"
+            ],
+            "groupName": "k8s.io"
+        }
+    ]
 }

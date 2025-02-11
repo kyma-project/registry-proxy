@@ -2,7 +2,7 @@ module github.tools.sap/kyma/image-pull-reverse-proxy
 
 go 1.23.0
 
-toolchain go1.23.5
+toolchain go1.23.6
 
 require (
 	github.com/go-logr/zapr v1.3.0

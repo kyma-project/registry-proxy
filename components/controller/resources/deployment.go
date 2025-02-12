@@ -1,8 +1,9 @@
 package resources
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"os"
+
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -122,6 +123,13 @@ func (d *deployment) podSpec() corev1.PodSpec {
 					RunAsUser:  d.podRunAsUserUID(),
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: corev1.SeccompProfileTypeRuntimeDefault,
+					},
+					AllowPrivilegeEscalation: ptr.To[bool](false),
+					RunAsNonRoot:             ptr.To[bool](true),
+					Capabilities: &corev1.Capabilities{
+						Drop: []corev1.Capability{
+							"All",
+						},
 					},
 				},
 			},

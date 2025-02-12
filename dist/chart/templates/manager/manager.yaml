@@ -7,7 +7,7 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
     control-plane: controller-manager
 spec:
-  replicas:  {{ .Values.controllerManager.replicas }}
+  replicas: 1
   selector:
     matchLabels:
       {{- include "chart.selectorLabels" . | nindent 6 }}
@@ -43,13 +43,30 @@ spec:
             {{- end }}
           {{- end }}
           livenessProbe:
-            {{- toYaml .Values.controllerManager.container.livenessProbe | nindent 12 }}
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            httpGet:
+              path: /healthz
+              port: 8081
           readinessProbe:
-            {{- toYaml .Values.controllerManager.container.readinessProbe | nindent 12 }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            httpGet:
+              path: /readyz
+              port: 8081
           resources:
-            {{- toYaml .Values.controllerManager.container.resources | nindent 12 }}
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 64Mi
           securityContext:
-            {{- toYaml .Values.controllerManager.container.securityContext | nindent 12 }}
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - "ALL"
           {{- if and .Values.certmanager.enable (or .Values.webhook.enable .Values.metrics.enable) }}
           volumeMounts:
             {{- if and .Values.metrics.enable .Values.certmanager.enable }}
@@ -59,9 +76,12 @@ spec:
             {{- end }}
           {{- end }}
       securityContext:
-        {{- toYaml .Values.controllerManager.securityContext | nindent 8 }}
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: {{ .Values.controllerManager.serviceAccountName }}
-      terminationGracePeriodSeconds: {{ .Values.controllerManager.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: 10
       {{- if and .Values.certmanager.enable (or .Values.webhook.enable .Values.metrics.enable) }}
       volumes:
         {{- if and .Values.metrics.enable .Values.certmanager.enable }}

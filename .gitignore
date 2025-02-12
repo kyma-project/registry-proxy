@@ -43,6 +43,7 @@ docs/.DS_Store
 .DS_Store
 __debug_bin
 vendor
+.github/workflows/test-chart.yml
 
 # draw.io
 *.bkp

@@ -60,8 +60,8 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 run-local: create-k3d ## Setup local k3d cluster and install controller
 	make -C components/controller docker-build CTRL-IMG=$(CTRL-IMG)
 	k3d image import $(CTRL-IMG) -c kyma
-	# make -C components/reverse-proxy docker-build IMG=$(IMG)
-	# k3d image import $(IMG) -c kyma
+	make -C components/reverse-proxy docker-build IMG=$(IMG)
+	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
 	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart
 

@@ -41,3 +41,13 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true
+
+  build-reverse-proxy:
+    needs: compute-tags
+    uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
+    with:
+      name: image-pull-reverse-proxy
+      dockerfile: components/reverse-proxy/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      context: .
+      use-go-internal-sap-modules: true

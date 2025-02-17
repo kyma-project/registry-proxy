@@ -1,6 +1,8 @@
 module-name: image-pull-reverse-proxy
 # rc-tag: 0.0.0
-protecode: []
+protecode:
+  - europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:main
+  - europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller:main
 whitesource:
   language: golang-mod
   subprojects: false

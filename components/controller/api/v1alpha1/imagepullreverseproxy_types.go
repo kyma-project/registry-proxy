@@ -15,6 +15,8 @@ type ImagePullReverseProxySpec struct {
 	// +kubebuilder:validation:MinLength=1
 	TargetHost string                       `json:"targetHost"`
 	Resources  *corev1.ResourceRequirements `json:"resources,omitempty"`
+	// Sets desired log level to be used. The default value is "info"
+	LogLevel string `json:"logLevel,omitempty"`
 }
 
 // ImagePullReverseProxyStatus defines the observed state of ImagePullReverseProxy.

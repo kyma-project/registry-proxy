@@ -26,9 +26,8 @@ func main() {
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.Parse()
 
-	// default log level to warn if user didn't specify one
-	// TODO: change to warn after LOG_LEVEL is available in the CR
-	logLevel := "debug"
+	// default log level to info if user didn't specify one
+	logLevel := "info"
 	if os.Getenv("LOG_LEVEL") != "" {
 		logLevel = os.Getenv("LOG_LEVEL")
 	}
@@ -105,8 +104,7 @@ func newLogger(level string) (*zap.SugaredLogger, error) {
 		return nil, err
 	}
 
-	logConfig := zap.NewDevelopmentConfig()
-	logConfig.EncoderConfig.TimeKey = "timestamp"
+	logConfig := zap.NewProductionConfig()
 	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	logConfig.Level = logLevel
 

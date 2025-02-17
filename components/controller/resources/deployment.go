@@ -160,7 +160,7 @@ func defaultResources() corev1.ResourceRequirements {
 }
 
 func (d *deployment) envs() []corev1.EnvVar {
-	return []corev1.EnvVar{
+	envVariables := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",
 			Value: d.reverseProxy.Spec.ProxyURL,
@@ -170,6 +170,15 @@ func (d *deployment) envs() []corev1.EnvVar {
 			Value: d.reverseProxy.Spec.TargetHost,
 		},
 	}
+
+	if d.reverseProxy.Spec.LogLevel != "" {
+		envVariables = append(envVariables, corev1.EnvVar{
+			Name:  "LOG_LEVEL",
+			Value: d.reverseProxy.Spec.LogLevel,
+		})
+	}
+
+	return envVariables
 }
 
 func (d *deployment) podRunAsUserUID() *int64 {

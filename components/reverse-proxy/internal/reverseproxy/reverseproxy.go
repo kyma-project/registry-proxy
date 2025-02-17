@@ -1,10 +1,11 @@
 package reverseproxy
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/server"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/server"
 
 	"go.uber.org/zap"
 )
@@ -27,6 +28,7 @@ func New(reverseProxyURL, connectivityProxyURL, targetHost string, log *zap.Suga
 	}
 
 	proxy := httputil.NewSingleHostReverseProxy(remote)
+	proxy.ErrorLog = zap.NewStdLog(log.Desugar())
 
 	httpServer := &http.Server{
 		Addr:    reverseProxyURL,

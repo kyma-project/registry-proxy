@@ -53,6 +53,10 @@ spec:
           spec:
             description: ImagePullReverseProxySpec defines the desired state of ImagePullReverseProxy.
             properties:
+              logLevel:
+                description: Sets desired log level to be used. The default value
+                  is "info"
+                type: string
               proxyURL:
                 description: URL of the Connectivity Proxy, with protocol
                 type: string

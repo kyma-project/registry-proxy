@@ -21,7 +21,7 @@ COPY components/controller components/controller
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager ./components/controller/cmd/main.go
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3 AS certs
 
 RUN apk add --no-cache ca-certificates
 

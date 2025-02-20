@@ -21,11 +21,11 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.conditions[?(@.type=='Deployment')].status
-      name: Deployment
+    - jsonPath: .status.conditions[?(@.type=='Running')].status
+      name: Running
       type: string
-    - jsonPath: .status.conditions[?(@.type=='TargetReachable')].status
-      name: Target
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: Ready
       type: string
     name: v1alpha1
     schema:

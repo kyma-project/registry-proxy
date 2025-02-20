@@ -3,18 +3,18 @@ package state
 import (
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -299,11 +299,4 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			v1alpha2.ConditionReasonDeploymentFailed,
 			"Deployment rp update failed: sad error message")
 	})
-}
-
-func minimalScheme(t *testing.T) *runtime.Scheme {
-	scheme := runtime.NewScheme()
-	require.NoError(t, v1alpha2.AddToScheme(scheme))
-	require.NoError(t, appsv1.AddToScheme(scheme))
-	return scheme
 }

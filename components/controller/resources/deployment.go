@@ -40,6 +40,7 @@ func (d *deployment) construct() *appsv1.Deployment {
 		v1alpha1.LabelManagedBy:  "image-pull-reverse-proxy",
 		v1alpha1.LabelModuleName: "image-pull-reverse-proxy",
 		v1alpha1.LabelResource:   "deployment",
+		v1alpha1.LabelPartOf:     "image-pull-reverse-proxy",
 	}
 
 	deployment := &appsv1.Deployment{

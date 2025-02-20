@@ -34,10 +34,10 @@ type ImagePullReverseProxyStatus struct {
 type ConditionType string
 
 const (
-	ConditionDeployment      ConditionType = "Deployment"
-	ConditionTargetReachable ConditionType = "TargetReachable"
-	ConditionRunning         ConditionType = "Running"
-	ConditionReady           ConditionType = "Ready"
+	// pod healthz
+	ConditionRunning ConditionType = "Running"
+	// pod readyz
+	ConditionReady ConditionType = "Ready"
 )
 
 type ConditionReason string
@@ -49,19 +49,23 @@ const (
 	ConditionReasonDeploymentWaiting ConditionReason = "DeploymentWaiting"
 	ConditionReasonDeploymentReady   ConditionReason = "DeploymentReady"
 	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
+	ConditionReasonProbeError        ConditionReason = "ProbeError"
+	ConditionReasonProbeSuccess      ConditionReason = "ProbeSuccess"
+	ConditionReasonProbeFailure      ConditionReason = "ProbeFailure"
 )
 
-const ( // TODO ZASTANOWIC SIE NAD LABELKAMI
+const (
 	LabelModuleName = "kyma-project.io/module"
 	LabelManagedBy  = "image-pull-reverse-proxy.kyma-project.io/managed-by"
 	LabelResource   = "image-pull-reverse-proxy.kyma-project.io/resource"
 	LabelName       = "app.kubernetes.io/name"
+	LabelPartOf     = "app.kubernetes.io/part-of"
 )
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Deployment",type="string",JSONPath=".status.conditions[?(@.type=='Deployment')].status"
-// +kubebuilder:printcolumn:name="Target",type="string",JSONPath=".status.conditions[?(@.type=='TargetReachable')].status"
+// +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
+// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // ImagePullReverseProxy is the Schema for the imagepullreverseproxies API.
 type ImagePullReverseProxy struct {
 	metav1.TypeMeta   `json:",inline"`

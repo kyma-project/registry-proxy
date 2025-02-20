@@ -3,9 +3,10 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"os"
+
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -63,13 +64,14 @@ func main() {
 	}
 
 	if os.Getenv("PROXY_COMMAND") == "" {
-		// todo: should we hardcode the command?
 		setupLog.Error(nil, "PROXY_COMMAND env var is empty")
 		os.Exit(1)
 	}
 
-	// TODO: adjust
-	controllerLogger, err := zap.NewProduction()
+	logConfig := zap.NewProductionConfig()
+	logConfig.EncoderConfig.TimeKey = "timestamp"
+	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	controllerLogger, err := logConfig.Build()
 	if err != nil {
 		setupLog.Error(err, "unable to setup logger")
 		os.Exit(1)
@@ -118,8 +120,7 @@ func main() {
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme: scheme,
-		// TODO: cache
+		Scheme:                 scheme,
 		Metrics:                metricsServerOptions,
 		WebhookServer:          webhookServer,
 		HealthProbeBindAddress: probeAddr,
@@ -141,11 +142,6 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-
-	logConfig := zap.NewDevelopmentConfig()
-	logConfig.EncoderConfig.TimeKey = "timestamp"
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	// logConfig.DisableCaller = true
 
 	reconcilerLogger, err := logConfig.Build()
 	if err != nil {

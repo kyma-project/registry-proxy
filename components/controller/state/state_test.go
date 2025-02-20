@@ -1,14 +1,19 @@
 package state
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	k8sruntime "k8s.io/apimachinery/pkg/runtime"
+
 	"github.com/stretchr/testify/require"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -65,4 +70,12 @@ func requireContainsCondition(t *testing.T, status v1alpha1.ImagePullReverseProx
 		}
 	}
 	require.True(t, hasExpectedCondition)
+}
+
+func minimalScheme(t *testing.T) *k8sruntime.Scheme {
+	scheme := k8sruntime.NewScheme()
+	require.NoError(t, corev1.AddToScheme(scheme))
+	require.NoError(t, v1alpha2.AddToScheme(scheme))
+	require.NoError(t, appsv1.AddToScheme(scheme))
+	return scheme
 }

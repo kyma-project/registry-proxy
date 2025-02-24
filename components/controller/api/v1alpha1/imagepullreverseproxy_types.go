@@ -22,10 +22,10 @@ type ImagePullReverseProxySpec struct {
 // ImagePullReverseProxyStatus defines the observed state of ImagePullReverseProxy.
 type ImagePullReverseProxyStatus struct {
 	// service nodeport number, then use localhost:<nodeport> to pull images
-	NodePort int64 `json:"nodePort,omitempty"`
+	NodePort int32 `json:"nodePort,omitempty,omitzero"`
 
 	// URL of the Connectivity Proxy
-	ProxyURL string `json:"proxyURL,omitempty"`
+	ProxyURL string `json:"proxyURL,omitempty,omitzero"`
 
 	// Conditions associated with CustomStatus.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
@@ -55,6 +55,7 @@ const (
 )
 
 const (
+	LabelApp        = "app"
 	LabelModuleName = "kyma-project.io/module"
 	LabelManagedBy  = "image-pull-reverse-proxy.kyma-project.io/managed-by"
 	LabelResource   = "image-pull-reverse-proxy.kyma-project.io/resource"
@@ -66,6 +67,7 @@ const (
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
+// +kubebuilder:printcolumn:name="NodePort",type="string",JSONPath=".status.nodePort"
 // ImagePullReverseProxy is the Schema for the imagepullreverseproxies API.
 type ImagePullReverseProxy struct {
 	metav1.TypeMeta   `json:",inline"`

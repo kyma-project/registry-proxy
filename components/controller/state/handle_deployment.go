@@ -3,11 +3,12 @@ package state
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"time"
+
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
-	"reflect"
-	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -17,8 +18,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
+// sFnHandleDeployment is responsible for handling the deployment
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	// This function is responsible for handling the deployment of the function
 	// #1 Does it exist
 	deployment, err := getDeployment(ctx, m)
 	if err != nil {
@@ -26,7 +27,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 	// Create if not
 	if deployment == nil {
-		// clean up conditions
+		// TODO: clean up conditions
 
 		return createDeployment(ctx, m)
 	}
@@ -104,10 +105,6 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, e
 	m.State.Deployment.Spec.Template = wantedDeployment.Spec.Template
 	m.State.Deployment.Spec.Replicas = wantedDeployment.Spec.Replicas
 	m.State.Deployment.Spec.Selector = wantedDeployment.Spec.Selector
-	// m.State.Deployment.Spec.Template.Spec.Containers[0].Env = wantedDeployment.Spec.Template.Spec.Containers[0].Env
-	// m.State.Deployment.Spec.Template.Spec.Containers[0].Resources = wantedDeployment.Spec.Template.Spec.Containers[0].Resources
-	// m.State.Deployment.Spec.Template.Spec.Containers[0].Image = wantedDeployment.Spec.Template.Spec.Containers[0].Image
-	// ...
 	return updateDeployment(ctx, m)
 }
 

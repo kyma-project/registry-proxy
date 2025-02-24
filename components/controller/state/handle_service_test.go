@@ -6,13 +6,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
 	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
-
-	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -21,9 +19,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/interceptor"
 )
 
-func Test_sFnHandleDeployment(t *testing.T) {
-	t.Run("when deployment does not exist on kubernetes should create deployment and apply it", func(t *testing.T) {
-		someDeployment := appsv1.Deployment{
+func Test_sFnHandleService(t *testing.T) {
+	t.Run("when service does not exist on kubernetes should create service and apply it", func(t *testing.T) {
+		someService := corev1.Service{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "serverless",
 				Namespace: "wherever",
@@ -31,7 +29,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		}
 		scheme := minimalScheme(t)
 		updateWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&someDeployment).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&someService).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				updateWasCalled = true
 				return nil
@@ -55,32 +53,15 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
-
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.Nil(t, err)
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		require.False(t, updateWasCalled)
-
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha2.ConditionRunning,
-			metav1.ConditionUnknown,
-			v1alpha2.ConditionReasonDeploymentCreated,
-			"Deployment rp created")
-
-		appliedDeployment := &appsv1.Deployment{}
-		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
-			Name:      "rp",
-			Namespace: "maslo",
-		}, appliedDeployment)
-		require.NoError(t, getErr)
-
-		require.NotEmpty(t, appliedDeployment.OwnerReferences)
-		require.Equal(t, "ImagePullReverseProxy", appliedDeployment.OwnerReferences[0].Kind)
-		require.Equal(t, "rp", appliedDeployment.OwnerReferences[0].Name)
 	})
-	t.Run("when cannot get deployment from kubernetes should stop processing", func(t *testing.T) {
+
+	t.Run("when cannot get service from kubernetes should stop processing", func(t *testing.T) {
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithInterceptorFuncs(interceptor.Funcs{
@@ -114,18 +95,17 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
-
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "typical error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
 		require.False(t, createOrUpdateWasCalled)
-
 	})
-	t.Run("when deployment does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
+
+	t.Run("when service does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
 		scheme := minimalScheme(t)
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects().WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				return errors.New("funny error message")
 			},
@@ -148,19 +128,14 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
-
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "funny error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha2.ConditionRunning,
-			metav1.ConditionFalse,
-			v1alpha2.ConditionReasonDeploymentFailed,
-			"Deployment rp create failed: funny error message")
 	})
-	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
+
+	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is empty, requeue", func(t *testing.T) {
 		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
@@ -171,10 +146,10 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		service := resources.NewService(&rp)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				createOrUpdateWasCalled = true
 				return nil
@@ -193,16 +168,57 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
-
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.Nil(t, err)
-		require.Nil(t, result)
-		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandlePodStatus, next)
+		require.NotNil(t, result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
+		require.Nil(t, next)
 		require.False(t, createOrUpdateWasCalled)
 		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
-		require.NotNil(t, m.State.Deployment)
+		require.NotNil(t, m.State.Service)
+	})
+	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is ready, update RP status", func(t *testing.T) {
+		rp := v1alpha2.ImagePullReverseProxy{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "rp",
+				Namespace: "maslo",
+			},
+			Spec: v1alpha2.ImagePullReverseProxySpec{
+				ProxyURL:   "http://test-proxy-url",
+				TargetHost: "dummy",
+			},
+		}
+		service := resources.NewService(&rp)
+		service.Spec.Ports[0].NodePort = 1234
+		scheme := minimalScheme(t)
+		createOrUpdateWasCalled := false
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
+			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
+				createOrUpdateWasCalled = true
+				return nil
+			},
+			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
+				createOrUpdateWasCalled = true
+				return nil
+			},
+		}).Build()
+
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				ReverseProxy: rp,
+			},
+			Log:    zap.NewNop().Sugar(),
+			Client: fakeClient,
+			Scheme: scheme,
+		}
+		next, result, err := sFnHandleService(context.Background(), &m)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
+		require.False(t, createOrUpdateWasCalled)
+		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
+		require.NotNil(t, m.State.Service)
+		require.Equal(t, int32(1234), m.State.ReverseProxy.Status.NodePort)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
 		rp := v1alpha2.ImagePullReverseProxy{
@@ -215,17 +231,16 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		service := resources.NewService(&rp)
+		service.Spec.Type = corev1.ServiceTypeClusterIP
 		scheme := minimalScheme(t)
 		createWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				createWasCalled = true
 				return nil
 			},
 		}).Build()
-
-		rp.Spec.TargetHost = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
@@ -235,29 +250,21 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
-
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.Nil(t, err)
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha2.ConditionRunning,
-			metav1.ConditionUnknown,
-			v1alpha2.ConditionReasonDeploymentUpdated,
-			"Deployment rp updated")
 		require.False(t, createWasCalled)
-		updatedDeployment := &appsv1.Deployment{}
+		updatedService := &corev1.Service{}
 		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
 			Name:      "rp",
 			Namespace: "maslo",
-		}, updatedDeployment)
+		}, updatedService)
 		require.NoError(t, getErr)
-		// deployment should have updated some specific fields
-		require.Contains(t, updatedDeployment.Spec.Template.Spec.Containers[0].Env,
-			corev1.EnvVar{Name: "TARGET_HOST", Value: "fresh"})
+		require.Equal(t, updatedService.Spec.Type, corev1.ServiceTypeNodePort)
 	})
+
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
@@ -269,15 +276,14 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		service := resources.NewService(&rp)
+		service.Spec.Type = corev1.ServiceTypeClusterIP
 		scheme := minimalScheme(t)
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				return errors.New("sad error message")
 			},
 		}).Build()
-
-		rp.Spec.TargetHost = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
@@ -287,16 +293,10 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-
-		next, result, err := sFnHandleDeployment(context.Background(), &m)
+		next, result, err := sFnHandleService(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "sad error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
-			v1alpha2.ConditionRunning,
-			metav1.ConditionFalse,
-			v1alpha2.ConditionReasonDeploymentFailed,
-			"Deployment rp update failed: sad error message")
 	})
 }

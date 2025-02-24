@@ -18,7 +18,7 @@ import (
 func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	podList := &corev1.PodList{}
 	matchLabels := client.MatchingLabels{}
-	matchLabels["app"] = m.State.ReverseProxy.Name
+	matchLabels[v1alpha1.LabelApp] = m.State.ReverseProxy.Name
 	// TODO: do we have to set up cache to list only our Pods
 	err := m.Client.List(ctx, podList, matchLabels)
 	if err != nil {
@@ -56,8 +56,7 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 		return stopWithEventualError(err)
 	}
 
-	// TODO: next function state
-	return nextState(nil)
+	return nextState(sFnHandleService)
 }
 
 // TODO: return status, we should requeue on error I guess

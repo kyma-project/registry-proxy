@@ -54,6 +54,7 @@ func (r *ImagePullReverseProxyReconciler) SetupWithManager(mgr ctrl.Manager) err
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
+		Owns(&corev1.Pod{}).
 		Named("image-pull-reverse-proxy").
 		Complete(r)
 }

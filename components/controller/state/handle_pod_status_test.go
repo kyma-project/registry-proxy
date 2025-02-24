@@ -90,7 +90,8 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		next, result, err := sFnHandlePodStatus(context.Background(), &m)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnHandleService, next)
 	})
 	t.Run("multiple pods exist", func(t *testing.T) {
 		// create two distinctive fake probes to check if we really took the correct pod depending on returned condition
@@ -128,7 +129,8 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		next, result, err := sFnHandlePodStatus(context.Background(), &m)
 		require.NoError(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnHandleService, next)
 		requireContainsCondition(t, m.State.ReverseProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
 	})
 }
@@ -227,7 +229,7 @@ func minimalPod(probesURL *url.URL) *corev1.Pod {
 			Name:      "rp-pod",
 			Namespace: "wherever",
 			Labels: map[string]string{
-				"app": "rp",
+				v1alpha1.LabelApp: "rp",
 			},
 		},
 		Spec: corev1.PodSpec{

@@ -34,28 +34,21 @@ func NewDeployment(rp *v1alpha1.ImagePullReverseProxy) *appsv1.Deployment {
 }
 
 func (d *deployment) construct() *appsv1.Deployment {
-	labels := map[string]string{
-		"app":                    d.reverseProxy.Name,
-		v1alpha1.LabelName:       d.reverseProxy.Name,
-		v1alpha1.LabelManagedBy:  "image-pull-reverse-proxy",
-		v1alpha1.LabelModuleName: "image-pull-reverse-proxy",
-		v1alpha1.LabelResource:   "deployment",
-		v1alpha1.LabelPartOf:     "image-pull-reverse-proxy",
-	}
+	deploymentLabels := labels(d.reverseProxy, "deployment")
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.reverseProxy.Name,
 			Namespace: d.reverseProxy.Namespace,
-			Labels:    labels,
+			Labels:    labels(d.reverseProxy, "deployment"),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
+				MatchLabels: deploymentLabels,
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
+					Labels: deploymentLabels,
 				},
 				Spec: d.podSpec(),
 			},

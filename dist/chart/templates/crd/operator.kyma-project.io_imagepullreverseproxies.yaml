@@ -9,7 +9,7 @@ metadata:
     {{- if .Values.crd.keep }}
     "helm.sh/resource-policy": keep
     {{- end }}
-    controller-gen.kubebuilder.io/version: v0.16.4
+    controller-gen.kubebuilder.io/version: v0.17.2
   name: imagepullreverseproxies.operator.kyma-project.io
 spec:
   group: operator.kyma-project.io
@@ -26,6 +26,9 @@ spec:
       type: string
     - jsonPath: .status.conditions[?(@.type=='Ready')].status
       name: Ready
+      type: string
+    - jsonPath: .status.nodePort
+      name: NodePort
       type: string
     name: v1alpha1
     schema:
@@ -189,7 +192,7 @@ spec:
               nodePort:
                 description: service nodeport number, then use localhost:<nodeport>
                   to pull images
-                format: int64
+                format: int32
                 type: integer
               proxyURL:
                 description: URL of the Connectivity Proxy

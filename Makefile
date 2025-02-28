@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-CTRL-IMG ?= image-pull-reverse-proxy-controller:main
+CTRL_IMG ?= image-pull-reverse-proxy-controller:main
 IMG ?= image-pull-reverse-proxy:main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
@@ -58,8 +58,8 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 
 .PHONY: run-local
 run-local: create-k3d ## Setup local k3d cluster and install controller
-	make -C components/controller docker-build CTRL-IMG=$(CTRL-IMG)
-	k3d image import $(CTRL-IMG) -c kyma
+	make -C components/controller docker-build CTRL_IMG=$(CTRL_IMG)
+	k3d image import $(CTRL_IMG) -c kyma
 	make -C components/reverse-proxy docker-build IMG=$(IMG)
 	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present

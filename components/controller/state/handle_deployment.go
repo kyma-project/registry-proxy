@@ -67,7 +67,7 @@ func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment
 }
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deployment := resources.NewDeployment(&m.State.ReverseProxy)
+	deployment := resources.NewDeployment(&m.State.ReverseProxy, m.State.ProxyURL)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
@@ -97,7 +97,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 }
 
 func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, error) {
-	wantedDeployment := resources.NewDeployment(&m.State.ReverseProxy)
+	wantedDeployment := resources.NewDeployment(&m.State.ReverseProxy, m.State.ProxyURL)
 	if !deploymentChanged(m.State.Deployment, wantedDeployment) {
 		return false, nil
 	}

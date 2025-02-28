@@ -3,9 +3,10 @@ package state
 import (
 	"context"
 	"fmt"
+	"net/url"
+
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	"net/url"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -21,5 +22,5 @@ func sFnValidateReverseProxyURL(_ context.Context, m *fsm.StateMachine) (fsm.Sta
 			fmt.Sprintf("Invalid Connectivity Proxy URL: %s", err.Error()))
 		return stop()
 	}
-	return nextState(sFnHandleDeployment)
+	return nextState(sFnConnectivityProxyURL)
 }

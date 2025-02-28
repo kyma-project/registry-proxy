@@ -42,8 +42,8 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		return requeueAfter(time.Minute)
 	}
 
-	m.State.ReverseProxy.Status.NodePort = m.State.Service.Spec.Ports[0].NodePort
-	return stop()
+	m.State.NodePort = m.State.Service.Spec.Ports[0].NodePort
+	return nextState(sFnHandleStatus)
 }
 
 func getService(ctx context.Context, m *fsm.StateMachine) (*corev1.Service, error) {

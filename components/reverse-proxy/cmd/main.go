@@ -50,6 +50,7 @@ func main() {
 	}
 	targetHost = os.Getenv("TARGET_HOST")
 
+	logger.Infof("Registering reverse proxy on %s through %s", proxyAddr, connectivityProxyAddress)
 	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, logger)
 	if err != nil {
 		log.Panicf("unable to setup reverse proxy: %s", err)
@@ -85,7 +86,7 @@ func main() {
 	select {
 	case s, ok := <-stop:
 		if ok {
-			logger.Errorf("channel stop still contains %s.\n", strconv.FormatBool(s))
+			logger.Errorf("channel stop still contains %s", strconv.FormatBool(s))
 		} else {
 			logger.Info("channel stop is closed")
 		}

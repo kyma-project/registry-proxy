@@ -54,6 +54,14 @@ rules:
   verbs:
   - get
 - apiGroups:
+  - connectivityproxy.sap.com
+  resources:
+  - connectivityproxies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
   - operator.kyma-project.io
   resources:
   - imagepullreverseproxies

@@ -171,7 +171,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -188,6 +188,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				ReverseProxy: rp,
+				ProxyURL:     rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -215,7 +216,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		createWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -230,6 +231,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				ReverseProxy: rp,
+				ProxyURL:     rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -269,7 +271,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp)
+		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
@@ -282,6 +284,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				ReverseProxy: rp,
+				ProxyURL:     rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

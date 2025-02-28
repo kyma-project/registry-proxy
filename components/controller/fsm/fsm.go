@@ -22,6 +22,8 @@ type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 type SystemState struct {
 	ReverseProxy   v1alpha1.ImagePullReverseProxy
 	statusSnapshot v1alpha1.ImagePullReverseProxyStatus
+	ProxyURL       string
+	NodePort       int32
 	Deployment     *appsv1.Deployment
 	Service        *corev1.Service
 }

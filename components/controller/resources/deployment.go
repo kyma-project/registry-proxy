@@ -24,11 +24,13 @@ const (
 
 type deployment struct {
 	reverseProxy *v1alpha1.ImagePullReverseProxy
+	proxyURL     string
 }
 
-func NewDeployment(rp *v1alpha1.ImagePullReverseProxy) *appsv1.Deployment {
+func NewDeployment(rp *v1alpha1.ImagePullReverseProxy, proxyURL string) *appsv1.Deployment {
 	d := &deployment{
 		reverseProxy: rp,
+		proxyURL:     proxyURL,
 	}
 	return d.construct()
 }
@@ -98,7 +100,7 @@ func (d *deployment) podSpec() corev1.PodSpec {
 					},
 					InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
 					FailureThreshold:    1,
-					PeriodSeconds:       5,
+					PeriodSeconds:       10,
 					TimeoutSeconds:      2,
 				},
 				LivenessProbe: &corev1.Probe{
@@ -157,7 +159,7 @@ func (d *deployment) envs() []corev1.EnvVar {
 	envVariables := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",
-			Value: d.reverseProxy.Spec.ProxyURL,
+			Value: d.proxyURL,
 		},
 		{
 			Name:  "TARGET_HOST",

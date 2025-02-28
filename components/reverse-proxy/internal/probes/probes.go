@@ -2,6 +2,7 @@ package probes
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/server"
@@ -23,7 +24,27 @@ func getReadyz(reverseProxyURL string, log *zap.SugaredLogger) http.HandlerFunc 
 			_, _ = w.Write([]byte(fmt.Sprintf("couldn't reach reverse proxy at %s: %v", reverseProxyURL, err)))
 			return
 		}
+		
+		defer func() {
+			errClose := resp.Body.Close()
+			if errClose != nil {
+				log.Infof("error closing body of response from to %s: %v", reverseProxyURL, errClose)
+			}
+		}()
+
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Warnf("couldn't read response body from reverse proxy at %s: %v", reverseProxyURL, err)
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte(fmt.Sprintf("couldn't read response body from reverse proxy at %s: %v", reverseProxyURL, err)))
+			return
+		}
+
 		log.Debugf("reverse proxy at %s returned status code %d", reverseProxyURL, resp.StatusCode)
+		if string(respBody) != "" {
+			log.Debugf("reverse proxy at %s returned body: %s", reverseProxyURL, string(respBody))
+		}
+
 		w.WriteHeader(resp.StatusCode)
 	}
 }

@@ -1,8 +1,9 @@
 package resources
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"testing"
+
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"
@@ -15,7 +16,7 @@ func TestNewDeployment(t *testing.T) {
 	t.Run("create deployment", func(t *testing.T) {
 		rp := minimalReverseProxy()
 
-		d := NewDeployment(rp)
+		d := NewDeployment(rp, rp.Spec.ProxyURL)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
@@ -33,7 +34,7 @@ func TestNewDeployment(t *testing.T) {
 		resources := minimalResources()
 		rp.Spec.Resources = &resources
 
-		d := NewDeployment(rp)
+		d := NewDeployment(rp, rp.Spec.ProxyURL)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)

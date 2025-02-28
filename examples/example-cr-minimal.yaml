@@ -1,0 +1,8 @@
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: ImagePullReverseProxy
+metadata:
+  name: imagepullreverseproxy-example-minimal
+  namespace: proxy
+spec:
+  # proxyURL will be automatically retrieved from the Connectivity Proxy module
+  targetHost: "myregistry.kyma:25002"

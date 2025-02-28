@@ -7,3 +7,5 @@ package controller
 //+kubebuilder:rbac:groups="",resources=pods/status,verbs=get
 
 //+kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;patch;delete;deletecollection
+
+//+kubebuilder:rbac:groups="connectivityproxy.sap.com",resources=connectivityproxies,verbs=get;list;watch

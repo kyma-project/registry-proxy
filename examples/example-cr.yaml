@@ -1,7 +1,8 @@
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: ImagePullReverseProxy
 metadata:
-  name: imagepullreverseproxy-sample
+  name: imagepullreverseproxy-example
 spec:
   proxyURL: "http://connectivity-proxy.kyma-system.svc.cluster.local:20003"
-  targetHost: "myregistry.kyma"
+  targetHost: "myregistry.kyma:25002"
+  logLevel: debug

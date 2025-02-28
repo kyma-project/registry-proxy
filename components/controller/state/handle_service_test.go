@@ -214,13 +214,14 @@ func Test_sFnHandleService(t *testing.T) {
 		next, result, err := sFnHandleService(context.Background(), &m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		require.Nil(t, next)
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnHandleStatus, next)
 		require.False(t, createOrUpdateWasCalled)
 		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
 		require.NotNil(t, m.State.Service)
-		require.Equal(t, int32(1234), m.State.ReverseProxy.Status.NodePort)
+		require.Equal(t, int32(1234), m.State.NodePort)
 	})
-	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
+	t.Run("when service exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
 		rp := v1alpha2.ImagePullReverseProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",

@@ -1,6 +1,6 @@
 module-name: image-pull-reverse-proxy
 # rc-tag: 0.0.0
-kind: kcp
+kind: kyma
 bdba:
   - europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:main
   - europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller:main

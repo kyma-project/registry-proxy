@@ -9,6 +9,7 @@ func labels(rp *v1alpha1.ImagePullReverseProxy, resource string) map[string]stri
 		v1alpha1.LabelManagedBy:  "image-pull-reverse-proxy",
 		v1alpha1.LabelModuleName: "image-pull-reverse-proxy",
 		v1alpha1.LabelResource:   resource,
+		v1alpha1.LabelPartOf:     "image-pull-reverse-proxy",
 	}
 
 }

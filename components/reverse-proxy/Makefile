@@ -30,7 +30,7 @@ SHELL = /usr/bin/env bash -o pipefail
 APP_NAME = "image-pull-reverse-proxy"
 
 .PHONY: all
-all: build
+all: test
 
 ##@ General
 
@@ -51,35 +51,11 @@ help: ## Display this help.
 
 ##@ Development
 
-.PHONY: fmt
-fmt: ## Run go fmt against code.
-	go fmt ./...
-
-.PHONY: vet
-vet: ## Run go vet against code.
-	go vet ./...
-
 .PHONY: test
 test: ## Run go tests
-	go test  -coverprofile cover.out
-
-.PHONY: lint
-lint: golangci-lint ## Run golangci-lint linter
-	$(GOLANGCI_LINT) run
-
-.PHONY: lint-fix
-lint-fix: golangci-lint ## Run golangci-lint linter and perform fixes
-	$(GOLANGCI_LINT) run --fix
+	go test  ./... -coverprofile cover.out
 
 ##@ Build
-
-.PHONY: build
-build: fmt vet ## Build image pull reverse proxy binary.
-	go build -o bin/iprp cmd/main.go
-
-.PHONY: run
-run: fmt vet ## Run image pull reverse proxy from your host.
-	go run ./cmd/main.go
 
 # If you wish to build the manager image targeting other platforms you can use the --platform flag.
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.

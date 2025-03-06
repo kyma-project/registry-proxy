@@ -19,7 +19,6 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	podList := &corev1.PodList{}
 	matchLabels := client.MatchingLabels{}
 	matchLabels[v1alpha1.LabelApp] = m.State.ReverseProxy.Name
-	// TODO: do we have to set up cache to list only our Pods
 	err := m.Client.List(ctx, podList, matchLabels)
 	if err != nil {
 		return nil, nil, err
@@ -59,7 +58,6 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	return nextState(sFnHandleService)
 }
 
-// TODO: return status, we should requeue on error I guess
 func handleProbe(rp *v1alpha1.ImagePullReverseProxy, podIP string, probe *corev1.Probe, condition v1alpha1.ConditionType) error {
 	probeStatus, err := getProbeStatus(podIP, probe)
 	if err != nil {
@@ -77,14 +75,14 @@ func handleProbe(rp *v1alpha1.ImagePullReverseProxy, podIP string, probe *corev1
 			v1alpha1.ConditionReasonProbeSuccess,
 			"",
 		)
-	} else {
-		rp.UpdateCondition(
-			condition,
-			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonProbeFailure,
-			fmt.Sprintf("%s probe has returned %d status", probe.HTTPGet.Path, probeStatus),
-		)
+		return nil
 	}
+	rp.UpdateCondition(
+		condition,
+		metav1.ConditionFalse,
+		v1alpha1.ConditionReasonProbeFailure,
+		fmt.Sprintf("%s probe has returned %d status", probe.HTTPGet.Path, probeStatus),
+	)
 	return nil
 }
 

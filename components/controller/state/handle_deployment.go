@@ -27,8 +27,6 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 	// Create if not
 	if deployment == nil {
-		// TODO: clean up conditions
-
 		return createDeployment(ctx, m)
 	}
 
@@ -42,7 +40,6 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return requeueAfter(time.Minute)
 	}
 
-	// TODO: is it ready - do we have to check it here?
 	// Move on to next state if all are true
 	// If not Create/Update or Requeue and remove historical info about the pod
 	return nextState(sFnHandlePodStatus)
@@ -53,7 +50,7 @@ func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment
 	rp := m.State.ReverseProxy
 	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: rp.GetNamespace(),
-		Name:      rp.GetName(), // TODO Do we want our deployment to be named diffrently than its resource - if yes extract the prefix to const
+		Name:      rp.GetName(),
 	}, currentDeployment)
 	if deploymentErr != nil {
 		if errors.IsNotFound(deploymentErr) { // Deployment not existing is expected behavior
@@ -70,9 +67,14 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	deployment := resources.NewDeployment(&m.State.ReverseProxy, m.State.ProxyURL)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
-	// will be deleted when the Function CR is deleted.
+	// will be deleted when the IPRP CR is deleted.
 	if err := controllerutil.SetControllerReference(&m.State.ReverseProxy, deployment, m.Scheme); err != nil {
 		m.Log.Error(err, "failed to set controller reference on Deployment")
+		m.State.ReverseProxy.UpdateCondition( // We update the condition on every possible return to make sure it's up to date
+			v1alpha1.ConditionRunning,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonDeploymentFailed,
+			"failed to set controller reference on Deployment")
 		return stopWithEventualError(err)
 	}
 
@@ -151,6 +153,5 @@ func updateDeployment(ctx context.Context, m *fsm.StateMachine) (bool, error) {
 		v1alpha1.ConditionReasonDeploymentUpdated,
 		fmt.Sprintf("Deployment %s updated", m.State.Deployment.GetName()))
 	// Requeue the request to ensure the Deployment is updated
-	// TODO: rethink if it's better solution
 	return true, nil
 }

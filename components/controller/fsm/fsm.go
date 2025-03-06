@@ -90,7 +90,6 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-// TODO: Add emiting events
 func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,

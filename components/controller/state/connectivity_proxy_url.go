@@ -51,7 +51,6 @@ func getReverseProxyURL(ctx context.Context, m *fsm.StateMachine) (string, error
 	if !found {
 		return "", fmt.Errorf("proxy http port was not specified in the connectivity proxy")
 	}
-
 	proxyURL := fmt.Sprintf("http://%s.%s.svc.cluster.local:%d", connectivityProxyKey.Name, connectivityProxyKey.Namespace, proxyPort.(int64))
 	return proxyURL, nil
 }

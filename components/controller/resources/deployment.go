@@ -13,11 +13,13 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+// TODO: do przetestowania wartosci defaultowe
+
 const (
 	defaultLimitCPU      = "100m"
-	defaultLimitMemory   = "128Mi"
-	defaultRequestCPU    = "100m"
-	defaultRequestMemory = "128Mi"
+	defaultLimitMemory   = "64Mi"
+	defaultRequestCPU    = "50"
+	defaultRequestMemory = "32Mi"
 	reverseProxyPort     = 8080
 	probesPort           = 8081
 )
@@ -74,7 +76,6 @@ func (d *deployment) podSpec() corev1.PodSpec {
 				Env:             d.envs(),
 				Ports: []corev1.ContainerPort{
 					{
-						// TODO: odsztywinić?
 						ContainerPort: reverseProxyPort,
 						Protocol:      "TCP",
 					},
@@ -142,7 +143,6 @@ func (d *deployment) resourceConfiguration() corev1.ResourceRequirements {
 }
 
 func defaultResources() corev1.ResourceRequirements {
-	// TODO: adjust
 	return corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
 			corev1.ResourceCPU:    resource.MustParse(defaultLimitCPU),

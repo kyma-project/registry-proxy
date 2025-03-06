@@ -46,8 +46,6 @@ const (
 	ConditionReasonDeploymentCreated ConditionReason = "DeploymentCreated"
 	ConditionReasonDeploymentUpdated ConditionReason = "DeploymentUpdated"
 	ConditionReasonDeploymentFailed  ConditionReason = "DeploymentFailed"
-	ConditionReasonDeploymentWaiting ConditionReason = "DeploymentWaiting"
-	ConditionReasonDeploymentReady   ConditionReason = "DeploymentReady"
 	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
 	ConditionReasonProbeError        ConditionReason = "ProbeError"
 	ConditionReasonProbeSuccess      ConditionReason = "ProbeSuccess"

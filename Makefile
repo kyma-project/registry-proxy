@@ -48,8 +48,19 @@ all: run-local
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-
 ##@ Development
+
+.PHONY: lint
+lint: golangci-lint ## Run golangci-lint linter
+	$(GOLANGCI_LINT) run
+
+.PHONY: lint-fix
+lint-fix: golangci-lint ## Run golangci-lint linter and perform fixes
+	$(GOLANGCI_LINT) run --fix
+
+.PHONY: generate
+generate: ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations for controller.
+	make -C components/controller generate
 
 .PHONY: manifests
 manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
@@ -68,3 +79,8 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 .PHONY: apply-default-cr
 apply-default-cr: manifests ## Apply default CustomResource
 	kubectl apply -f examples/example-cr.yaml
+
+.PHONY: test
+test: ## Run unit tests
+	make -C components/controller test
+	make -C components/reverse-proxy test

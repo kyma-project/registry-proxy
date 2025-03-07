@@ -5,16 +5,16 @@ import (
 
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources/connectivityproxy"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/state"
-
 	"go.uber.org/zap"
-
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -55,6 +55,7 @@ func (r *ImagePullReverseProxyReconciler) SetupWithManager(mgr ctrl.Manager) err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&corev1.Pod{}).
+		Watches(&connectivityproxy.ConnectivityProxy{}, &handler.EnqueueRequestForObject{}).
 		Named("image-pull-reverse-proxy").
 		Complete(r)
 }

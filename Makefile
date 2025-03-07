@@ -64,7 +64,9 @@ generate: ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject
 
 .PHONY: manifests
 manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	rm -rf config || true
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./components/controller/..." output:crd:artifacts:config=config/crd/bases
+	rm config/crd/bases/operator.kyma-project.io_connectivityproxies.yaml
 	$(KUBEBUILDER) edit --plugins=helm/v1-alpha
 
 .PHONY: run-local

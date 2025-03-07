@@ -18,13 +18,14 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 func getReadyz(reverseProxyURL string, log *zap.SugaredLogger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		resp, err := http.Get(reverseProxyURL)
+
 		if err != nil {
 			log.Warnf("couldn't reach reverse proxy at %s: %v", reverseProxyURL, err)
 			w.WriteHeader(http.StatusServiceUnavailable)
 			_, _ = w.Write([]byte(fmt.Sprintf("couldn't reach reverse proxy at %s: %v", reverseProxyURL, err)))
 			return
 		}
-		
+
 		defer func() {
 			errClose := resp.Body.Close()
 			if errClose != nil {

@@ -13,12 +13,10 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-// TODO: do przetestowania wartosci defaultowe
-
 const (
 	defaultLimitCPU      = "100m"
 	defaultLimitMemory   = "64Mi"
-	defaultRequestCPU    = "50"
+	defaultRequestCPU    = "50m"
 	defaultRequestMemory = "32Mi"
 	reverseProxyPort     = 8080
 	probesPort           = 8081

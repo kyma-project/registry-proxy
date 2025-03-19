@@ -78,9 +78,29 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 	## make sure helm is installed or binary is present
 	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart
 
+
+
+.PHONY: run-local-integration
+run-local-integration: run-local
+	# connectivity proxy
+	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
+	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
+	# docker registry
+	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml
+	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml
+	# upload test image to the docker registry
+	docker pull alpine:3.21.3
+	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=60s
+	sleep 5
+	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
+	sleep 5
+	$(KYMA) alpha registry image-import alpine:3.21.3
+	go run $(PROJECT_ROOT)/tests/main.go
+
 .PHONY: apply-default-cr
-apply-default-cr: manifests ## Apply default CustomResource
+apply-default-cr: manifests kyma ## Apply default CustomResource
 	kubectl apply -f examples/example-cr.yaml
+	# load image into the docker registry
 
 .PHONY: test
 test: ## Run unit tests

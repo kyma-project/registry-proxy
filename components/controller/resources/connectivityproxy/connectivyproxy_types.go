@@ -32,3 +32,16 @@ type ConnectivityProxyServerProxy struct {
 type ConnectivityProxyHttp struct {
 	Port int `json:"port,omitempty"`
 }
+
+// +kubebuilder:object:root=true
+
+// ConnectivityProxyList contains a list of ConnectivityProxy.
+type ConnectivityProxyList struct {
+	metav1.TypeMeta `json:",inline"`
+	metav1.ListMeta `json:"metadata,omitempty"`
+	Items           []ConnectivityProxy `json:"items"`
+}
+
+func init() {
+	SchemeBuilder.Register(&ConnectivityProxy{}, &ConnectivityProxyList{})
+}

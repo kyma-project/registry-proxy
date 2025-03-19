@@ -1,0 +1,38 @@
+name: integration tests
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        description: 'The image to test'
+        required: true
+        type: string
+      ctrl_image:
+        description: 'The controller image to test'
+        required: true
+        type: string
+      trigger_btp:
+        description: 'Trigger Connectivity Proxy integration test'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  operator-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make run-local-integration
+        env:
+          IMG: ${{ inputs.image }}
+          CTRL_IMG: ${{ inputs.ctrl_image }}
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info

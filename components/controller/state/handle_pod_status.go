@@ -41,7 +41,7 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 		return requeueAfter(time.Minute)
 	}
 
-	pod := getLatestPod(podList)
+	pod := GetLatestPod(podList)
 	if pod.Status.PodIP == "" {
 		// podIP is not instantly set, sometimes we have to wait for it
 		return requeueAfter(time.Second * 10)
@@ -96,7 +96,7 @@ func getProbeStatus(podIP string, probe *corev1.Probe) (int, error) {
 	return res.StatusCode, nil
 }
 
-func getLatestPod(podList *corev1.PodList) *corev1.Pod {
+func GetLatestPod(podList *corev1.PodList) *corev1.Pod {
 	if len(podList.Items) < 1 {
 		return nil
 	}

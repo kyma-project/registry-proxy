@@ -8,6 +8,7 @@ $(LOCALBIN):
 
 ## Tool Binaries
 KUBECTL ?= kubectl
+KYMA ?= $(LOCALBIN)/kyma
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 KUBEBUILDER ?= $(LOCALBIN)/kubebuilder
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
@@ -15,6 +16,7 @@ ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
+KYMA_VERSION ?= 3.0.0-rc1
 KUSTOMIZE_VERSION ?= v5.6.0
 KUBEBUILDER_VERSION ?= v4.5.0
 CONTROLLER_TOOLS_VERSION ?= v0.17.2
@@ -28,6 +30,15 @@ fmt: ## Run go fmt against code.
 .PHONY: vet
 vet: ## Run go vet against code.
 	go vet ./...
+
+
+.PHONY: kyma
+kyma: $(KYMA)
+$(KYMA): $(LOCALBIN)
+	curl -sL "https://github.com/kyma-project/cli/releases/download/${KYMA_VERSION}/kyma_$$(uname -s)_$$(uname -m).tar.gz" -o cli.tar.gz
+	tar -zxvf cli.tar.gz kyma
+	mv kyma $(LOCALBIN)/kyma
+	rm cli.tar.gz
 
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.

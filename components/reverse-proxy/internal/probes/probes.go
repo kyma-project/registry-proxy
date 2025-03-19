@@ -42,7 +42,7 @@ func getReadyz(reverseProxyURL string, log *zap.SugaredLogger) http.HandlerFunc 
 		}
 
 		log.Debugf("reverse proxy at %s returned status code %d", reverseProxyURL, resp.StatusCode)
-		if string(respBody) != "" {
+		if string(respBody) != "" && resp.StatusCode != http.StatusOK {
 			log.Debugf("reverse proxy at %s returned body: %s", reverseProxyURL, string(respBody))
 		}
 

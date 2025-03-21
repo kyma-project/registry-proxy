@@ -30,9 +30,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
-          make run-local-integration
+          make run-integration
         env:
           IMG: ${{ inputs.image }}
           CTRL_IMG: ${{ inputs.ctrl_image }}
-      - if: ${{ always() }}
-        uses: ./.github/actions/collect-cluster-info

@@ -11,6 +11,10 @@ on:
         description: 'The controller image to test'
         required: true
         type: string
+      k3d-version:
+        required: true
+        type: string
+        default: v5.6.0
 
 jobs:
   operator-integration-test:
@@ -22,7 +26,11 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - name: install-k3d
+        env:
+          K3D_URL: https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh
+          DEFAULT_K3D_VERSION: ${{ inputs.k3d-version }}
+        run: curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
       - name: run test
         run: |
           make run-integration

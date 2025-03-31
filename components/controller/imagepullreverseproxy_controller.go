@@ -2,10 +2,9 @@ package controller
 
 import (
 	"context"
-
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources/connectivityproxy"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/state"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -14,7 +13,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
@@ -23,11 +21,8 @@ type ImagePullReverseProxyReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 	Log    *zap.SugaredLogger
+	Cache  cache.BoolCache
 }
-
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=imagepullreverseproxies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=imagepullreverseproxies/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=imagepullreverseproxies/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -43,7 +38,7 @@ func (r *ImagePullReverseProxyReconciler) Reconcile(ctx context.Context, req ctr
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	sm := fsm.New(r.Client, &reverseProxy, state.StartState(), r.Scheme, log)
+	sm := fsm.New(r.Client, &reverseProxy, state.StartState(), r.Scheme, log, r.Cache)
 	return sm.Reconcile(ctx)
 }
 
@@ -55,7 +50,6 @@ func (r *ImagePullReverseProxyReconciler) SetupWithManager(mgr ctrl.Manager) err
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&corev1.Pod{}).
-		Watches(&connectivityproxy.ConnectivityProxy{}, &handler.EnqueueRequestForObject{}).
 		Named("image-pull-reverse-proxy").
 		Complete(r)
 }

@@ -3,8 +3,10 @@ package state
 import (
 	"context"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -70,5 +72,60 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 			v1alpha1.ConditionReasonInvalidProxyURL,
 			"Invalid Connectivity Proxy URL: parse \":thisURLisbroken\": missing protocol scheme")
 
+	})
+}
+
+func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
+	t.Run("when Connectivity Proxy CRD is not installed should update condition and requeue", func(t *testing.T) {
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				ReverseProxy: v1alpha1.ImagePullReverseProxy{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "rp",
+						Namespace: "maslo",
+					},
+				},
+			},
+			Cache: cache.NewInMemoryBoolCache(),
+		}
+
+		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
+
+		require.Nil(t, next)
+		require.NotNil(t, result)
+		require.Equal(t, time.Minute, result.RequeueAfter)
+		require.Nil(t, err)
+		requireContainsCondition(t, m.State.ReverseProxy.Status,
+			v1alpha1.ConditionConfigured,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonConnectivityProxyCrdUnknownn,
+			"Connectivity Proxy not installed. This module is required. ")
+	})
+
+	t.Run("when Connectivity Proxy CRD is installed should update condition and proceed to next state", func(t *testing.T) {
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				ReverseProxy: v1alpha1.ImagePullReverseProxy{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "rp",
+						Namespace: "maslo",
+					},
+				},
+			},
+			Cache: cache.NewInMemoryBoolCache(),
+		}
+		m.Cache.Set(true)
+
+		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
+
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnValidateReverseProxyURL, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+		requireContainsCondition(t, m.State.ReverseProxy.Status,
+			v1alpha1.ConditionConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConnectivityProxyCrdFound,
+			"Connectivity Proxy installed.")
 	})
 }

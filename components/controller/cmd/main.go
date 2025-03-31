@@ -3,11 +3,12 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"os"
-
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
 	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources/connectivityproxy"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -35,6 +36,7 @@ var (
 func init() {
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 
+	utilruntime.Must(apiextensionsv1.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	utilruntime.Must(connectivityproxy.AddToScheme(scheme))
 	// +kubebuilder:scaffold:scheme
@@ -147,10 +149,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	boolCache := cache.NewInMemoryBoolCache()
+
+	if err = (&controller.CrdsReconciler{
+		Client: mgr.GetClient(),
+		Log:    reconcilerLogger.Sugar(),
+		Cache:  boolCache,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ConnectivityProxyCrd")
+		os.Exit(1)
+	}
+
 	if err = (&controller.ImagePullReverseProxyReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Log:    reconcilerLogger.Sugar(),
+		Cache:  boolCache,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "ImagePullReverseProxy")
 		os.Exit(1)

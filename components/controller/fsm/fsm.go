@@ -3,6 +3,7 @@ package fsm
 import (
 	"context"
 	"fmt"
+	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
 	"reflect"
 	"runtime"
 	"strings"
@@ -42,6 +43,7 @@ type StateMachine struct {
 	Log    *zap.SugaredLogger
 	Client client.Client
 	Scheme *apimachineryruntime.Scheme
+	Cache  cache.BoolCache
 }
 
 func (m *StateMachine) stateFnName() string {
@@ -90,7 +92,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
@@ -99,6 +101,7 @@ func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startSt
 		Log:    log,
 		Client: client,
 		Scheme: scheme,
+		Cache:  cache,
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

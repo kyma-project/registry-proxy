@@ -38,18 +38,22 @@ const (
 	ConditionRunning ConditionType = "Running"
 	// pod readyz
 	ConditionReady ConditionType = "Ready"
+	// connectivity proxy prerequisite
+	ConditionConfigured ConditionType = "Configured"
 )
 
 type ConditionReason string
 
 const (
-	ConditionReasonDeploymentCreated ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed  ConditionReason = "DeploymentFailed"
-	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
-	ConditionReasonProbeError        ConditionReason = "ProbeError"
-	ConditionReasonProbeSuccess      ConditionReason = "ProbeSuccess"
-	ConditionReasonProbeFailure      ConditionReason = "ProbeFailure"
+	ConditionReasonDeploymentCreated            ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated            ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed             ConditionReason = "DeploymentFailed"
+	ConditionReasonInvalidProxyURL              ConditionReason = "InvalidProxyURL"
+	ConditionReasonProbeError                   ConditionReason = "ProbeError"
+	ConditionReasonProbeSuccess                 ConditionReason = "ProbeSuccess"
+	ConditionReasonProbeFailure                 ConditionReason = "ProbeFailure"
+	ConditionReasonConnectivityProxyCrdUnknownn ConditionReason = "ConnectivityProxyCrdUnknown"
+	ConditionReasonConnectivityProxyCrdFound    ConditionReason = "ConnectivityProxyCrdFound"
 )
 
 const (

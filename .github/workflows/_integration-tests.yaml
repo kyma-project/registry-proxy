@@ -4,11 +4,11 @@ on:
   workflow_call:
     inputs:
       image:
-        description: 'The image to test'
+        description: "The image to test"
         required: true
         type: string
       ctrl_image:
-        description: 'The controller image to test'
+        description: "The controller image to test"
         required: true
         type: string
 
@@ -16,6 +16,10 @@ jobs:
   operator-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: [self-hosted, solinas]
+    container:
+      image: public.int.repositories.cloud.sap/ubuntu:22.04
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
         with:
@@ -25,53 +29,10 @@ jobs:
       - name: compute github commit sha
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@0635a02ed7c63944f2e544d27603f3d2c72fee2b
-        id: create-btp-resources
-        with:
-          btp_subaccount_name: cli-test-${{ steps.vars.outputs.sha_short }}-${{ github.run_attempt }}
-          btp_backend_url: '${{ secrets.BTP_BACKEND_URL}}'
-          btp_user: '${{ secrets.BTP_BOT_USER}}'
-          btp_password: '${{ secrets.BTP_BOT_PASSWORD}}'
-          btp_global_account: '${{ secrets.BTP_GLOBAL_ACCOUNT }}'
-          btp_idp_tenant: '${{ secrets.BTP_CUSTOM_IAS_TENANT }}'
-          btp_subaccount_region: '${{ secrets.BTP_SUBACCOUNT_REGION }}'
-          btp_kyma_region: '${{ secrets.BTP_KYMA_REGION }}'
-          btp_kyma_plan: '${{ secrets.BTP_KYMA_PLAN }}'
-      - name: ensure btp prerequisites
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
         run: |
-          echo -e "BTP_GLOBAL_ACCOUNT = \"$BTP_GLOBAL_ACCOUNT\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_BOT_USER = \"$BTP_BOT_USER\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_BOT_PASSWORD = \"$BTP_BOT_PASSWORD\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_BACKEND_URL = \"$BTP_BACKEND_URL\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_CUSTOM_IAS_TENANT = \"$BTP_CUSTOM_IAS_TENANT\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_KYMA_SUBACCOUNT_ID = \"$BTP_KYMA_SUBACCOUNT_ID\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_OBJECTSTORE_SUBACCOUNT_ID = \"$BTP_OBJECTSTORE_SUBACCOUNT_ID\"" >> tests/btp/tf/.tfvars
-          echo -e "BTP_HANA_SUBACCOUNT_ID = \"$BTP_HANA_SUBACCOUNT_ID\"" >> tests/btp/tf/.tfvars
-          make -C tests/btp prerequisites
+          make run-integration
         env:
-          BTP_BACKEND_URL: '${{ secrets.BTP_BACKEND_URL}}'
-          BTP_BOT_USER: '${{ secrets.BTP_BOT_USER}}'
-          BTP_BOT_PASSWORD: '${{ secrets.BTP_BOT_PASSWORD}}'
-          BTP_CUSTOM_IAS_TENANT: '${{ secrets.BTP_CUSTOM_IAS_TENANT }}'
-          BTP_GLOBAL_ACCOUNT: '${{ secrets.BTP_GLOBAL_ACCOUNT }}'
-          BTP_KYMA_SUBACCOUNT_ID: '${{ steps.create-btp-resources.outputs.subaccount_id }}'
-          BTP_OBJECTSTORE_SUBACCOUNT_ID: '${{ secrets.BTP_OBJECTSTORE_SUBACCOUNT_ID }}'
-          BTP_HANA_SUBACCOUNT_ID: '${{ secrets.BTP_HANA_SUBACCOUNT_ID }}'
-      - name: test
-        run: |
-          DOMAIN=$DOMAIN \
-          make -C tests/btp e2e-test
-        env:
-          DOMAIN: '${{ steps.create-btp-resources.outputs.domain }}'
-      - name: cleanup
-        run: |
-          make -C tests/btp cleanup
-      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@0635a02ed7c63944f2e544d27603f3d2c72fee2b
-        if: always()
-        with:
-          btp_subaccount_id: ${{ steps.create-btp-resources.outputs.subaccount_id }}
-          btp_backend_url: ${{ secrets.BTP_BACKEND_URL}}
-          btp_user: ${{ secrets.BTP_BOT_USER}}
-          btp_password: ${{ secrets.BTP_BOT_PASSWORD}}
-          btp_global_account: ${{ secrets.BTP_GLOBAL_ACCOUNT }}
-          btp_idp_tenant: ${{ secrets.BTP_CUSTOM_IAS_TENANT }}
+          IMG: ${{ inputs.image }}
+          CTRL_IMG: ${{ inputs.ctrl_image }}

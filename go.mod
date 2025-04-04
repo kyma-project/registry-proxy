@@ -2,7 +2,7 @@ module github.tools.sap/kyma/image-pull-reverse-proxy
 
 go 1.24
 
-toolchain go1.24.0
+toolchain go1.24.2
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible

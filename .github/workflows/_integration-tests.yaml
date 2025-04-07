@@ -11,15 +11,15 @@ on:
         description: "The controller image to test"
         required: true
         type: string
+      tag:
+        description: "The tag to use for the image"
+        required: true
+        type: string
 
 jobs:
   operator-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: [self-hosted, solinas]
-    container:
-      image: public.int.repositories.cloud.sap/ubuntu:22.04
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +32,23 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
+          CLI_TMPDIR=cli-$(date "+%Y-%m-%d_%H:%M:%S")
+          mkdir -p ${CLI_TMPDIR}
+          VERSION="3.0.0"
+          echo "Downloading https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz"
+          curl -sL "https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz" -o ${CLI_TMPDIR}/cli.tar.gz
+          echo "unpacking kyma cli"
+          tar --force-local -zxvf ${CLI_TMPDIR}/cli.tar.gz kyma
+          mv kyma ./bin/kyma
+          echo "removing ${CLI_TMPDIR}"
+          rm -r ${CLI_TMPDIR}
+          PATH=$(pwd)/bin:$PATH
+          echo "path: ${PATH}"
+          export PATH
           make run-integration
         env:
           IMG: ${{ inputs.image }}
           CTRL_IMG: ${{ inputs.ctrl_image }}
+          TAG: ${{ inputs.tag }}
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info

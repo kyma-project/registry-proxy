@@ -12,7 +12,11 @@ runs:
         DEFAULT_K3D_VERSION: "v5.7.4"
       shell: sh
       run: |
-        apt update
-        apt install curl -y
-        apt install make -y
-        curl --silent --fail $K3D_URL | TAG=$DEFAULT_K3D_VERSION bash
+        echo "path: ${PATH}"
+        mkdir -p ./bin
+        PATH=$(pwd)/bin:$PATH
+        echo "path: ${PATH}"
+        export PATH
+        curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o ./bin
+        curl --silent --fail $K3D_URL | K3D_INSTALL_DIR=./bin TAG=$DEFAULT_K3D_VERSION bash -s -- "--no-sudo"
+        make create-k3d

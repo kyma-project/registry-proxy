@@ -2,7 +2,7 @@ name: push
 
 on:
   push:
-    branches: [ "main", "release-*" ]
+    branches: ["main", "release-*"]
 
 jobs:
   builds:
@@ -13,5 +13,6 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
-      image: europe-docker.pkg.dev/kyma-project/dev/image-pull-reverse-proxy:PR-${{ github.event.number }}
-      ctrl_image: europe-docker.pkg.dev/kyma-project/dev/image-pull-reverse-proxy-controller:PR-${{ github.event.number }}
+      image: europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:${{ github.sha }}
+      ctrl_image: europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller:${{ github.sha }}
+      tag: ${{ github.sha }}

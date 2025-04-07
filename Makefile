@@ -81,6 +81,12 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 
 .PHONY: run-local-integration
 run-local-integration: run-local
+	make -C components/controller docker-build CTRL_IMG=$(CTRL_IMG)
+	k3d image import $(CTRL_IMG) -c kyma
+	make -C components/reverse-proxy docker-build IMG=$(IMG)
+	k3d image import $(IMG) -c kyma
+	## make sure helm is installed or binary is present
+	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -98,12 +104,8 @@ run-local-integration: run-local
 
 .PHONY: run-integration
 run-integration:
-	make -C components/controller docker-build CTRL_IMG=$(CTRL_IMG)
-	k3d image import $(CTRL_IMG) -c kyma
-	make -C components/reverse-proxy docker-build IMG=$(IMG)
-	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart
+	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller" --set controllerManager.container.image.tag=$(TAG) --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -129,3 +131,18 @@ apply-default-cr: manifests kyma ## Apply default CustomResource
 test: ## Run unit tests
 	make -C components/controller test
 	make -C components/reverse-proxy test
+
+.PHONY: cluster-info
+cluster-info: ## Print useful info about the cluster regarding integration run
+	@echo "####################### Controller Logs #######################"
+	@kubectl logs -n kyma-system -l app.kubernetes.io/name=image-pull-reverse-proxy --tail=-1 || true
+	@echo ""
+
+	@echo "####################### IPRP CR #######################"
+	@kubectl get imagepullreverseproxies -A -oyaml || true
+	@echo ""
+
+	@echo "####################### Pods #######################"
+	@kubectl get pods -A || true
+	@echo ""
+

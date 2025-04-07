@@ -1,0 +1,126 @@
+name: create release
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Release name ( e.g. "2.1.3" )'
+        default: ""
+        required: true
+      latest_release:
+        description: 'Latest release'
+        type: boolean
+        default: false
+
+permissions: # used by build images steps
+  id-token: write # This is required for requesting the JWT token
+  contents: write # This is required for actions/checkout
+
+jobs:
+  upgrade-images:
+    name: Upgrade main images
+    runs-on: [self-hosted, solinas]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          fetch-depth: 0
+
+      - name: Bump helm chart
+        run: |
+          ./.github/scripts/upgrade-iprp-version.sh
+        env:
+          MODULE_VERSION: ${{ github.event.inputs.name }}
+
+      - name: Bump sec-scanners-config.yaml
+        run: ./.github/scripts/upgrade-sec-scanners-config.sh
+        env:
+          IMG_VERSION: ${{ github.event.inputs.name }}
+
+      - name: Commit&Push
+        run: |
+          git config --local user.email "otter-releaser@otter-releaser.noreply.github.com"
+          git config --local user.name "otter-releaser"
+
+          git add .
+          git commit --allow-empty -m "upgrade dependencies"
+          git push origin ${{ github.ref_name }}
+
+  create-tag:
+    name: Create tag
+    needs: upgrade-images
+    runs-on: [self-hosted, solinas]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}  # Checkout to latest branch changes
+      - name: Create tag
+        run: |
+          git tag ${{ github.event.inputs.name }}
+          git push origin ${{ github.event.inputs.name }}
+
+  builds:
+    needs: create-tag
+    uses: ./.github/workflows/_build.yaml
+    with:
+      tag: "${{ github.event.inputs.name }}"
+
+  create-draft:
+    name: Create draft release
+    needs: create-tag
+    runs-on: [self-hosted, solinas]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
+
+      - uses: ./.github/actions/setup-go
+
+      - name: Create changelog
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./.github/scripts/create-changelog.sh ${{ github.event.inputs.name }}
+
+      - name: Create draft release
+        id: create-draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
+          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
+
+      - name: Create release assets
+        id: create-assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
+          TAG: ${{ github.event.inputs.name}}
+        run: ./.github/scripts/release.sh
+
+    outputs:
+      release_id: ${{ steps.create-draft.outputs.release_id }}
+
+  ##here add DevOps-Insights if needed and/or wanted
+
+  publish-release:
+    name: Publish release
+    needs: [create-draft]
+    runs-on: [self-hosted, solinas]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
+
+      - name: Publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${{ github.event.inputs.latest_release }}

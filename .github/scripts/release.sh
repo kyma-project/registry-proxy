@@ -10,7 +10,6 @@ set -o pipefail # prevents errors in a pipeline from being masked
 GITHUB_TOKEN=${GITHUB_TOKEN?"Define GITHUB_TOKEN env"} # github token used to upload the template yaml
 RELEASE_ID=${RELEASE_ID?"Define RELEASE_ID env"} # github token used to upload the template yaml
 PROJECT_ROOT=${PWD}
-IMG=${IMG?"Define IMG env"}
 TAG=${TAG?"Define TAG env"}
 
 uploadFile() {
@@ -37,7 +36,7 @@ helm template image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart \
 --namespace=kyma-system \
 --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller" \
 --set controllerManager.container.image.tag=image-pull-reverse-proxy:$(TAG) \
---set controllerManager.container.env.PROXY_IMAGE=$(IMG) \
+--set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:$(TAG) \
 > image-pull-reverse-proxy.yaml
 
 echo "Generated keda-manager.yaml:"

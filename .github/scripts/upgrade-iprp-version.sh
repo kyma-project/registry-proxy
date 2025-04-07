@@ -12,4 +12,4 @@ echo "ensure helm..."
 PROJECT_ROOT=${PROJECT_ROOT} make -C ${PROJECT_ROOT} helm
 
 echo "upgrade helm chart..."
-cd dist/chart && yq --inplace ".version=${MODULE_VERSION}" Chart.yaml && yq --inplace ".appVersion=\"${MODULE_VERSION}\"" Chart.yaml
+cd dist/chart && yq --inplace ".version=\"${MODULE_VERSION}\"" Chart.yaml && yq --inplace ".appVersion=\"${MODULE_VERSION}\"" Chart.yaml

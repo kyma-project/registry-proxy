@@ -110,7 +110,7 @@ func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startSt
 func updateProxyStatus(ctx context.Context, m *StateMachine) error {
 	s := &m.State
 	if !reflect.DeepEqual(s.ReverseProxy.Status, s.statusSnapshot) {
-		m.Log.Debug(fmt.Sprintf("updating serverless status to '%+v'", s.ReverseProxy.Status))
+		m.Log.Debug(fmt.Sprintf("updating image pull reverse proxy status to '%+v'", s.ReverseProxy.Status))
 		err := m.Client.Status().Update(ctx, &s.ReverseProxy)
 		//emitEvent(r, s)
 		s.saveStatusSnapshot()

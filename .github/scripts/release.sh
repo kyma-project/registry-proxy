@@ -39,11 +39,10 @@ helm template image-pull-reverse-proxy-controller ${PROJECT_ROOT}/dist/chart \
   --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:${TAG} \
   > image-pull-reverse-proxy.yaml
 
-echo "Generated keda-manager.yaml:"
-cat keda-manager.yaml
+echo "Generated image-pull-reverse-proxy.yaml:"
+cat image-pull-reverse-proxy.yaml
 
 echo "Updating github release with assets"
-UPLOAD_URL="https://uploads.github.com/repos/kyma-project/keda-manager/releases/${RELEASE_ID}/assets"
+UPLOAD_URL="https://github.tools.sap/api/v3/repos/kyma/image-pull-reverse-proxy/releases/${RELEASE_ID}/assets"
 
-uploadFile "keda-manager.yaml" "${UPLOAD_URL}?name=keda-manager.yaml"
-uploadFile "config/samples/keda-default-cr.yaml" "${UPLOAD_URL}?name=keda-default-cr.yaml"
+uploadFile "image-pull-reverse-proxy.yaml" "${UPLOAD_URL}?name=image-pull-reverse-proxy.yaml"

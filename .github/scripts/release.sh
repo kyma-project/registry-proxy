@@ -43,6 +43,6 @@ echo "Generated image-pull-reverse-proxy.yaml:"
 cat image-pull-reverse-proxy.yaml
 
 echo "Updating github release with assets"
-UPLOAD_URL="https://github.tools.sap/api/v3/repos/kyma/image-pull-reverse-proxy/releases/${RELEASE_ID}/assets"
+UPLOAD_URL="https://github.tools.sap/api/uploads/repos/kyma/image-pull-reverse-proxy/releases/${RELEASE_ID}/assets"
 
 uploadFile "image-pull-reverse-proxy.yaml" "${UPLOAD_URL}?name=image-pull-reverse-proxy.yaml"

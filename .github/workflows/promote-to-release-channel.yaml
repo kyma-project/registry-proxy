@@ -67,8 +67,9 @@ jobs:
           git fetch upstream
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
-          mkdir -p modules/iprp/${CHANNEL}
-          cp ../image-pull-reverse-proxy.yaml modules/iprp/${CHANNEL}/image-pull-reverse-proxy.yaml
+          mkdir -p modules/image-pull-reverse-proxy/${CHANNEL}
+          cp ../image-pull-reverse-proxy.yaml modules/image-pull-reverse-proxy/${CHANNEL}/image-pull-reverse-proxy.yaml
+          cp ../module-config.yaml modules/image-pull-reverse-proxy/${CHANNEL}/module-config.yaml
           
           git add .
           git commit -m "promote iprp ${MODULE_VERSION} to ${CHANNEL} channel"

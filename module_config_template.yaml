@@ -1,0 +1,8 @@
+name: kyma-project.io/module/iprp
+channel: {{.Channel}}
+version: {{.Version}}
+#defaultCR: hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
+manifest: image-pull-reverse-proxy.yaml
+#annotations:
+  #"operator.kyma-project.io/doc-url": "https://kyma-project.io/#/image-pull-reverse-proxy/user/README"
+moduleRepo: https://github.tools.sap/kyma/image-pull-reverse-proxy

@@ -146,3 +146,8 @@ cluster-info: ## Print useful info about the cluster regarding integration run
 	@kubectl get pods -A || true
 	@echo ""
 
+##@ Actions
+.PHONY: module-config
+module-config:
+	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
+    	module-config-template.yaml > module-config.yaml

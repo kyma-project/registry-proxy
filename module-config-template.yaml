@@ -5,4 +5,4 @@ version: {{.Version}}
 manifest: image-pull-reverse-proxy.yaml
 #annotations:
   #"operator.kyma-project.io/doc-url": "https://kyma-project.io/#/image-pull-reverse-proxy/user/README"
-moduleRepo: https://github.tools.sap/kyma/image-pull-reverse-proxy
+moduleRepo: https://github.tools.sap/kyma/image-pull-reverse-proxy.git

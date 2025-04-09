@@ -7,10 +7,10 @@ bdba:
 mend:
   language: golang-mod
   exclude:
-    - "**/test/**"
+    - "**/tests/**"
     - "**/*_test.go"
 checkmarx-one:
   preset: go-default
   exclude:
-    - "**/test/**"
+    - "**/tests/**"
     - "**/*_test.go"

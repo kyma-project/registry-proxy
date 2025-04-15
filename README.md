@@ -1,22 +1,26 @@
-# image-pull-reverse-proxy
+# Registry Proxy
+
 Enables kyma users to setup a managed connection between kubelet and an onprem docker registry
 
 ## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
+
+This module allows users to download images from on-prem location through the Connectivity Proxy module.
 
 ## Getting Started
 
 ### Prerequisites
-- go version v1.22.0+
-- docker version 17.03+.
+
+- Go version v1.22.0+
+- Docker version 17.03+.
 - kubectl version v1.11.3+.
 - Access to a Kubernetes v1.11.3+ cluster.
 
 ### To Deploy on the cluster
+
 **Build and push your image to the location specified by `IMG`:**
 
 ```sh
-make docker-build docker-push IMG=<some-registry>/image-pull-reverse-proxy:tag
+make docker-build docker-push IMG=<some-registry>/registry-proxy:tag
 ```
 
 **NOTE:** This image ought to be published in the personal registry you specified.
@@ -32,7 +36,7 @@ make install
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
 ```sh
-make deploy IMG=<some-registry>/image-pull-reverse-proxy:tag
+make deploy IMG=<some-registry>/registry-proxy:tag
 ```
 
 > **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
@@ -73,7 +77,7 @@ Following are the steps to build the installer and distribute this project to us
 1. Build the installer for the image built and published in the registry:
 
 ```sh
-make build-installer IMG=<some-registry>/image-pull-reverse-proxy:tag
+make build-installer IMG=<some-registry>/registry-proxy:tag
 ```
 
 NOTE: The makefile target mentioned above generates an 'install.yaml'
@@ -86,7 +90,7 @@ its dependencies.
 Users can just run kubectl apply -f <URL for YAML BUNDLE> to install the project, i.e.:
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/<org>/image-pull-reverse-proxy/<tag or branch>/dist/install.yaml
+kubectl apply -f https://raw.githubusercontent.com/<org>/registry-proxy/<tag or branch>/dist/install.yaml
 ```
 
 ## Contributing

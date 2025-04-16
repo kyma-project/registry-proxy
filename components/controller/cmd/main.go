@@ -3,12 +3,13 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources/connectivityproxy"
-	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"os"
+
+	"github.tools.sap/kyma/registry-proxy/components/controller"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/cache"
+	"github.tools.sap/kyma/registry-proxy/components/controller/resources/connectivityproxy"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.

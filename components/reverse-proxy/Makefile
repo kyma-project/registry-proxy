@@ -1,7 +1,7 @@
 PROJECT_ROOT = ../..
 
 # Image URL to use all building/pushing image targets
-IMG ?= image-pull-reverse-proxy:main
+IMG ?= registry-proxy:main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
@@ -27,7 +27,7 @@ SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
 # Setting APP_NAME for local development
-APP_NAME = "image-pull-reverse-proxy"
+APP_NAME = "registry-proxy"
 
 .PHONY: all
 all: test
@@ -79,10 +79,10 @@ PLATFORMS ?= linux/arm64,linux/amd64
 docker-buildx: ## Build and push docker image for the manager for cross-platform support
 	# copy existing Dockerfile and insert --platform=${BUILDPLATFORM} into Dockerfile.cross, and preserve the original Dockerfile
 	sed -e '1 s/\(^FROM\)/FROM --platform=\$$\{BUILDPLATFORM\}/; t' -e ' 1,// s//FROM --platform=\$$\{BUILDPLATFORM\}/' Dockerfile > Dockerfile.cross
-	- $(CONTAINER_TOOL) buildx create --name image-pull-reverse-proxy-builder
-	$(CONTAINER_TOOL) buildx use image-pull-reverse-proxy-builder
+	- $(CONTAINER_TOOL) buildx create --name registry-proxy-builder
+	$(CONTAINER_TOOL) buildx use registry-proxy-builder
 	- $(CONTAINER_TOOL) buildx build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile.cross ${PROJECT_ROOT}
-	- $(CONTAINER_TOOL) buildx rm image-pull-reverse-proxy-builder
+	- $(CONTAINER_TOOL) buildx rm registry-proxy-builder
 	rm Dockerfile.cross
 
 build-image: ## Build image pull reverse proxy backend image

@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/probes"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/reverseproxy"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/reverse-proxy/internal/server"
+	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/probes"
+	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/reverseproxy"
+	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/server"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

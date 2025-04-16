@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: image-pull-reverse-proxy-controller-manager-metrics-service
+  name: registry-proxy-controller-manager-metrics-service
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}

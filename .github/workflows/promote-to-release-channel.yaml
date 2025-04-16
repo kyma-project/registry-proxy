@@ -3,31 +3,30 @@ name: promote to release channel
 on:
   workflow_dispatch:
     inputs:
-      iprp_tag:
-        description: 'IPRP tag to promote (`x.x.x`)'
+      rp_tag:
+        description: "RP tag to promote (`x.x.x`)"
         default: ""
         required: true
       channel:
         type: choice
-        description: 'Module channel'
+        description: "Module channel"
         options:
           - dev
         required: true
 
 env:
-  MODULE_VERSION: ${{ github.event.inputs.iprp_tag }}
+  MODULE_VERSION: ${{ github.event.inputs.rp_tag }}
   CHANNEL: ${{ github.event.inputs.channel }}
   # needed by gh cli for GitHub enterprise
   GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
   GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
-  IPRP_REPO_URL: ${{ secrets.IPRP_REPO_URL }}
+  RP_REPO_URL: ${{ secrets.RP_REPO_URL }}
 
 jobs:
-
-  promote-iprp:
-    name: Get, render and push iprp assets
+  promote-rp:
+    name: Get, render and push rp assets
     runs-on: [self-hosted, solinas]
 
     steps:
@@ -35,24 +34,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.iprp_tag }}
+          ref: ${{ github.event.inputs.rp_tag }}
 
       - uses: ./.github/actions/setup-go
 
       - name: Download release assets
         env:
-            GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
+          GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
-          gh release download ${{ github.event.inputs.iprp_tag}} -R "${IPRP_REPO_URL}" --pattern '*.yaml'
+          gh release download ${{ github.event.inputs.rp_tag}} -R "${RP_REPO_URL}" --pattern '*.yaml'
 
       - name: Render module-config
         env:
           CHANNEL: ${{ github.event.inputs.channel }}
-          MODULE_VERSION: ${{ github.event.inputs.iprp_tag }}
+          MODULE_VERSION: ${{ github.event.inputs.rp_tag }}
         run: |
           make module-config
           echo "==== module-config ==="
-          cat module-config.yaml 
+          cat module-config.yaml
 
       - name: Set up module-manifests repo
         run: |
@@ -67,12 +66,12 @@ jobs:
           git fetch upstream
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
-          mkdir -p modules/image-pull-reverse-proxy/${CHANNEL}
-          cp ../image-pull-reverse-proxy.yaml modules/image-pull-reverse-proxy/${CHANNEL}/image-pull-reverse-proxy.yaml
-          cp ../module-config.yaml modules/image-pull-reverse-proxy/${CHANNEL}/module-config.yaml
-          
+          mkdir -p modules/registry-proxy/${CHANNEL}
+          cp ../registry-proxy.yaml modules/registry-proxy/${CHANNEL}/registry-proxy.yaml
+          cp ../module-config.yaml modules/registry-proxy/${CHANNEL}/module-config.yaml
+
           git add .
-          git commit -m "promote iprp ${MODULE_VERSION} to ${CHANNEL} channel"
+          git commit -m "promote rp ${MODULE_VERSION} to ${CHANNEL} channel"
           git push origin "${MODULE_VERSION}-${CHANNEL}" -f
 
       - name: Create PullRequest to module-manifests
@@ -88,5 +87,5 @@ jobs:
           gh pr create -B main --fill \
             -H "${BOT_USERNAME}:${MODULE_VERSION}-${CHANNEL}" \
             -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests/" \
-            --title "Promote Iprp ${MODULE_VERSION} to ${CHANNEL} channel" \
-            --body "https://github.tools.sap/kyma/image-pull-reverse-proxy/actions/${{github.run_id}}"
+            --title "Promote registry-proxy ${MODULE_VERSION} to ${CHANNEL} channel" \
+            --body "https://github.tools.sap/kyma/registry-proxy/actions/${{github.run_id}}"

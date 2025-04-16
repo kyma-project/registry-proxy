@@ -5,10 +5,10 @@
   {{- else if .Values.nameOverride }}
     {{ .Values.nameOverride | trunc 63 | trimSuffix "-" }}
   {{- else }}
-    image-pull-reverse-proxy
+    registry-proxy
   {{- end }}
 {{- else }}
-  image-pull-reverse-proxy
+  registry-proxy
 {{- end }}
 {{- end }}
 

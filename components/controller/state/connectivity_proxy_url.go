@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrl "sigs.k8s.io/controller-runtime"

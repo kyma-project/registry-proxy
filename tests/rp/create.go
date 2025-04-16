@@ -1,15 +1,15 @@
-package iprp
+package rp
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/utils"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/tests/utils"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Create(utils *utils.TestUtils) error {
-	iprpObj := fixImagePullReverseProxy(utils)
+	rpObj := fixImagePullReverseProxy(utils)
 
-	return utils.Client.Create(utils.Ctx, iprpObj)
+	return utils.Client.Create(utils.Ctx, rpObj)
 }
 
 func fixImagePullReverseProxy(testUtils *utils.TestUtils) *v1alpha1.ImagePullReverseProxy {

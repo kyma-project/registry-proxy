@@ -10,7 +10,7 @@ set -o pipefail # prevents errors in a pipeline from being masked
 
 RELEASE_TAG=$1
 
-REPOSITORY=${REPOSITORY:-kyma/image-pull-reverse-proxy}
+REPOSITORY=${REPOSITORY:-kyma/registry-proxy}
 GITHUB_URL=https://github.tools.sap/api/v3/repos/${REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
 CHANGELOG_FILE="CHANGELOG.md"

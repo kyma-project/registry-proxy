@@ -3,7 +3,7 @@ package resources
 import (
 	"testing"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
 
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"

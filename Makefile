@@ -1,6 +1,6 @@
 # Image URL to use all building/pushing image targets
-CTRL_IMG ?= image-pull-reverse-proxy-controller:main
-IMG ?= image-pull-reverse-proxy:main
+CTRL_IMG ?= registry-proxy-controller:main
+IMG ?= registry-proxy:main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
@@ -76,7 +76,7 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 	make -C components/reverse-proxy docker-build IMG=$(IMG)
 	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart
+	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart
 
 
 .PHONY: run-local-integration
@@ -86,7 +86,7 @@ run-local-integration: run-local
 	make -C components/reverse-proxy docker-build IMG=$(IMG)
 	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system
+	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -105,7 +105,7 @@ run-local-integration: run-local
 .PHONY: run-integration
 run-integration:
 	## make sure helm is installed or binary is present
-	helm install image-pull-reverse-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller" --set controllerManager.container.image.tag=$(TAG) --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
+	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" --set controllerManager.container.image.tag=$(TAG) --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -135,10 +135,10 @@ test: ## Run unit tests
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
 	@echo "####################### Controller Logs #######################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/name=image-pull-reverse-proxy --tail=-1 || true
+	@kubectl logs -n kyma-system -l app.kubernetes.io/name=registry-proxy --tail=-1 || true
 	@echo ""
 
-	@echo "####################### IPRP CR #######################"
+	@echo "####################### RP CR #######################"
 	@kubectl get imagepullreverseproxies -A -oyaml || true
 	@echo ""
 

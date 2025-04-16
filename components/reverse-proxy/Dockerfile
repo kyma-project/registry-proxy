@@ -19,7 +19,7 @@ COPY components/reverse-proxy components/reverse-proxy
 # was called. For example, if we call make docker-build in a local env which has the Apple Silicon M1 SO
 # the docker BUILDPLATFORM arg will be linux/arm64 when for Apple x86 it will be linux/amd64. Therefore,
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o iprp ./components/reverse-proxy/cmd/main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o rp ./components/reverse-proxy/cmd/main.go
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3 AS certs
 
@@ -31,8 +31,8 @@ FROM scratch
 
 WORKDIR /
 
-COPY --from=builder /workdir/iprp .
+COPY --from=builder /workdir/rp .
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000:1000
 
-ENTRYPOINT ["/iprp"]
+ENTRYPOINT ["/rp"]

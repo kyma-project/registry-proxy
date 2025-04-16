@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/stretchr/testify/require"

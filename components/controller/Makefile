@@ -1,5 +1,5 @@
 # Image URL to use all building/pushing image targets
-CTRL_IMG ?= image-pull-reverse-proxy-controller:main
+CTRL_IMG ?= registry-proxy-controller:main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
@@ -105,9 +105,9 @@ PLATFORMS ?= linux/arm64,linux/amd64
 docker-buildx: ## Build and push docker image for the manager for cross-platform support
 	# copy existing Dockerfile and insert --platform=${BUILDPLATFORM} into Dockerfile.cross, and preserve the original Dockerfile
 	sed -e '1 s/\(^FROM\)/FROM --platform=\$$\{BUILDPLATFORM\}/; t' -e ' 1,// s//FROM --platform=\$$\{BUILDPLATFORM\}/' Dockerfile > Dockerfile.cross
-	- $(CONTAINER_TOOL) buildx create --name image-pull-reverse-proxy-controller-builder
-	$(CONTAINER_TOOL) buildx use image-pull-reverse-proxy-controller-builder
+	- $(CONTAINER_TOOL) buildx create --name registry-proxy-controller-builder
+	$(CONTAINER_TOOL) buildx use registry-proxy-controller-builder
 	- $(CONTAINER_TOOL) buildx build --push --platform=$(PLATFORMS) --tag ${CTRL_IMG} -f Dockerfile.cross ${PROJECT_ROOT}
-	- $(CONTAINER_TOOL) buildx rm image-pull-reverse-proxy-controller-builder
+	- $(CONTAINER_TOOL) buildx rm registry-proxy-controller-builder
 	rm Dockerfile.cross
 

@@ -1,9 +1,9 @@
-package namespace
+package rp
 
 import "github.tools.sap/kyma/registry-proxy/tests/utils"
 
 func Delete(utils *utils.TestUtils) error {
-	namespace := fixNamespace(utils)
+	rp := fixImagePullReverseProxy(utils)
 
-	return utils.Client.Delete(utils.Ctx, namespace)
+	return utils.Client.Delete(utils.Ctx, rp)
 }

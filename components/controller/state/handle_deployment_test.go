@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	v1alpha2 "github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
+	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/registry-proxy/components/controller/resources"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

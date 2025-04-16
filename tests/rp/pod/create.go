@@ -4,26 +4,26 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/utils"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/tests/utils"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Create(utils *utils.TestUtils) error {
-	iprp, err := getIPRP(utils)
+	rp, err := getRP(utils)
 	if err != nil {
 		return err
 	}
 
-	// docker-registry module credentials point to the docker-registry service, we ahve to convert that to our iprp nodePort
+	// docker-registry module credentials point to the docker-registry service, we ahve to convert that to our rp nodePort
 	dockerCreds, err := getDockerCredentials(utils)
 	if err != nil {
 		return err
 	}
 
-	secret, err := fixSecret(utils, iprp, dockerCreds)
+	secret, err := fixSecret(utils, rp, dockerCreds)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func Create(utils *utils.TestUtils) error {
 		return err
 	}
 
-	pod, err := fixPod(utils, iprp)
+	pod, err := fixPod(utils, rp)
 	if err != nil {
 		return err
 	}
@@ -41,22 +41,22 @@ func Create(utils *utils.TestUtils) error {
 }
 
 // TODO: common function
-func getIPRP(utils *utils.TestUtils) (*v1alpha1.ImagePullReverseProxy, error) {
-	var iprp v1alpha1.ImagePullReverseProxy
+func getRP(utils *utils.TestUtils) (*v1alpha1.ImagePullReverseProxy, error) {
+	var rp v1alpha1.ImagePullReverseProxy
 	objectKey := client.ObjectKey{
 		Name:      utils.ImagePullReverseProxyName,
 		Namespace: utils.Namespace,
 	}
 
-	if err := utils.Client.Get(utils.Ctx, objectKey, &iprp); err != nil {
+	if err := utils.Client.Get(utils.Ctx, objectKey, &rp); err != nil {
 		return nil, err
 	}
 
-	return &iprp, nil
+	return &rp, nil
 }
 
-func fixPod(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy) (*v1.Pod, error) {
-	podImage, err := getPodImage(utils, iprp)
+func fixPod(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) (*v1.Pod, error) {
+	podImage, err := getPodImage(utils, rp)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +81,8 @@ func fixPod(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy) (*v1.P
 	}, nil
 }
 
-func getPodImage(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy) (string, error) {
-	nodeport := iprp.Status.NodePort
+func getPodImage(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) (string, error) {
+	nodeport := rp.Status.NodePort
 	if nodeport == 0 {
 		return "", fmt.Errorf("NodePort is not set in status")
 
@@ -105,11 +105,11 @@ func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {
 }
 
 // we have to convert secret to kubernetes.io/dockerconfigjson
-func fixSecret(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy, dockerSecret *v1.Secret) (*v1.Secret, error) {
+func fixSecret(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy, dockerSecret *v1.Secret) (*v1.Secret, error) {
 	username := string(dockerSecret.Data["username"])
 	password := string(dockerSecret.Data["password"])
 	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
-	nodePort := iprp.Status.NodePort
+	nodePort := rp.Status.NodePort
 
 	secret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{

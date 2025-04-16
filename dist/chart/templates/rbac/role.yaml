@@ -5,7 +5,7 @@ kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: image-pull-reverse-proxy-manager-role
+  name: registry-proxy-manager-role
 rules:
 - apiGroups:
   - ""

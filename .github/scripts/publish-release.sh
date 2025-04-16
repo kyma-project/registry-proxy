@@ -11,7 +11,7 @@ set -o pipefail # prevents errors in a pipeline from being masked
 RELEASE_ID=$1
 IS_LATEST_RELEASE=$2
 
-REPOSITORY=${REPOSITORY:-kyma/image-pull-reverse-proxy}
+REPOSITORY=${REPOSITORY:-kyma/registry-proxy}
 GITHUB_URL=https://github.tools.sap/api/v3/repos/${REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: Bearer ${GITHUB_TOKEN}"
 

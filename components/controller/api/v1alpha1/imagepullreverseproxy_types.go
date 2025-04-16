@@ -59,8 +59,8 @@ const (
 const (
 	LabelApp        = "app"
 	LabelModuleName = "kyma-project.io/module"
-	LabelManagedBy  = "image-pull-reverse-proxy.kyma-project.io/managed-by"
-	LabelResource   = "image-pull-reverse-proxy.kyma-project.io/resource"
+	LabelManagedBy  = "registry-proxy.kyma-project.io/managed-by"
+	LabelResource   = "registry-proxy.kyma-project.io/resource"
 	LabelName       = "app.kubernetes.io/name"
 	LabelPartOf     = "app.kubernetes.io/part-of"
 )

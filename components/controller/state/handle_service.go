@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/registry-proxy/components/controller/resources"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	ctrl "sigs.k8s.io/controller-runtime"

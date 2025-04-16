@@ -1,7 +1,7 @@
 package namespace
 
 import (
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/utils"
+	"github.tools.sap/kyma/registry-proxy/tests/utils"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

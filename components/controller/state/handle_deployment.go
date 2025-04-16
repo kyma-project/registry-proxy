@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"time"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/resources"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
+	"github.tools.sap/kyma/registry-proxy/components/controller/resources"
 
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -67,7 +67,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	deployment := resources.NewDeployment(&m.State.ReverseProxy, m.State.ProxyURL)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
-	// will be deleted when the IPRP CR is deleted.
+	// will be deleted when the RP CR is deleted.
 	if err := controllerutil.SetControllerReference(&m.State.ReverseProxy, deployment, m.Scheme); err != nil {
 		m.Log.Error(err, "failed to set controller reference on Deployment")
 		m.State.ReverseProxy.UpdateCondition( // We update the condition on every possible return to make sure it's up to date

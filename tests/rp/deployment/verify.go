@@ -3,14 +3,14 @@ package deployment
 import (
 	"fmt"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/utils"
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/tests/utils"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func VerifyEnvs(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy) error {
+func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) error {
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
 		Name:      utils.ImagePullReverseProxyName,
@@ -22,18 +22,18 @@ func VerifyEnvs(utils *utils.TestUtils, iprp *v1alpha1.ImagePullReverseProxy) er
 		return err
 	}
 
-	return verifyDeployEnvs(&deploy, iprp)
+	return verifyDeployEnvs(&deploy, rp)
 }
 
-func verifyDeployEnvs(deploy *appsv1.Deployment, iprp *v1alpha1.ImagePullReverseProxy) error {
+func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.ImagePullReverseProxy) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",
-			Value: iprp.Status.ProxyURL,
+			Value: rp.Status.ProxyURL,
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: iprp.Spec.TargetHost,
+			Value: rp.Spec.TargetHost,
 		},
 	}
 

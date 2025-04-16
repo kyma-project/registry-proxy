@@ -1,4 +1,4 @@
-# These are the default owners for the whole content of the `image-pull-reverse-proxy` repository. The default owners are automatically added as reviewers when you open a pull request unless different owners are specified in the file.
+# These are the default owners for the whole content of the `registry-proxy` repository. The default owners are automatically added as reviewers when you open a pull request unless different owners are specified in the file.
 * @kyma/otters
 
 # All .md files

@@ -6,11 +6,10 @@ import (
 	"os"
 	"time"
 
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/iprp"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/iprp/pod"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/logger"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/namespace"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/tests/utils"
+	"github.tools.sap/kyma/registry-proxy/tests/logger"
+	"github.tools.sap/kyma/registry-proxy/tests/namespace"
+	"github.tools.sap/kyma/registry-proxy/tests/rp/pod"
+	"github.tools.sap/kyma/registry-proxy/tests/utils"
 
 	"github.com/google/uuid"
 )
@@ -38,13 +37,13 @@ func main() {
 
 	log.Info("Start scenario")
 	err = runScenario(&utils.TestUtils{
-		Namespace: fmt.Sprintf("iprp-%s", uuid.New().String()),
+		Namespace: fmt.Sprintf("rp-%s", uuid.New().String()),
 
-		ImagePullReverseProxyName: "iprp-test",
+		ImagePullReverseProxyName: "rp-test",
 		ProxyURL:                  "http://dockerregistry.kyma-system.svc.cluster.local:5000",
 		TargetHost:                "dockerregistry.kyma-system.svc.cluster.local:5000",
 		ImageName:                 "alpine:3.21.3",
-		TestPod:                   "iprp-test-pod",
+		TestPod:                   "rp-test-pod",
 		Ctx:                       ctx,
 		Client:                    client,
 		Logger:                    log,
@@ -64,17 +63,17 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// create image pull reverse proxy
 	testutil.Logger.Infof("Creating image pull reverse proxy '%s'", testutil.ImagePullReverseProxyName)
-	if err := iprp.Create(testutil); err != nil {
+	if err := rp.Create(testutil); err != nil {
 		return err
 	}
 
 	// verify image pull reverse proxy
-	testutil.Logger.Infof("Verifying iprp '%s'", testutil.ImagePullReverseProxyName)
-	if err := utils.WithRetry(testutil, iprp.Verify); err != nil {
+	testutil.Logger.Infof("Verifying rp '%s'", testutil.ImagePullReverseProxyName)
+	if err := utils.WithRetry(testutil, rp.Verify); err != nil {
 		return err
 	}
 
-	// create pod with image through iprp
+	// create pod with image through rp
 	testutil.Logger.Infof("Creating pod '%s'", testutil.TestPod)
 	if err := pod.Create(testutil); err != nil {
 		return err
@@ -86,15 +85,15 @@ func runScenario(testutil *utils.TestUtils) error {
 		return err
 	}
 
-	// delete iprp
-	testutil.Logger.Infof("Deleting iprp '%s'", testutil.ImagePullReverseProxyName)
-	if err := iprp.Delete(testutil); err != nil {
+	// delete rp
+	testutil.Logger.Infof("Deleting rp '%s'", testutil.ImagePullReverseProxyName)
+	if err := rp.Delete(testutil); err != nil {
 		return err
 	}
 
-	// verify iprp deletion
-	testutil.Logger.Infof("Verifying iprp '%s' deletion", testutil.ImagePullReverseProxyName)
-	if err := utils.WithRetry(testutil, iprp.VerifyDeletion); err != nil {
+	// verify rp deletion
+	testutil.Logger.Infof("Verifying rp '%s' deletion", testutil.ImagePullReverseProxyName)
+	if err := utils.WithRetry(testutil, rp.VerifyDeletion); err != nil {
 		return err
 	}
 

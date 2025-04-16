@@ -5,7 +5,7 @@ kind: ServiceMonitor
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: image-pull-reverse-proxy-controller-manager-metrics-monitor
+  name: registry-proxy-controller-manager-metrics-monitor
   namespace: {{ .Release.Namespace }}
 spec:
   endpoints:

@@ -1,4 +1,4 @@
-module github.tools.sap/kyma/image-pull-reverse-proxy
+module github.tools.sap/kyma/registry-proxy
 
 go 1.24
 

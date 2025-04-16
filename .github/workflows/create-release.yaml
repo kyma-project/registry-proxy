@@ -29,7 +29,7 @@ jobs:
 
       - name: Bump helm chart
         run: |
-          ./.github/scripts/upgrade-iprp-version.sh
+          ./.github/scripts/upgrade-rp-version.sh
         env:
           MODULE_VERSION: ${{ github.event.inputs.name }}
 

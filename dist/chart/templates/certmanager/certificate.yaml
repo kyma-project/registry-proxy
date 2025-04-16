@@ -25,9 +25,9 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
 spec:
   dnsNames:
-    - image-pull-reverse-proxy.{{ .Release.Namespace }}.svc
-    - image-pull-reverse-proxy.{{ .Release.Namespace }}.svc.cluster.local
-    - image-pull-reverse-proxy-webhook-service.{{ .Release.Namespace }}.svc
+    - registry-proxy.{{ .Release.Namespace }}.svc
+    - registry-proxy.{{ .Release.Namespace }}.svc.cluster.local
+    - registry-proxy-webhook-service.{{ .Release.Namespace }}.svc
   issuerRef:
     kind: Issuer
     name: selfsigned-issuer
@@ -49,9 +49,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   dnsNames:
-    - image-pull-reverse-proxy.{{ .Release.Namespace }}.svc
-    - image-pull-reverse-proxy.{{ .Release.Namespace }}.svc.cluster.local
-    - image-pull-reverse-proxy-metrics-service.{{ .Release.Namespace }}.svc
+    - registry-proxy.{{ .Release.Namespace }}.svc
+    - registry-proxy.{{ .Release.Namespace }}.svc.cluster.local
+    - registry-proxy-metrics-service.{{ .Release.Namespace }}.svc
   issuerRef:
     kind: Issuer
     name: selfsigned-issuer

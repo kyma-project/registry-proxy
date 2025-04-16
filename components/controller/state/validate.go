@@ -3,12 +3,13 @@ package state
 import (
 	"context"
 	"fmt"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/api/v1alpha1"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/fsm"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"net/url"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"time"
+
+	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/controller/fsm"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {

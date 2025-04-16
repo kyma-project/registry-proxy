@@ -2,14 +2,15 @@ package controller
 
 import (
 	"context"
-	"github.tools.sap/kyma/image-pull-reverse-proxy/components/controller/cache"
+	"time"
+
+	"github.tools.sap/kyma/registry-proxy/components/controller/cache"
 	"go.uber.org/zap"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"time"
 )
 
 type CrdsReconciler struct {
@@ -23,7 +24,7 @@ func (r *CrdsReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&apiextensionsv1.CustomResourceDefinition{}).
 		WithEventFilter(r.buildPredicates()).
-		Named("iprp-crds-controller").
+		Named("rp-crds-controller").
 		Complete(r)
 }
 

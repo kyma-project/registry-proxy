@@ -32,17 +32,17 @@ uploadFile() {
   fi
 }
 
-helm template image-pull-reverse-proxy-controller ${PROJECT_ROOT}/dist/chart \
+helm template registry-proxy-controller ${PROJECT_ROOT}/dist/chart \
   --namespace=kyma-system \
-  --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy-controller" \
-  --set controllerManager.container.image.tag=image-pull-reverse-proxy:${TAG} \
-  --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/image-pull-reverse-proxy:${TAG} \
-  > image-pull-reverse-proxy.yaml
+  --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" \
+  --set controllerManager.container.image.tag=registry-proxy:${TAG} \
+  --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/registry-proxy:${TAG} \
+  > registry-proxy.yaml
 
-echo "Generated image-pull-reverse-proxy.yaml:"
-cat image-pull-reverse-proxy.yaml
+echo "Generated registry-proxy.yaml:"
+cat registry-proxy.yaml
 
 echo "Updating github release with assets"
-UPLOAD_URL="https://github.tools.sap/api/uploads/repos/kyma/image-pull-reverse-proxy/releases/${RELEASE_ID}/assets"
+UPLOAD_URL="https://github.tools.sap/api/uploads/repos/kyma/registry-proxy/releases/${RELEASE_ID}/assets"
 
-uploadFile "image-pull-reverse-proxy.yaml" "${UPLOAD_URL}?name=image-pull-reverse-proxy.yaml"
+uploadFile "registry-proxy.yaml" "${UPLOAD_URL}?name=registry-proxy.yaml"

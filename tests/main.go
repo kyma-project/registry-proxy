@@ -8,6 +8,7 @@ import (
 
 	"github.tools.sap/kyma/registry-proxy/tests/logger"
 	"github.tools.sap/kyma/registry-proxy/tests/namespace"
+	"github.tools.sap/kyma/registry-proxy/tests/rp"
 	"github.tools.sap/kyma/registry-proxy/tests/rp/pod"
 	"github.tools.sap/kyma/registry-proxy/tests/utils"
 

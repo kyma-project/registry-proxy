@@ -76,17 +76,11 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 	make -C components/reverse-proxy docker-build IMG=$(IMG)
 	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart
+	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart  --namespace=kyma-system
 
 
 .PHONY: run-local-integration
-run-local-integration: run-local
-	make -C components/controller docker-build CTRL_IMG=$(CTRL_IMG)
-	k3d image import $(CTRL_IMG) -c kyma
-	make -C components/reverse-proxy docker-build IMG=$(IMG)
-	k3d image import $(IMG) -c kyma
-	## make sure helm is installed or binary is present
-	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system
+run-local-integration: run-local ## create k2d cluster and run integration test
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -103,7 +97,7 @@ run-local-integration: run-local
 	go run $(PROJECT_ROOT)/tests/main.go
 
 .PHONY: run-integration
-run-integration:
+run-integration: # run integration test
 	## make sure helm is installed or binary is present
 	helm install registry-proxy-controller $(PROJECT_ROOT)/dist/chart --namespace=kyma-system --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" --set controllerManager.container.image.tag=$(TAG) --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
 	# connectivity proxy

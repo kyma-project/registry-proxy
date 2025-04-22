@@ -83,14 +83,14 @@ kubectl create namespace ${NAMESPACE}
 2. You can get images for your changes by pushing them and grabbing them from the build job or build the Docker images yourself for Controller and Registry Proxy and push them.
 
 ```bash
-	make -C components/controller docker-build CTRL_IMG="registry-proxy-controller:main"
+	make -C components/registry-proxy docker-build CTRL_IMG="registry-proxy-controller:main"
 	make -C components/reverse-proxy docker-build IMG="registry-proxy:main"
 ```
 
 3. Install the Helm chart.
 
 ```bash
-helm install registry-proxy dist/chart -n ${NAMESPACE} \
+helm install registry-proxy config/registry-proxy -n ${NAMESPACE} \
   --set controllerManager.container.image.repository="<registry-proxy-controller>" \
   --set controllerManager.container.image.tag="<latest>" \
   --set controllerManager.container.env.PROXY_IMAGE=<registry-proxy:latest>

@@ -6,7 +6,7 @@ import (
 	"os/user"
 	"path/filepath"
 
-	v1alpha1 "github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	v1alpha1 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"

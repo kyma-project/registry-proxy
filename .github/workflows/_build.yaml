@@ -37,7 +37,7 @@ jobs:
     uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
     with:
       name: registry-proxy-controller
-      dockerfile: components/controller/Dockerfile
+      dockerfile: components/registry-proxy/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true
@@ -46,6 +46,7 @@ jobs:
     needs: compute-tags
     uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
     with:
+      # TODO: rename to registry-proxy-connection
       name: registry-proxy
       dockerfile: components/reverse-proxy/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}

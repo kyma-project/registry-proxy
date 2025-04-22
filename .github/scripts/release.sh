@@ -32,7 +32,7 @@ uploadFile() {
   fi
 }
 
-helm template registry-proxy-controller ${PROJECT_ROOT}/dist/chart \
+helm template registry-proxy-controller ${PROJECT_ROOT}/config/registry-proxy \
   --namespace=kyma-system \
   --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" \
   --set controllerManager.container.image.tag=registry-proxy:${TAG} \

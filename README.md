@@ -40,7 +40,7 @@ make deploy IMG=<some-registry>/registry-proxy:tag
 ```
 
 > **NOTE**: If you encounter RBAC errors, you may need to grant yourself cluster-admin
-privileges or be logged in as admin.
+> privileges or be logged in as admin.
 
 **Create instances of your solution**
 You can apply the samples (examples) from the config/sample:
@@ -49,9 +49,10 @@ You can apply the samples (examples) from the config/sample:
 kubectl apply -k config/samples/
 ```
 
->**NOTE**: Ensure that the samples has default values to test it out.
+> **NOTE**: Ensure that the samples has default values to test it out.
 
 ### To Uninstall
+
 **Delete the instances (CRs) from the cluster:**
 
 ```sh
@@ -89,11 +90,14 @@ its dependencies.
 
 Users can just run kubectl apply -f <URL for YAML BUNDLE> to install the project, i.e.:
 
+# TODO: this is completely false
+
 ```sh
 kubectl apply -f https://raw.githubusercontent.com/<org>/registry-proxy/<tag or branch>/dist/install.yaml
 ```
 
 ## Contributing
+
 // TODO(user): Add detailed information on how you would like others to contribute to this project
 
 **NOTE:** Run `make help` for more information on all potential `make` targets
@@ -101,4 +105,3 @@ kubectl apply -f https://raw.githubusercontent.com/<org>/registry-proxy/<tag or 
 More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
 
 ## License
-

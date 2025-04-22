@@ -3,7 +3,7 @@ package rp
 import (
 	"fmt"
 
-	"github.tools.sap/kyma/registry-proxy/components/controller/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/tests/rp/deployment"
 	"github.tools.sap/kyma/registry-proxy/tests/utils"
 	"k8s.io/apimachinery/pkg/api/errors"

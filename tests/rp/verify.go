@@ -21,9 +21,9 @@ func VerifyDeletion(utils *utils.TestUtils) error {
 }
 
 func Verify(utils *utils.TestUtils) error {
-	var rp v1alpha1.ImagePullReverseProxy
+	var rp v1alpha1.RegistryProxy
 	objectKey := client.ObjectKey{
-		Name:      utils.ImagePullReverseProxyName,
+		Name:      utils.RegistryProxyName,
 		Namespace: utils.Namespace,
 	}
 
@@ -43,7 +43,7 @@ func Verify(utils *utils.TestUtils) error {
 }
 
 // check if all data from the spec is reflected in the status
-func verifyStatus(rp *v1alpha1.ImagePullReverseProxy) error {
+func verifyStatus(rp *v1alpha1.RegistryProxy) error {
 	status := rp.Status
 	spec := rp.Spec
 
@@ -71,7 +71,7 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 	return nil
 }
 
-func verifyState(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) error {
+func verifyState(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) error {
 	for _, condition := range rp.Status.Conditions {
 		if condition.Type == string(v1alpha1.ConditionReady) {
 			if condition.Reason == string(v1alpha1.ConditionReasonProbeSuccess) &&

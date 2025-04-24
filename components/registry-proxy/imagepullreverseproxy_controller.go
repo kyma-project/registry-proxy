@@ -17,8 +17,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
-// ImagePullReverseProxyReconciler reconciles a ImagePullReverseProxy object
-type ImagePullReverseProxyReconciler struct {
+// RegistryProxyReconciler reconciles a RegistryProxy object
+type RegistryProxyReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 	Log    *zap.SugaredLogger
@@ -30,23 +30,23 @@ type ImagePullReverseProxyReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.1/pkg/reconcile
-func (r *ImagePullReverseProxyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := r.Log.With("request", req)
 	log.Info("reconciliation started")
 
-	var reverseProxy v1alpha1.ImagePullReverseProxy
-	if err := r.Get(ctx, req.NamespacedName, &reverseProxy); err != nil {
+	var registryProxy v1alpha1.RegistryProxy
+	if err := r.Get(ctx, req.NamespacedName, &registryProxy); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	sm := fsm.New(r.Client, &reverseProxy, state.StartState(), r.Scheme, log, r.Cache)
+	sm := fsm.New(r.Client, &registryProxy, state.StartState(), r.Scheme, log, r.Cache)
 	return sm.Reconcile(ctx)
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ImagePullReverseProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1alpha1.ImagePullReverseProxy{}).
+		For(&v1alpha1.RegistryProxy{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

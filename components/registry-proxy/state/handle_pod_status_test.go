@@ -42,7 +42,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -59,8 +59,8 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
-		requireContainsCondition(t, m.State.ReverseProxy.Status, v1alpha1.ConditionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
+		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
+		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
 	})
 
 	t.Run("one pod exists", func(t *testing.T) {
@@ -75,7 +75,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -114,7 +114,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -131,7 +131,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.Nil(t, result)
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleService, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
+		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
 	})
 }
 
@@ -146,14 +146,14 @@ func TestHandleProbe(t *testing.T) {
 
 	tests := []struct {
 		name              string
-		rp                *v1alpha1.ImagePullReverseProxy
+		rp                *v1alpha1.RegistryProxy
 		podIP             string
 		probe             *corev1.Probe
 		expectedCondition metav1.Condition
 	}{
 		{
 			name:  "should return error on broken probe",
-			rp:    &v1alpha1.ImagePullReverseProxy{},
+			rp:    &v1alpha1.RegistryProxy{},
 			podIP: "127.0.0.1",
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{
@@ -172,7 +172,7 @@ func TestHandleProbe(t *testing.T) {
 		},
 		{
 			name:  "should return probe failure",
-			rp:    &v1alpha1.ImagePullReverseProxy{},
+			rp:    &v1alpha1.RegistryProxy{},
 			podIP: failureURL.Hostname(),
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{
@@ -191,7 +191,7 @@ func TestHandleProbe(t *testing.T) {
 		},
 		{
 			name:  "should return probe success",
-			rp:    &v1alpha1.ImagePullReverseProxy{},
+			rp:    &v1alpha1.RegistryProxy{},
 			podIP: successURL.Hostname(),
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{

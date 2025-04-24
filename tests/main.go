@@ -40,14 +40,14 @@ func main() {
 	err = runScenario(&utils.TestUtils{
 		Namespace: fmt.Sprintf("rp-%s", uuid.New().String()),
 
-		ImagePullReverseProxyName: "rp-test",
-		ProxyURL:                  "http://dockerregistry.kyma-system.svc.cluster.local:5000",
-		TargetHost:                "dockerregistry.kyma-system.svc.cluster.local:5000",
-		ImageName:                 "alpine:3.21.3",
-		TestPod:                   "rp-test-pod",
-		Ctx:                       ctx,
-		Client:                    client,
-		Logger:                    log,
+		RegistryProxyName: "rp-test",
+		ProxyURL:          "http://dockerregistry.kyma-system.svc.cluster.local:5000",
+		TargetHost:        "dockerregistry.kyma-system.svc.cluster.local:5000",
+		ImageName:         "alpine:3.21.3",
+		TestPod:           "rp-test-pod",
+		Ctx:               ctx,
+		Client:            client,
+		Logger:            log,
 	})
 	if err != nil {
 		log.Error(err)
@@ -62,14 +62,14 @@ func runScenario(testutil *utils.TestUtils) error {
 		return err
 	}
 
-	// create image pull reverse proxy
-	testutil.Logger.Infof("Creating image pull reverse proxy '%s'", testutil.ImagePullReverseProxyName)
+	// create registry proxy
+	testutil.Logger.Infof("Creating registry proxy '%s'", testutil.RegistryProxyName)
 	if err := rp.Create(testutil); err != nil {
 		return err
 	}
 
-	// verify image pull reverse proxy
-	testutil.Logger.Infof("Verifying rp '%s'", testutil.ImagePullReverseProxyName)
+	// verify registry proxy
+	testutil.Logger.Infof("Verifying rp '%s'", testutil.RegistryProxyName)
 	if err := utils.WithRetry(testutil, rp.Verify); err != nil {
 		return err
 	}
@@ -87,13 +87,13 @@ func runScenario(testutil *utils.TestUtils) error {
 	}
 
 	// delete rp
-	testutil.Logger.Infof("Deleting rp '%s'", testutil.ImagePullReverseProxyName)
+	testutil.Logger.Infof("Deleting rp '%s'", testutil.RegistryProxyName)
 	if err := rp.Delete(testutil); err != nil {
 		return err
 	}
 
 	// verify rp deletion
-	testutil.Logger.Infof("Verifying rp '%s' deletion", testutil.ImagePullReverseProxyName)
+	testutil.Logger.Infof("Verifying rp '%s' deletion", testutil.RegistryProxyName)
 	if err := utils.WithRetry(testutil, rp.VerifyDeletion); err != nil {
 		return err
 	}

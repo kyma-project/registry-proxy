@@ -41,10 +41,10 @@ func Create(utils *utils.TestUtils) error {
 }
 
 // TODO: common function
-func getRP(utils *utils.TestUtils) (*v1alpha1.ImagePullReverseProxy, error) {
-	var rp v1alpha1.ImagePullReverseProxy
+func getRP(utils *utils.TestUtils) (*v1alpha1.RegistryProxy, error) {
+	var rp v1alpha1.RegistryProxy
 	objectKey := client.ObjectKey{
-		Name:      utils.ImagePullReverseProxyName,
+		Name:      utils.RegistryProxyName,
 		Namespace: utils.Namespace,
 	}
 
@@ -55,7 +55,7 @@ func getRP(utils *utils.TestUtils) (*v1alpha1.ImagePullReverseProxy, error) {
 	return &rp, nil
 }
 
-func fixPod(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) (*v1.Pod, error) {
+func fixPod(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) (*v1.Pod, error) {
 	podImage, err := getPodImage(utils, rp)
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func fixPod(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) (*v1.Pod
 	}, nil
 }
 
-func getPodImage(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) (string, error) {
+func getPodImage(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) (string, error) {
 	nodeport := rp.Status.NodePort
 	if nodeport == 0 {
 		return "", fmt.Errorf("NodePort is not set in status")
@@ -105,7 +105,7 @@ func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {
 }
 
 // we have to convert secret to kubernetes.io/dockerconfigjson
-func fixSecret(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy, dockerSecret *v1.Secret) (*v1.Secret, error) {
+func fixSecret(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy, dockerSecret *v1.Secret) (*v1.Secret, error) {
 	username := string(dockerSecret.Data["username"])
 	password := string(dockerSecret.Data["password"])
 	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))

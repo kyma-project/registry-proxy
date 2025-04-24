@@ -7,18 +7,18 @@ import (
 )
 
 func Create(utils *utils.TestUtils) error {
-	rpObj := fixImagePullReverseProxy(utils)
+	rpObj := fixRegistryProxy(utils)
 
 	return utils.Client.Create(utils.Ctx, rpObj)
 }
 
-func fixImagePullReverseProxy(testUtils *utils.TestUtils) *v1alpha1.ImagePullReverseProxy {
-	return &v1alpha1.ImagePullReverseProxy{
+func fixRegistryProxy(testUtils *utils.TestUtils) *v1alpha1.RegistryProxy {
+	return &v1alpha1.RegistryProxy{
 		ObjectMeta: v1.ObjectMeta{
-			Name:      testUtils.ImagePullReverseProxyName,
+			Name:      testUtils.RegistryProxyName,
 			Namespace: testUtils.Namespace,
 		},
-		Spec: v1alpha1.ImagePullReverseProxySpec{
+		Spec: v1alpha1.RegistryProxySpec{
 			ProxyURL:   testUtils.ProxyURL,
 			TargetHost: testUtils.TargetHost,
 			LogLevel:   "debug",

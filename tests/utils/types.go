@@ -12,9 +12,9 @@ type TestUtils struct {
 	Logger *zap.SugaredLogger
 	Client client.Client
 
-	Namespace                 string
-	ImagePullReverseProxyName string
-	ProxyURL                  string
+	Namespace         string
+	RegistryProxyName string
+	ProxyURL          string
 	TargetHost                string
 	// image name with tag
 	ImageName string

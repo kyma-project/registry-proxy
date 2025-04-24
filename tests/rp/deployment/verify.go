@@ -10,10 +10,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) error {
+func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) error {
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
-		Name:      utils.ImagePullReverseProxyName,
+		Name:      utils.RegistryProxyName,
 		Namespace: utils.Namespace,
 	}
 
@@ -25,7 +25,7 @@ func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.ImagePullReverseProxy) erro
 	return verifyDeployEnvs(&deploy, rp)
 }
 
-func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.ImagePullReverseProxy) error {
+func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.RegistryProxy) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",

@@ -8,7 +8,7 @@ import (
 
 func TestNewService(t *testing.T) {
 	t.Run("create service", func(t *testing.T) {
-		rp := minimalReverseProxy()
+		rp := minimalRegistryProxy()
 
 		s := NewService(rp)
 

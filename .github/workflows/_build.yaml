@@ -32,7 +32,7 @@ jobs:
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-  build-reverse-proxy-controller:
+  build-registry-proxy-controller:
     needs: compute-tags
     uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
     with:
@@ -42,13 +42,12 @@ jobs:
       context: .
       use-go-internal-sap-modules: true
 
-  build-reverse-proxy:
+  build-registry-proxy-connection:
     needs: compute-tags
     uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
     with:
-      # TODO: rename to registry-proxy-connection
-      name: registry-proxy
-      dockerfile: components/reverse-proxy/Dockerfile
+      name: registry-proxy-connection
+      dockerfile: components/connection/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true

@@ -61,11 +61,11 @@ test: ## Run go tests
 # (i.e. docker build --platform linux/arm64). However, you must enable docker buildKit for it.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
-docker-build: ## Build docker image with image pull reverse proxy.
+docker-build: ## Build docker image with registry proxy.
 	$(CONTAINER_TOOL) build -t ${IMG} -f Dockerfile ${PROJECT_ROOT}
 
 .PHONY: docker-push
-docker-push: ## Push docker image with image pull reverse proxy.
+docker-push: ## Push docker image with registry proxy.
 	$(CONTAINER_TOOL) push ${IMG}
 
 # PLATFORMS defines the target platforms for the manager image be built to provide support to multiple
@@ -85,5 +85,5 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	- $(CONTAINER_TOOL) buildx rm registry-proxy-builder
 	rm Dockerfile.cross
 
-build-image: ## Build image pull reverse proxy backend image
+build-image: ## Build registry proxy backend image
 	docker build -t $(APP_NAME) -f Dockerfile .

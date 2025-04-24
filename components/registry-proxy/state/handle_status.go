@@ -9,7 +9,7 @@ import (
 
 func sFnHandleStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	// update ProxyURL & NodePort
-	m.State.ReverseProxy.Status.ProxyURL = m.State.ProxyURL
-	m.State.ReverseProxy.Status.NodePort = m.State.NodePort
+	m.State.RegistryProxy.Status.ProxyURL = m.State.ProxyURL
+	m.State.RegistryProxy.Status.NodePort = m.State.NodePort
 	return nextState(nil)
 }

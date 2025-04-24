@@ -1,5 +1,5 @@
 apiVersion: operator.kyma-project.io/v1alpha1
-kind: ImagePullReverseProxy
+kind: RegistryProxy
 metadata:
   name: registry-proxy-minimal
   namespace: proxy

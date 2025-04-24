@@ -7,14 +7,14 @@ metadata:
   annotations:
     "helm.sh/resource-policy": keep
     controller-gen.kubebuilder.io/version: v0.17.2
-  name: imagepullreverseproxies.operator.kyma-project.io
+  name: registryproxies.operator.kyma-project.io
 spec:
   group: operator.kyma-project.io
   names:
-    kind: ImagePullReverseProxy
-    listKind: ImagePullReverseProxyList
-    plural: imagepullreverseproxies
-    singular: imagepullreverseproxy
+    kind: RegistryProxy
+    listKind: RegistryProxyList
+    plural: registryproxies
+    singular: registryproxy
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -30,8 +30,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: ImagePullReverseProxy is the Schema for the imagepullreverseproxies
-          API.
+        description: RegistryProxy is the Schema for the registryproxies API.
         properties:
           apiVersion:
             description: |-
@@ -51,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: ImagePullReverseProxySpec defines the desired state of ImagePullReverseProxy.
+            description: RegistryProxySpec defines the desired state of RegistryProxy.
             properties:
               logLevel:
                 description: Sets desired log level to be used. The default value
@@ -126,8 +125,7 @@ spec:
             - targetHost
             type: object
           status:
-            description: ImagePullReverseProxyStatus defines the observed state of
-              ImagePullReverseProxy.
+            description: RegistryProxyStatus defines the observed state of RegistryProxyStatus.
             properties:
               conditions:
                 description: Conditions associated with CustomStatus.

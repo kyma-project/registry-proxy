@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/probes"
-	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/reverseproxy"
-	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/server"
+	"github.tools.sap/kyma/registry-proxy/components/connection/internal/probes"
+	"github.tools.sap/kyma/registry-proxy/components/connection/internal/reverseproxy"
+	"github.tools.sap/kyma/registry-proxy/components/connection/internal/server"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -22,7 +22,7 @@ func main() {
 	var connectivityProxyAddress string
 	var targetHost string
 
-	flag.StringVar(&proxyAddr, "reverse-proxy-bind-address", ":8080", "The address the reverse proxy binds to.")
+	flag.StringVar(&proxyAddr, "connection-bind-address", ":8080", "The address the registry proxy connection binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.Parse()
 

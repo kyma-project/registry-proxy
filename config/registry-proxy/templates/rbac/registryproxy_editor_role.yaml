@@ -1,16 +1,16 @@
 {{- if .Values.rbac.enable }}
-# permissions for end users to edit imagepullreverseproxies.
+# permissions for end users to edit registryproxies.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: imagepullreverseproxy-editor-role
+  name: registryproxy-editor-role
 rules:
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - imagepullreverseproxies
+      - registryproxies
     verbs:
       - create
       - delete
@@ -22,7 +22,7 @@ rules:
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - imagepullreverseproxies/status
+      - registryproxies/status
     verbs:
       - get
 {{- end -}}

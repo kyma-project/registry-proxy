@@ -1,16 +1,16 @@
 {{- if .Values.rbac.enable }}
-# permissions for end users to view imagepullreverseproxies.
+# permissions for end users to view registryproxies.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: imagepullreverseproxy-viewer-role
+  name: registryproxy-viewer-role
 rules:
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - imagepullreverseproxies
+      - registryproxies
     verbs:
       - get
       - list
@@ -18,7 +18,7 @@ rules:
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - imagepullreverseproxies/status
+      - registryproxies/status
     verbs:
       - get
 {{- end -}}

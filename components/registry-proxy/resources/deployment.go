@@ -18,31 +18,31 @@ const (
 	defaultLimitMemory   = "64Mi"
 	defaultRequestCPU    = "50m"
 	defaultRequestMemory = "32Mi"
-	reverseProxyPort     = 8080
+	registryProxyPort    = 8080
 	probesPort           = 8081
 )
 
 type deployment struct {
-	reverseProxy *v1alpha1.ImagePullReverseProxy
-	proxyURL     string
+	registryProxy *v1alpha1.RegistryProxy
+	proxyURL      string
 }
 
-func NewDeployment(rp *v1alpha1.ImagePullReverseProxy, proxyURL string) *appsv1.Deployment {
+func NewDeployment(rp *v1alpha1.RegistryProxy, proxyURL string) *appsv1.Deployment {
 	d := &deployment{
-		reverseProxy: rp,
-		proxyURL:     proxyURL,
+		registryProxy: rp,
+		proxyURL:      proxyURL,
 	}
 	return d.construct()
 }
 
 func (d *deployment) construct() *appsv1.Deployment {
-	deploymentLabels := labels(d.reverseProxy, "deployment")
+	deploymentLabels := labels(d.registryProxy, "deployment")
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      d.reverseProxy.Name,
-			Namespace: d.reverseProxy.Namespace,
-			Labels:    labels(d.reverseProxy, "deployment"),
+			Name:      d.registryProxy.Name,
+			Namespace: d.registryProxy.Namespace,
+			Labels:    labels(d.registryProxy, "deployment"),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
@@ -64,7 +64,7 @@ func (d *deployment) podSpec() corev1.PodSpec {
 	return corev1.PodSpec{
 		Containers: []corev1.Container{
 			{
-				Name:  d.reverseProxy.Name,
+				Name:  d.registryProxy.Name,
 				Image: os.Getenv("PROXY_IMAGE"),
 				Command: []string{
 					os.Getenv("PROXY_COMMAND"),
@@ -74,7 +74,7 @@ func (d *deployment) podSpec() corev1.PodSpec {
 				Env:             d.envs(),
 				Ports: []corev1.ContainerPort{
 					{
-						ContainerPort: reverseProxyPort,
+						ContainerPort: registryProxyPort,
 						Protocol:      "TCP",
 					},
 				},
@@ -133,8 +133,8 @@ func (d *deployment) podSpec() corev1.PodSpec {
 }
 
 func (d *deployment) resourceConfiguration() corev1.ResourceRequirements {
-	if d.reverseProxy.Spec.Resources != nil {
-		return *d.reverseProxy.Spec.Resources
+	if d.registryProxy.Spec.Resources != nil {
+		return *d.registryProxy.Spec.Resources
 	}
 
 	return defaultResources()
@@ -161,14 +161,14 @@ func (d *deployment) envs() []corev1.EnvVar {
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: d.reverseProxy.Spec.TargetHost,
+			Value: d.registryProxy.Spec.TargetHost,
 		},
 	}
 
-	if d.reverseProxy.Spec.LogLevel != "" {
+	if d.registryProxy.Spec.LogLevel != "" {
 		envVariables = append(envVariables, corev1.EnvVar{
 			Name:  "LOG_LEVEL",
-			Value: d.reverseProxy.Spec.LogLevel,
+			Value: d.registryProxy.Spec.LogLevel,
 		})
 	}
 

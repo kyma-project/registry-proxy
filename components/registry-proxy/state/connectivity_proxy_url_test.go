@@ -70,12 +70,12 @@ func TestGetReverseProxyURL(t *testing.T) {
 func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 	t.Run("user provided proxyURL", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -92,7 +92,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -109,12 +109,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL from connectivity proxy", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				TargetHost: "dummy",
 			},
 		}
@@ -125,7 +125,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -141,12 +141,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL missing", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				TargetHost: "dummy",
 			},
 		}
@@ -157,7 +157,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

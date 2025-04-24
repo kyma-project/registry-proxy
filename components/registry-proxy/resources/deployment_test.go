@@ -14,7 +14,7 @@ import (
 
 func TestNewDeployment(t *testing.T) {
 	t.Run("create deployment", func(t *testing.T) {
-		rp := minimalReverseProxy()
+		rp := minimalRegistryProxy()
 
 		d := NewDeployment(rp, rp.Spec.ProxyURL)
 
@@ -29,7 +29,7 @@ func TestNewDeployment(t *testing.T) {
 	})
 
 	t.Run("create deployment with Resources", func(t *testing.T) {
-		rp := minimalReverseProxy()
+		rp := minimalRegistryProxy()
 
 		resources := minimalResources()
 		rp.Spec.Resources = &resources
@@ -50,13 +50,13 @@ func TestNewDeployment(t *testing.T) {
 	})
 }
 
-func minimalReverseProxy() *v1alpha1.ImagePullReverseProxy {
-	return &v1alpha1.ImagePullReverseProxy{
+func minimalRegistryProxy() *v1alpha1.RegistryProxy {
+	return &v1alpha1.RegistryProxy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test-rp-name",
 			Namespace: "test-rp-namespace",
 		},
-		Spec: v1alpha1.ImagePullReverseProxySpec{
+		Spec: v1alpha1.RegistryProxySpec{
 			ProxyURL:   "http://test-proxy-url",
 			TargetHost: "dummy",
 		},

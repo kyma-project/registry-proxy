@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.tools.sap/kyma/registry-proxy/components/reverse-proxy/internal/server"
+	"github.tools.sap/kyma/registry-proxy/components/connection/internal/server"
 
 	"go.uber.org/zap"
 )
@@ -14,36 +14,36 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-// getReadyz checks if we can access the reverse proxy URL and returns its status code (or 503 if it's unreachable)
-func getReadyz(reverseProxyURL string, log *zap.SugaredLogger) http.HandlerFunc {
+// getReadyz checks if we can access the registry proxy connection URL and returns its status code (or 503 if it's unreachable)
+func getReadyz(registryProxyConnection string, log *zap.SugaredLogger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, err := http.Get(reverseProxyURL)
+		resp, err := http.Get(registryProxyConnection)
 
 		if err != nil {
-			log.Warnf("couldn't reach reverse proxy at %s: %v", reverseProxyURL, err)
+			log.Warnf("couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)
 			w.WriteHeader(http.StatusServiceUnavailable)
-			_, _ = w.Write([]byte(fmt.Sprintf("couldn't reach reverse proxy at %s: %v", reverseProxyURL, err)))
+			_, _ = w.Write([]byte(fmt.Sprintf("couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)))
 			return
 		}
 
 		defer func() {
 			errClose := resp.Body.Close()
 			if errClose != nil {
-				log.Infof("error closing body of response from to %s: %v", reverseProxyURL, errClose)
+				log.Infof("error closing body of response from to %s: %v", registryProxyConnection, errClose)
 			}
 		}()
 
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Warnf("couldn't read response body from reverse proxy at %s: %v", reverseProxyURL, err)
+			log.Warnf("couldn't read response body from registry proxy connection at %s: %v", registryProxyConnection, err)
 			w.WriteHeader(http.StatusServiceUnavailable)
-			_, _ = w.Write([]byte(fmt.Sprintf("couldn't read response body from reverse proxy at %s: %v", reverseProxyURL, err)))
+			_, _ = w.Write([]byte(fmt.Sprintf("couldn't read response body from registry proxy connection at %s: %v", registryProxyConnection, err)))
 			return
 		}
 
-		log.Debugf("reverse proxy at %s returned status code %d", reverseProxyURL, resp.StatusCode)
+		log.Debugf("registry proxy connection at %s returned status code %d", registryProxyConnection, resp.StatusCode)
 		if string(respBody) != "" && resp.StatusCode != http.StatusOK {
-			log.Debugf("reverse proxy at %s returned body: %s", reverseProxyURL, string(respBody))
+			log.Debugf("registry proxy connection at %s returned body: %s", registryProxyConnection, string(respBody))
 		}
 
 		w.WriteHeader(resp.StatusCode)

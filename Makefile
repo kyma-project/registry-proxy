@@ -71,7 +71,7 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 run-local: create-k3d ## Setup local k3d cluster and install controller
 	make -C components/registry-proxy docker-build CTRL_IMG=$(CTRL_IMG)
 	k3d image import $(CTRL_IMG) -c kyma
-	make -C components/reverse-proxy docker-build IMG=$(IMG)
+	make -C components/connection docker-build IMG=$(IMG)
 	k3d image import $(IMG) -c kyma
 	## make sure helm is installed or binary is present
 	helm install registry-proxy-controller $(PROJECT_ROOT)/config/registry-proxy  --namespace=kyma-system
@@ -122,7 +122,7 @@ apply-example-connection-cr: manifests kyma ## Apply example Connection CR
 .PHONY: test
 test: ## Run unit tests
 	make -C components/registry-proxy test
-	make -C components/reverse-proxy test
+	make -C components/connection test
 
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
@@ -131,7 +131,7 @@ cluster-info: ## Print useful info about the cluster regarding integration run
 	@echo ""
 
 	@echo "####################### RP CR #######################"
-	@kubectl get imagepullreverseproxies -A -oyaml || true
+	@kubectl get registryproxies -A -oyaml || true
 	@echo ""
 
 	@echo "####################### Pods #######################"

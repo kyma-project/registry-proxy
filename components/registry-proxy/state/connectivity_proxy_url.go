@@ -12,8 +12,8 @@ import (
 )
 
 func sFnConnectivityProxyURL(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	if m.State.ReverseProxy.Spec.ProxyURL != "" {
-		m.State.ProxyURL = m.State.ReverseProxy.Spec.ProxyURL
+	if m.State.RegistryProxy.Spec.ProxyURL != "" {
+		m.State.ProxyURL = m.State.RegistryProxy.Spec.ProxyURL
 	} else {
 		proxyURL, err := getReverseProxyURL(ctx, m)
 		if err != nil {

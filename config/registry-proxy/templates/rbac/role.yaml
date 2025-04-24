@@ -71,7 +71,7 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - imagepullreverseproxies
+  - registryproxies
   verbs:
   - create
   - delete
@@ -83,13 +83,13 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - imagepullreverseproxies/finalizers
+  - registryproxies/finalizers
   verbs:
   - update
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - imagepullreverseproxies/status
+  - registryproxies/status
   verbs:
   - get
   - patch

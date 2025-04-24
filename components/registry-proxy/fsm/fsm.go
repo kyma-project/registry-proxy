@@ -22,8 +22,8 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	ReverseProxy   v1alpha1.ImagePullReverseProxy
-	statusSnapshot v1alpha1.ImagePullReverseProxyStatus
+	RegistryProxy  v1alpha1.RegistryProxy
+	statusSnapshot v1alpha1.RegistryProxyStatus
 	ProxyURL       string
 	NodePort       int32
 	Deployment     *appsv1.Deployment
@@ -31,9 +31,9 @@ type SystemState struct {
 }
 
 func (s *SystemState) saveStatusSnapshot() {
-	result := s.ReverseProxy.Status.DeepCopy()
+	result := s.RegistryProxy.Status.DeepCopy()
 	if result == nil {
-		result = &v1alpha1.ImagePullReverseProxyStatus{}
+		result = &v1alpha1.RegistryProxyStatus{}
 	}
 	s.statusSnapshot = *result
 }
@@ -93,11 +93,11 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache) StateMachineReconciler {
+func New(client client.Client, instance *v1alpha1.RegistryProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
-			ReverseProxy: *instance,
+			RegistryProxy: *instance,
 		},
 		Log:    log,
 		Client: client,
@@ -110,9 +110,9 @@ func New(client client.Client, instance *v1alpha1.ImagePullReverseProxy, startSt
 
 func updateProxyStatus(ctx context.Context, m *StateMachine) error {
 	s := &m.State
-	if !reflect.DeepEqual(s.ReverseProxy.Status, s.statusSnapshot) {
-		m.Log.Debug(fmt.Sprintf("updating image pull reverse proxy status to '%+v'", s.ReverseProxy.Status))
-		err := m.Client.Status().Update(ctx, &s.ReverseProxy)
+	if !reflect.DeepEqual(s.RegistryProxy.Status, s.statusSnapshot) {
+		m.Log.Debug(fmt.Sprintf("updating registry proxy status to '%+v'", s.RegistryProxy.Status))
+		err := m.Client.Status().Update(ctx, &s.RegistryProxy)
 		//emitEvent(r, s)
 		s.saveStatusSnapshot()
 		return err

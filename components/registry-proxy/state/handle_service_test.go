@@ -38,12 +38,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -80,12 +80,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -113,12 +113,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -136,12 +136,12 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is empty, requeue", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -162,7 +162,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -174,16 +174,16 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
+		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
 		require.NotNil(t, m.State.Service)
 	})
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is ready, update RP status", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -205,7 +205,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -217,17 +217,17 @@ func Test_sFnHandleService(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleStatus, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
+		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
 		require.NotNil(t, m.State.Service)
 		require.Equal(t, int32(1234), m.State.NodePort)
 	})
 	t.Run("when service exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -245,7 +245,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -267,12 +267,12 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -288,7 +288,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
+				RegistryProxy: rp,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

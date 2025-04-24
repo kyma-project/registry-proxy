@@ -161,13 +161,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controller.ImagePullReverseProxyReconciler{
+	if err = (&controller.RegistryProxyReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Log:    reconcilerLogger.Sugar(),
 		Cache:  boolCache,
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ImagePullReverseProxy")
+		setupLog.Error(err, "unable to create controller", "controller", "RegistryProxy")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

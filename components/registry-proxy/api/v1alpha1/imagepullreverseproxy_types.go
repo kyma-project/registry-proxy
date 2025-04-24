@@ -6,8 +6,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ImagePullReverseProxySpec defines the desired state of ImagePullReverseProxy.
-type ImagePullReverseProxySpec struct {
+// RegistryProxySpec defines the desired state of RegistryProxy.
+type RegistryProxySpec struct {
 	// URL of the Connectivity Proxy, with protocol
 	ProxyURL string `json:"proxyURL,omitempty"`
 
@@ -19,8 +19,8 @@ type ImagePullReverseProxySpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 }
 
-// ImagePullReverseProxyStatus defines the observed state of ImagePullReverseProxy.
-type ImagePullReverseProxyStatus struct {
+// RegistryProxyStatus defines the observed state of RegistryProxyStatus.
+type RegistryProxyStatus struct {
 	// service nodeport number, then use localhost:<nodeport> to pull images
 	NodePort int32 `json:"nodePort,omitempty,omitzero"`
 
@@ -70,29 +70,29 @@ const (
 // +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="NodePort",type="string",JSONPath=".status.nodePort"
-// ImagePullReverseProxy is the Schema for the imagepullreverseproxies API.
-type ImagePullReverseProxy struct {
+// RegistryProxy is the Schema for the registryproxies API.
+type RegistryProxy struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ImagePullReverseProxySpec   `json:"spec,omitempty"`
-	Status ImagePullReverseProxyStatus `json:"status,omitempty"`
+	Spec   RegistryProxySpec   `json:"spec,omitempty"`
+	Status RegistryProxyStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// ImagePullReverseProxyList contains a list of ImagePullReverseProxy.
-type ImagePullReverseProxyList struct {
+// RegistryProxyList contains a list of RegistryProxy.
+type RegistryProxyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []ImagePullReverseProxy `json:"items"`
+	Items           []RegistryProxy `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&ImagePullReverseProxy{}, &ImagePullReverseProxyList{})
+	SchemeBuilder.Register(&RegistryProxy{}, &RegistryProxyList{})
 }
 
-func (rp *ImagePullReverseProxy) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
+func (rp *RegistryProxy) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             s,

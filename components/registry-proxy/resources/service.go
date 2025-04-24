@@ -8,12 +8,12 @@ import (
 )
 
 type service struct {
-	reverseProxy *v1alpha1.ImagePullReverseProxy
+	registryProxy *v1alpha1.RegistryProxy
 }
 
-func NewService(rp *v1alpha1.ImagePullReverseProxy) *corev1.Service {
+func NewService(rp *v1alpha1.RegistryProxy) *corev1.Service {
 	s := &service{
-		reverseProxy: rp,
+		registryProxy: rp,
 	}
 	return s.construct()
 }
@@ -21,9 +21,9 @@ func NewService(rp *v1alpha1.ImagePullReverseProxy) *corev1.Service {
 func (s *service) construct() *corev1.Service {
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      s.reverseProxy.Name,
-			Namespace: s.reverseProxy.Namespace,
-			Labels:    labels(s.reverseProxy, "service"),
+			Name:      s.registryProxy.Name,
+			Namespace: s.registryProxy.Namespace,
+			Labels:    labels(s.registryProxy, "service"),
 		},
 		Spec: corev1.ServiceSpec{
 			Type: corev1.ServiceTypeNodePort,
@@ -31,11 +31,11 @@ func (s *service) construct() *corev1.Service {
 				{
 					Port:       80,
 					Protocol:   corev1.ProtocolTCP,
-					TargetPort: intstr.FromInt(reverseProxyPort),
+					TargetPort: intstr.FromInt(registryProxyPort),
 				},
 			},
 			Selector: map[string]string{
-				v1alpha1.LabelApp: s.reverseProxy.Name,
+				v1alpha1.LabelApp: s.registryProxy.Name,
 			},
 		},
 	}

@@ -14,7 +14,7 @@ import (
 
 func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	if !m.Cache.Get() {
-		m.State.ReverseProxy.UpdateCondition(
+		m.State.RegistryProxy.UpdateCondition(
 			v1alpha1.ConditionConfigured,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonConnectivityProxyCrdUnknownn,
@@ -22,7 +22,7 @@ func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fs
 		)
 		return requeueAfter(time.Minute)
 	}
-	m.State.ReverseProxy.UpdateCondition(
+	m.State.RegistryProxy.UpdateCondition(
 		v1alpha1.ConditionConfigured,
 		metav1.ConditionTrue,
 		v1alpha1.ConditionReasonConnectivityProxyCrdFound,
@@ -31,9 +31,9 @@ func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fs
 }
 
 func sFnValidateReverseProxyURL(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	_, err := url.Parse(m.State.ReverseProxy.Spec.ProxyURL)
+	_, err := url.Parse(m.State.RegistryProxy.Spec.ProxyURL)
 	if err != nil {
-		m.State.ReverseProxy.UpdateCondition(
+		m.State.RegistryProxy.UpdateCondition(
 			v1alpha1.ConditionReady,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInvalidProxyURL,

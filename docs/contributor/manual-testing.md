@@ -84,7 +84,7 @@ kubectl create namespace ${NAMESPACE}
 
 ```bash
 	make -C components/registry-proxy docker-build CTRL_IMG="registry-proxy-controller:main"
-	make -C components/reverse-proxy docker-build IMG="registry-proxy:main"
+	make -C components/connection docker-build IMG="registry-proxy:main"
 ```
 
 3. Install the Helm chart.
@@ -112,7 +112,7 @@ spec:
 
 Back inside the `on-premise-docker-registry` subfolder inside the `kyma-runtime-extension-samples` repository:
 
-1. `export NODE_PORT=$(kubectl get imagepullreverseproxies.operator.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})`
+1. `export NODE_PORT=$(kubectl get registryproxies.operator.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})`
 2. `make docker-login`
 3. `make create-test-image` note the image tag. For example `on-prem-nginx:<current date and time>`
 4.

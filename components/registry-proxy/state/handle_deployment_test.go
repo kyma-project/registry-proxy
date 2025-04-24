@@ -40,12 +40,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -63,7 +63,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, next)
 		require.False(t, updateWasCalled)
 
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
+		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			v1alpha2.ConditionReasonDeploymentCreated,
@@ -77,7 +77,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NoError(t, getErr)
 
 		require.NotEmpty(t, appliedDeployment.OwnerReferences)
-		require.Equal(t, "ImagePullReverseProxy", appliedDeployment.OwnerReferences[0].Kind)
+		require.Equal(t, "RegistryProxy", appliedDeployment.OwnerReferences[0].Kind)
 		require.Equal(t, "rp", appliedDeployment.OwnerReferences[0].Name)
 	})
 	t.Run("when cannot get deployment from kubernetes should stop processing", func(t *testing.T) {
@@ -99,12 +99,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -133,12 +133,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: v1alpha2.ImagePullReverseProxy{
+				RegistryProxy: v1alpha2.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ImagePullReverseProxySpec{
+					Spec: v1alpha2.RegistryProxySpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -154,19 +154,19 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.ErrorContains(t, err, "funny error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
+		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha2.ConditionReasonDeploymentFailed,
 			"Deployment rp create failed: funny error message")
 	})
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -187,8 +187,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
-				ProxyURL:     rp.Spec.ProxyURL,
+				RegistryProxy: rp,
+				ProxyURL:      rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -202,16 +202,16 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandlePodStatus, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.ReverseProxy.Status.Conditions)
+		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
 		require.NotNil(t, m.State.Deployment)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -230,8 +230,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
-				ProxyURL:     rp.Spec.ProxyURL,
+				RegistryProxy: rp,
+				ProxyURL:      rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -244,7 +244,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
+		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			v1alpha2.ConditionReasonDeploymentUpdated,
@@ -261,12 +261,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "TARGET_HOST", Value: "fresh"})
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha2.ImagePullReverseProxy{
+		rp := v1alpha2.RegistryProxy{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ImagePullReverseProxySpec{
+			Spec: v1alpha2.RegistryProxySpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -283,8 +283,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				ReverseProxy: rp,
-				ProxyURL:     rp.Spec.ProxyURL,
+				RegistryProxy: rp,
+				ProxyURL:      rp.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -296,7 +296,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.ErrorContains(t, err, "sad error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.ReverseProxy.Status,
+		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha2.ConditionReasonDeploymentFailed,

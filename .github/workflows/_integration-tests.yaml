@@ -34,7 +34,7 @@ jobs:
         run: |
           CLI_TMPDIR=cli-$(date "+%Y-%m-%d_%H:%M:%S")
           mkdir -p ${CLI_TMPDIR}
-          VERSION=$(curl -s https://api.github.com/repos/kyma-project/cli/releases/latest | jq -r '.tag_name')
+          VERSION=$(curl -H "Authorization: Bearer ${GH_TOKEN}" -s https://api.github.com/repos/kyma-project/cli/releases/latest | jq -r '.tag_name')
           echo "Downloading https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz"
           curl -sL "https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz" -o ${CLI_TMPDIR}/cli.tar.gz
           echo "unpacking kyma cli"
@@ -47,6 +47,7 @@ jobs:
           export PATH
           make run-integration
         env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           IMG: ${{ inputs.image }}
           CTRL_IMG: ${{ inputs.ctrl_image }}
           TAG: ${{ inputs.tag }}

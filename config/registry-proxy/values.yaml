@@ -9,7 +9,7 @@ controllerManager:
       - "--metrics-bind-address=:8443"
       - "--health-probe-bind-address=:8081"
     env:
-      PROXY_IMAGE: "registry-proxy:main"
+      PROXY_IMAGE: "registry-proxy-connection:main"
       PROXY_COMMAND: "/rp"
   serviceAccountName: registry-proxy-controller-manager
 

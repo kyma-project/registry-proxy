@@ -84,7 +84,7 @@ kubectl create namespace ${NAMESPACE}
 
 ```bash
 	make -C components/registry-proxy docker-build CTRL_IMG="registry-proxy-controller:main"
-	make -C components/connection docker-build IMG="registry-proxy:main"
+	make -C components/connection docker-build IMG="registry-proxy-connection:main"
 ```
 
 3. Install the Helm chart.

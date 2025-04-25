@@ -2,7 +2,7 @@ module-name: registry-proxy
 # rc-tag: 0.0.0
 kind: kyma
 bdba:
-  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy:main
+  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
   - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
 mend:
   language: golang-mod

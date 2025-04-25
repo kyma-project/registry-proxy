@@ -35,8 +35,8 @@ uploadFile() {
 helm template registry-proxy-controller ${PROJECT_ROOT}/config/registry-proxy \
   --namespace=kyma-system \
   --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" \
-  --set controllerManager.container.image.tag=registry-proxy:${TAG} \
-  --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/registry-proxy:${TAG} \
+  --set controllerManager.container.image.tag=registry-proxy-connection:${TAG} \
+  --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${TAG} \
   > registry-proxy.yaml
 
 echo "Generated registry-proxy.yaml:"

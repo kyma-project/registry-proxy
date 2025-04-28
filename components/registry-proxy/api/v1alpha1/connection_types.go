@@ -6,8 +6,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// RegistryProxySpec defines the desired state of RegistryProxy.
-type RegistryProxySpec struct {
+// ConnectionSpec defines the desired state of Connection.
+type ConnectionSpec struct {
 	// URL of the Connectivity Proxy, with protocol
 	ProxyURL string `json:"proxyURL,omitempty"`
 
@@ -19,8 +19,8 @@ type RegistryProxySpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 }
 
-// RegistryProxyStatus defines the observed state of RegistryProxyStatus.
-type RegistryProxyStatus struct {
+// ConnectionStatus defines the observed state of ConnectionStatus.
+type ConnectionStatus struct {
 	// service nodeport number, then use localhost:<nodeport> to pull images
 	NodePort int32 `json:"nodePort,omitempty,omitzero"`
 
@@ -70,29 +70,29 @@ const (
 // +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
 // +kubebuilder:printcolumn:name="NodePort",type="string",JSONPath=".status.nodePort"
-// RegistryProxy is the Schema for the registryproxies API.
-type RegistryProxy struct {
+// Connection is the Schema for the registryproxies API.
+type Connection struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   RegistryProxySpec   `json:"spec,omitempty"`
-	Status RegistryProxyStatus `json:"status,omitempty"`
+	Spec   ConnectionSpec   `json:"spec,omitempty"`
+	Status ConnectionStatus `json:"status,omitempty"`
 }
 
 // +kubebuilder:object:root=true
 
-// RegistryProxyList contains a list of RegistryProxy.
-type RegistryProxyList struct {
+// ConnectionList contains a list of Connection.
+type ConnectionList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []RegistryProxy `json:"items"`
+	Items           []Connection `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&RegistryProxy{}, &RegistryProxyList{})
+	SchemeBuilder.Register(&Connection{}, &ConnectionList{})
 }
 
-func (rp *RegistryProxy) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
+func (rp *Connection) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             s,

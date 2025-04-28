@@ -58,7 +58,7 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	return nextState(sFnHandleService)
 }
 
-func handleProbe(rp *v1alpha1.RegistryProxy, podIP string, probe *corev1.Probe, condition v1alpha1.ConditionType) error {
+func handleProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.Probe, condition v1alpha1.ConditionType) error {
 	probeStatus, err := getProbeStatus(podIP, probe)
 	if err != nil {
 		rp.UpdateCondition(

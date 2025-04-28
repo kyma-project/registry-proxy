@@ -8,10 +8,10 @@ import (
 )
 
 type service struct {
-	registryProxy *v1alpha1.RegistryProxy
+	registryProxy *v1alpha1.Connection
 }
 
-func NewService(rp *v1alpha1.RegistryProxy) *corev1.Service {
+func NewService(rp *v1alpha1.Connection) *corev1.Service {
 	s := &service{
 		registryProxy: rp,
 	}

@@ -42,7 +42,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.RegistryProxy{
+				RegistryProxy: v1alpha2.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -75,7 +75,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.RegistryProxy{
+				RegistryProxy: v1alpha2.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -114,7 +114,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.RegistryProxy{
+				RegistryProxy: v1alpha2.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -146,14 +146,14 @@ func TestHandleProbe(t *testing.T) {
 
 	tests := []struct {
 		name              string
-		rp                *v1alpha1.RegistryProxy
+		rp                *v1alpha1.Connection
 		podIP             string
 		probe             *corev1.Probe
 		expectedCondition metav1.Condition
 	}{
 		{
 			name:  "should return error on broken probe",
-			rp:    &v1alpha1.RegistryProxy{},
+			rp:    &v1alpha1.Connection{},
 			podIP: "127.0.0.1",
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{
@@ -172,7 +172,7 @@ func TestHandleProbe(t *testing.T) {
 		},
 		{
 			name:  "should return probe failure",
-			rp:    &v1alpha1.RegistryProxy{},
+			rp:    &v1alpha1.Connection{},
 			podIP: failureURL.Hostname(),
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{
@@ -191,7 +191,7 @@ func TestHandleProbe(t *testing.T) {
 		},
 		{
 			name:  "should return probe success",
-			rp:    &v1alpha1.RegistryProxy{},
+			rp:    &v1alpha1.Connection{},
 			podIP: successURL.Hostname(),
 			probe: &corev1.Probe{
 				ProbeHandler: corev1.ProbeHandler{

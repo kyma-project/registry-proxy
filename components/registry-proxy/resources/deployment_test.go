@@ -50,13 +50,13 @@ func TestNewDeployment(t *testing.T) {
 	})
 }
 
-func minimalRegistryProxy() *v1alpha1.RegistryProxy {
-	return &v1alpha1.RegistryProxy{
+func minimalRegistryProxy() *v1alpha1.Connection {
+	return &v1alpha1.Connection{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test-rp-name",
 			Namespace: "test-rp-namespace",
 		},
-		Spec: v1alpha1.RegistryProxySpec{
+		Spec: v1alpha1.ConnectionSpec{
 			ProxyURL:   "http://test-proxy-url",
 			TargetHost: "dummy",
 		},

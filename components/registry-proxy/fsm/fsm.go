@@ -22,8 +22,8 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	RegistryProxy  v1alpha1.RegistryProxy
-	statusSnapshot v1alpha1.RegistryProxyStatus
+	RegistryProxy  v1alpha1.Connection
+	statusSnapshot v1alpha1.ConnectionStatus
 	ProxyURL       string
 	NodePort       int32
 	Deployment     *appsv1.Deployment
@@ -33,7 +33,7 @@ type SystemState struct {
 func (s *SystemState) saveStatusSnapshot() {
 	result := s.RegistryProxy.Status.DeepCopy()
 	if result == nil {
-		result = &v1alpha1.RegistryProxyStatus{}
+		result = &v1alpha1.ConnectionStatus{}
 	}
 	s.statusSnapshot = *result
 }
@@ -93,7 +93,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, instance *v1alpha1.RegistryProxy, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache) StateMachineReconciler {
+func New(client client.Client, instance *v1alpha1.Connection, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{

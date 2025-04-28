@@ -10,7 +10,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) error {
+func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.Connection) error {
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
 		Name:      utils.RegistryProxyName,
@@ -25,7 +25,7 @@ func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.RegistryProxy) error {
 	return verifyDeployEnvs(&deploy, rp)
 }
 
-func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.RegistryProxy) error {
+func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.Connection) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",

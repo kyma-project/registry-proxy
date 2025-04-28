@@ -17,7 +17,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
-// RegistryProxyReconciler reconciles a RegistryProxy object
+// RegistryProxyReconciler reconciles a Connection object
 type RegistryProxyReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
@@ -34,7 +34,7 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	log := r.Log.With("request", req)
 	log.Info("reconciliation started")
 
-	var registryProxy v1alpha1.RegistryProxy
+	var registryProxy v1alpha1.Connection
 	if err := r.Get(ctx, req.NamespacedName, &registryProxy); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
@@ -46,7 +46,7 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 // SetupWithManager sets up the controller with the Manager.
 func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1alpha1.RegistryProxy{}).
+		For(&v1alpha1.Connection{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).

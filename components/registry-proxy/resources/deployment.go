@@ -23,11 +23,11 @@ const (
 )
 
 type deployment struct {
-	registryProxy *v1alpha1.RegistryProxy
+	registryProxy *v1alpha1.Connection
 	proxyURL      string
 }
 
-func NewDeployment(rp *v1alpha1.RegistryProxy, proxyURL string) *appsv1.Deployment {
+func NewDeployment(rp *v1alpha1.Connection, proxyURL string) *appsv1.Deployment {
 	d := &deployment{
 		registryProxy: rp,
 		proxyURL:      proxyURL,

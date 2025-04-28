@@ -167,7 +167,7 @@ func main() {
 		Log:    reconcilerLogger.Sugar(),
 		Cache:  boolCache,
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "RegistryProxy")
+		setupLog.Error(err, "unable to create controller", "controller", "Connection")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

@@ -7,14 +7,14 @@ metadata:
   annotations:
     "helm.sh/resource-policy": keep
     controller-gen.kubebuilder.io/version: v0.17.2
-  name: registryproxies.operator.kyma-project.io
+  name: connections.registry-proxy.kyma-project.io
 spec:
-  group: operator.kyma-project.io
+  group: registry-proxy.kyma-project.io
   names:
-    kind: RegistryProxy
-    listKind: RegistryProxyList
-    plural: registryproxies
-    singular: registryproxy
+    kind: Connection
+    listKind: ConnectionList
+    plural: connections
+    singular: connection
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -30,7 +30,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: RegistryProxy is the Schema for the registryproxies API.
+        description: Connection is the Schema for the registryproxies API.
         properties:
           apiVersion:
             description: |-
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: RegistryProxySpec defines the desired state of RegistryProxy.
+            description: ConnectionSpec defines the desired state of Connection.
             properties:
               logLevel:
                 description: Sets desired log level to be used. The default value
@@ -125,7 +125,7 @@ spec:
             - targetHost
             type: object
           status:
-            description: RegistryProxyStatus defines the observed state of RegistryProxyStatus.
+            description: ConnectionStatus defines the observed state of ConnectionStatus.
             properties:
               conditions:
                 description: Conditions associated with CustomStatus.

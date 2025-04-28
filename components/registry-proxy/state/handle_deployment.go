@@ -56,7 +56,7 @@ func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment
 		if errors.IsNotFound(deploymentErr) { // Deployment not existing is expected behavior
 			return nil, nil
 		}
-		m.Log.Error(deploymentErr, "unable to fetch Deployment for RegistryProxy")
+		m.Log.Error(deploymentErr, "unable to fetch Deployment for Connection")
 		return nil, deploymentErr
 	}
 

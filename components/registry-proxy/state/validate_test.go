@@ -17,12 +17,12 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 	t.Run("when function is valid should go to the next state", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.RegistryProxy{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha1.RegistryProxySpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL: "http://test-proxy-url",
 					},
 				},
@@ -45,12 +45,12 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 	t.Run("when function is invalid should stop processing", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.RegistryProxy{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha1.RegistryProxySpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL: ":thisURLisbroken",
 					},
 				},
@@ -80,7 +80,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 	t.Run("when Connectivity Proxy CRD is not installed should update condition and requeue", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.RegistryProxy{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -106,7 +106,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 	t.Run("when Connectivity Proxy CRD is installed should update condition and proceed to next state", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.RegistryProxy{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",

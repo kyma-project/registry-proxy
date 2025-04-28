@@ -70,12 +70,12 @@ func TestGetReverseProxyURL(t *testing.T) {
 func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 	t.Run("user provided proxyURL", func(t *testing.T) {
-		rp := v1alpha2.RegistryProxy{
+		rp := v1alpha2.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.RegistryProxySpec{
+			Spec: v1alpha2.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -109,12 +109,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL from connectivity proxy", func(t *testing.T) {
-		rp := v1alpha2.RegistryProxy{
+		rp := v1alpha2.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.RegistryProxySpec{
+			Spec: v1alpha2.ConnectionSpec{
 				TargetHost: "dummy",
 			},
 		}
@@ -141,12 +141,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL missing", func(t *testing.T) {
-		rp := v1alpha2.RegistryProxy{
+		rp := v1alpha2.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.RegistryProxySpec{
+			Spec: v1alpha2.ConnectionSpec{
 				TargetHost: "dummy",
 			},
 		}

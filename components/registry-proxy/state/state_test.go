@@ -57,7 +57,7 @@ func getFnName(fn fsm.StateFn) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
 
-func requireContainsCondition(t *testing.T, status v1alpha1.RegistryProxyStatus,
+func requireContainsCondition(t *testing.T, status v1alpha1.ConnectionStatus,
 	conditionType v1alpha1.ConditionType, conditionStatus metav1.ConditionStatus,
 	conditionReason v1alpha1.ConditionReason, conditionMessage string) {
 	hasExpectedCondition := false

@@ -12,6 +12,6 @@ package controller
 
 // +kubebuilder:rbac:groups=apiextensions.k8s.io,resources=customresourcedefinitions,verbs=get;list;watch
 
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=registryproxies,verbs=get;list;watch;create;update;patch;delete
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=registryproxies/status,verbs=get;update;patch
-// +kubebuilder:rbac:groups=operator.kyma-project.io,resources=registryproxies/finalizers,verbs=update
+// +kubebuilder:rbac:groups=registry-proxy.kyma-project.io,resources=connections,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups=registry-proxy.kyma-project.io,resources=connections/status,verbs=get;update;patch
+// +kubebuilder:rbac:groups=registry-proxy.kyma-project.io,resources=connections/finalizers,verbs=update

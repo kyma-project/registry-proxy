@@ -16,11 +16,6 @@ on:
         required: true
         type: string
 
-      tag:
-        description: "The tag to use for the image"
-        required: true
-        type: string
-
 jobs:
   operator-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}

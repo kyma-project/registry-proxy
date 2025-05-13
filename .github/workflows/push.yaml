@@ -17,5 +17,6 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
-      image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.sha }}
-      ctrl_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.sha }}
+      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.sha }}
+      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.sha }}
+      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.sha }}

@@ -35,6 +35,8 @@ make install
 
 **Deploy the Manager to the cluster with the image specified by `IMG`:**
 
+<!-- TODO: bogus -->
+
 ```sh
 make deploy IMG=<some-registry>/registry-proxy-connection:tag
 ```

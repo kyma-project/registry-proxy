@@ -1,9 +1,7 @@
 PROJECT_ROOT = ../..
 
 # Image URL to use all building/pushing image targets
-IMG ?= registry-proxy:main
-# ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
-ENVTEST_K8S_VERSION = 1.31.0
+CONNECTION_IMG ?= registry-proxy-connection:main
 
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
@@ -46,11 +44,11 @@ test: ## Run go tests
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: ## Build docker image with registry proxy.
-	$(CONTAINER_TOOL) build -t ${IMG} -f Dockerfile ${PROJECT_ROOT}
+	$(CONTAINER_TOOL) build -t ${CONNECTION_IMG} -f Dockerfile ${PROJECT_ROOT}
 
 .PHONY: docker-push
 docker-push: ## Push docker image with registry proxy.
-	$(CONTAINER_TOOL) push ${IMG}
+	$(CONTAINER_TOOL) push ${CONNECTION_IMG}
 
 # PLATFORMS defines the target platforms for the manager image be built to provide support to multiple
 # architectures. (i.e. make docker-buildx IMG=myregistry/mypoperator:0.0.1). To use this option you need to:
@@ -65,7 +63,7 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	sed -e '1 s/\(^FROM\)/FROM --platform=\$$\{BUILDPLATFORM\}/; t' -e ' 1,// s//FROM --platform=\$$\{BUILDPLATFORM\}/' Dockerfile > Dockerfile.cross
 	- $(CONTAINER_TOOL) buildx create --name registry-proxy-builder
 	$(CONTAINER_TOOL) buildx use registry-proxy-builder
-	- $(CONTAINER_TOOL) buildx build --push --platform=$(PLATFORMS) --tag ${IMG} -f Dockerfile.cross ${PROJECT_ROOT}
+	- $(CONTAINER_TOOL) buildx build --push --platform=$(PLATFORMS) --tag ${CONNECTION_IMG} -f Dockerfile.cross ${PROJECT_ROOT}
 	- $(CONTAINER_TOOL) buildx rm registry-proxy-builder
 	rm Dockerfile.cross
 

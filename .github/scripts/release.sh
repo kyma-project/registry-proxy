@@ -32,17 +32,15 @@ uploadFile() {
   fi
 }
 
-helm template registry-proxy-controller ${PROJECT_ROOT}/config/registry-proxy \
+helm template registry-proxy-operator ${PROJECT_ROOT}/config/operator \
   --namespace=kyma-system \
-  --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" \
-  --set controllerManager.container.image.tag=registry-proxy-connection:${TAG} \
-  --set controllerManager.container.env.PROXY_IMAGE=europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${TAG} \
-  > registry-proxy.yaml
+  > registry-proxy-operator.yaml
 
-echo "Generated registry-proxy.yaml:"
-cat registry-proxy.yaml
+echo "Generated registry-proxy-operator.yaml:"
+cat registry-proxy-operator.yaml
 
 echo "Updating github release with assets"
 UPLOAD_URL="https://github.tools.sap/api/uploads/repos/kyma/registry-proxy/releases/${RELEASE_ID}/assets"
 
-uploadFile "registry-proxy.yaml" "${UPLOAD_URL}?name=registry-proxy.yaml"
+uploadFile "registry-proxy-operator.yaml" "${UPLOAD_URL}?name=registry-proxy-operator.yaml"
+uploadFile "config/samples/default-registry-proxy-cr.yaml" "${UPLOAD_URL}?name=default-registry-proxy-cr.yaml"

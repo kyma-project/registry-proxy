@@ -7,6 +7,10 @@ on:
 jobs:
   builds:
     uses: ./.github/workflows/_build.yaml
+    with:
+      purpose: "dev"
+      img_directory: "prod"
+      img_version: ${{ github.sha }}
 
   integrations:
     needs: builds
@@ -15,4 +19,3 @@ jobs:
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.sha }}
       ctrl_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.sha }}
-      tag: ${{ github.sha }}

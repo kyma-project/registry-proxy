@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/cache"
+	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"go.uber.org/zap"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -13,6 +13,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
+// TODO: rename this to something more meaningful. ConnectivityProxyReconciler
+// TODO: move this to the operator/common?
 type CrdsReconciler struct {
 	client.Client
 	Log   *zap.SugaredLogger

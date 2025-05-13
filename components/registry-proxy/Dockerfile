@@ -12,6 +12,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 # Copy the go source
+COPY components/common components/common
 COPY components/registry-proxy components/registry-proxy
 
 # Build

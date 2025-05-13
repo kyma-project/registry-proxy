@@ -1,6 +1,9 @@
 # Image URL to use all building/pushing image targets
-CTRL_IMG ?= registry-proxy-controller:main
-IMG ?= registry-proxy-connection:main
+OPERATOR_IMG ?= registry-proxy-operator:main
+RP_IMG ?= registry-proxy-controller:main
+CONNECTION_IMG ?= registry-proxy-connection:main
+
+IMG_VERSION ?= main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
@@ -44,25 +47,33 @@ lint-fix: golangci-lint ## Run golangci-lint linter and perform fixes
 
 .PHONY: generate
 generate: ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations for controller.
+	make -C components/operator generate
 	make -C components/registry-proxy generate
 
 .PHONY: manifests
 # TODO: autogenerate in correct place, or mv files
 manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
+	make -C components/operator manifests
 	make -C components/registry-proxy manifests
-	
+
 .PHONY: run-local
 run-local: create-k3d ## Setup local k3d cluster and install controller
-	make -C components/registry-proxy docker-build CTRL_IMG=$(CTRL_IMG)
-	k3d image import $(CTRL_IMG) -c kyma
-	make -C components/connection docker-build IMG=$(IMG)
-	k3d image import $(IMG) -c kyma
+	IMG_DIRECTORY="" IMG_VERSION="${IMG_VERSION}" OPERATOR_IMG=$(OPERATOR_IMG) make -C components/operator docker-build-local
+	k3d image import $(OPERATOR_IMG) -c kyma
+	RP_IMG=$(RP_IMG) make -C components/registry-proxy docker-build
+	k3d image import $(RP_IMG) -c kyma
+	CONNECTION_IMG=$(CONNECTION_IMG) make -C components/connection docker-build
+	k3d image import $(CONNECTION_IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install registry-proxy-controller $(PROJECT_ROOT)/config/registry-proxy  --namespace=kyma-system
+	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator --namespace=kyma-system --set controllerManager.container.image="$(OPERATOR_IMG)"
+	kubectl apply -f $(PROJECT_ROOT)/config/samples/default-registry-proxy-cr.yaml
+	# TODO: wait for ready status
 
+.PHONY: run-integration-local
+run-integration-local: run-local run-integration-test ## create k3d cluster and run integration test
 
-.PHONY: run-local-integration
-run-local-integration: run-local ## create k2d cluster and run integration test
+.PHONY: integration-dependencies
+integration-dependencies:  ## create k2d cluster and run integration test
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
@@ -76,52 +87,34 @@ run-local-integration: run-local ## create k2d cluster and run integration test
 	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
 	sleep 5
 	$(KYMA) alpha registry image-import alpine:3.21.3
-	go run $(PROJECT_ROOT)/tests/main.go
 
-.PHONY: run-integration
-run-integration: # run integration test
-	## make sure helm is installed or binary is present
-	helm install registry-proxy-controller $(PROJECT_ROOT)/config/registry-proxy --namespace=kyma-system --set controllerManager.container.image.repository="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller" --set controllerManager.container.image.tag=$(TAG) --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
-	# connectivity proxy
-	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
-	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
-	# docker registry
-	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml
-	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml
-	# upload test image to the docker registry
-	docker pull alpine:3.21.3
-	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=90s
-	sleep 5
-	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
-	sleep 5
-	$(KYMA) alpha registry image-import alpine:3.21.3
-	go run $(PROJECT_ROOT)/tests/main.go
+.PHONY: run-integration-test
+run-integration-test: integration-dependencies ## run integration test
+	make -C tests/operator test
+	make -C tests/registry-proxy test
 
+# TODO: move somewhere else
+.PHONY: install-registry-proxy
+install-registry-proxy:
+	helm install registry-proxy-controller $(PROJECT_ROOT)/config/registry-proxy \
+	--namespace=kyma-system \
+	# --set controllerManager.container.image="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:$(TAG)" \
+	# --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
 
-.PHONY: apply-example-connection-cr
-apply-example-connection-cr: manifests kyma ## Apply example Connection CR
-	kubectl apply -f examples/connection-cr.yaml
-	# load image into the docker registry
+.PHONY: integration-tests
+integration-tests: ## Run integration tests
+	make -C tests/registry-proxy test
+	make -C tests/operator test
 
-.PHONY: test
-test: ## Run unit tests
+.PHONY: unit-tests
+unit-tests: ## Run unit tests
+	make -C components/operator test
 	make -C components/registry-proxy test
 	make -C components/connection test
 
 .PHONY: cluster-info
-cluster-info: ## Print useful info about the cluster regarding integration run
-	@echo "####################### Controller Logs #######################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/name=registry-proxy --tail=-1 || true
-	@echo ""
-
-	@echo "####################### RP CR #######################"
-	@kubectl get registryproxies -A -oyaml || true
-	@echo ""
-
-	@echo "####################### Pods #######################"
-	@kubectl get pods -A || true
-	@echo ""
-
+cluster-info:
+	make -C tests/registry-proxy cluster-info
 ##@ Actions
 .PHONY: module-config
 module-config:

@@ -3,8 +3,8 @@ package controller
 import (
 	"context"
 
+	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/cache"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/state"
 	"go.uber.org/zap"
@@ -51,7 +51,8 @@ func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&corev1.Pod{}).
-		Named("registry-proxy").
+		// TODO: remove this comment after rename: rename was made here first to avoid conflits with operator
+		Named("connection").
 		Complete(r)
 }
 

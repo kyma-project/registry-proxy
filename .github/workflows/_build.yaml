@@ -8,6 +8,21 @@ on:
         required: false
         type: string
         default: ""
+      purpose:
+        description: "Purpose of the build (dev - for pull/push, empty - for release)"
+        required: false
+        type: string
+        default: ""
+      img_directory:
+        description: "Directory of the image (dev/prod)"
+        required: false
+        type: string
+        default: ""
+      img_version:
+        description: "Version of the image"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   compute-tags:
@@ -31,6 +46,20 @@ jobs:
             echo "${{ inputs.tag }}"
             echo EOF
           } >> "$GITHUB_OUTPUT"
+
+  build-registry-proxy-operator:
+    needs: compute-tags
+    uses: kyma/oci-image-builder/.github/workflows/image-builder.yml@main
+    with:
+      name: registry-proxy-operator
+      dockerfile: components/operator/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      context: .
+      use-go-internal-sap-modules: true
+      build-args: |
+        PURPOSE=${{ inputs.purpose }}
+        IMG_DIRECTORY=${{ inputs.img_directory }}
+        IMG_VERSION=${{ inputs.img_version }}
 
   build-registry-proxy-controller:
     needs: compute-tags

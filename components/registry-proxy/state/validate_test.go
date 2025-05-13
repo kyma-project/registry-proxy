@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/cache"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 
 	"github.com/stretchr/testify/require"

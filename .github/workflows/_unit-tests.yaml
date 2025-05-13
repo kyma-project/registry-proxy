@@ -12,5 +12,5 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
-      - name: run test
-        run: make test
+      - name: run unit tests
+        run: make unit-tests

@@ -7,7 +7,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/cache"
+	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 
@@ -38,6 +38,7 @@ func (s *SystemState) saveStatusSnapshot() {
 	s.statusSnapshot = *result
 }
 
+// TODO: think if we can use generics here to have one state machine for both RegistryProxy and Connection
 type StateMachine struct {
 	nextFn StateFn
 	State  SystemState

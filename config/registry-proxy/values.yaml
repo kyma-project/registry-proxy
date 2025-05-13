@@ -1,15 +1,23 @@
-# [MANAGER]: Manager Deployment Configurations
+global:
+  containerRegistry:
+    path: europe-docker.pkg.dev/kyma-project
+  images:
+    registry_proxy:
+      name: "registry-proxy-controller"
+      version: "main"
+      directory: "prod"
+    connection:
+      name: "registry-proxy-connection"
+      version: "main"
+      directory: "prod"
+
 controllerManager:
   container:
-    image:
-      repository: registry-proxy-controller
-      tag: main
     args:
       - "--leader-elect"
       - "--metrics-bind-address=:8443"
       - "--health-probe-bind-address=:8081"
     env:
-      PROXY_IMAGE: "registry-proxy-connection:main"
       PROXY_COMMAND: "/rp"
   serviceAccountName: registry-proxy-controller-manager
 

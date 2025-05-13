@@ -80,6 +80,8 @@ Inside the `registry-proxy` repository:
 kubectl create namespace ${NAMESPACE}
 ```
 
+<!-- TODO: broken RN -->
+
 2. You can get images for your changes by pushing them and grabbing them from the build job or build the Docker images yourself for Controller and Registry Proxy and push them.
 
 ```bash

@@ -33,15 +33,15 @@ spec:
             {{- end }}
           command:
             - /manager
-          image: {{ .Values.controllerManager.container.image.repository }}:{{ .Values.controllerManager.container.image.tag }}
+          image: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.registry_proxy) }}"
           imagePullPolicy: IfNotPresent
-          {{- if .Values.controllerManager.container.env }}
           env:
+            - name: PROXY_IMAGE
+              value: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.connection) }}"
             {{- range $key, $value := .Values.controllerManager.container.env }}
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
-          {{- end }}
           livenessProbe:
             initialDelaySeconds: 15
             periodSeconds: 20

@@ -23,7 +23,7 @@ func Test_sFnHandleService(t *testing.T) {
 	t.Run("when service does not exist on kubernetes should create service and apply it", func(t *testing.T) {
 		someService := corev1.Service{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "serverless",
+				Name:      "serversome-service",
 				Namespace: "wherever",
 			},
 		}

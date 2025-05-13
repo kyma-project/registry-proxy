@@ -25,7 +25,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 	t.Run("when deployment does not exist on kubernetes should create deployment and apply it", func(t *testing.T) {
 		someDeployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "serverless",
+				Name:      "some-deployment",
 				Namespace: "wherever",
 			},
 		}

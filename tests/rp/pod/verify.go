@@ -18,7 +18,6 @@ func Verify(utils *utils.TestUtils) error {
 
 }
 
-// TODO: common function
 func getPod(utils *utils.TestUtils) (*v1.Pod, error) {
 	var pod v1.Pod
 	objectKey := client.ObjectKey{

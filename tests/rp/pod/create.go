@@ -40,7 +40,6 @@ func Create(utils *utils.TestUtils) error {
 	return utils.Client.Create(utils.Ctx, pod)
 }
 
-// TODO: common function
 func getRP(utils *utils.TestUtils) (*v1alpha1.Connection, error) {
 	var rp v1alpha1.Connection
 	objectKey := client.ObjectKey{

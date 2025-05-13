@@ -45,7 +45,8 @@ jobs:
           PATH=$(pwd)/bin:$PATH
           echo "path: ${PATH}"
           export PATH
-          make install-registry-proxy-operator-local run-integration
+          make -C components/operator install-registry-proxy-operator
+          make run-integration-test
         env:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           # TODO: do we need all of these or just the operator?

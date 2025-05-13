@@ -108,12 +108,7 @@ lint-config: golangci-lint ## Verify golangci-lint linter configuration
 .PHONY:  install-registry-proxy-operator
 install-registry-proxy-operator:
 	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator \
-	--namespace=kyma-system
-
-.PHONY:  install-registry-proxy-operator-local
-install-registry-proxy-operator-local:
-	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator \
-	--namespace=kyma-system --set controllerManager.container.image=k3d-kyma-registry.localhost:5000/registry-proxy-operator:$(TAG)
+	--namespace=kyma-system --set controllerManager.container.image=$(OPERATOR_IMG)
 
 ##@ Build
 

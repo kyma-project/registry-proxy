@@ -46,6 +46,7 @@ jobs:
           echo "path: ${PATH}"
           export PATH
           make -C components/operator install-registry-proxy-operator
+          kubectl apply -f config/samples/default-registry-proxy-cr.yaml
           make run-integration-test
         env:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}

@@ -57,7 +57,7 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 	make -C components/registry-proxy manifests
 
 .PHONY: run-local
-run-local: create-k3d ## Setup local k3d cluster and install controller
+run-local: create-k3d ## Setup local k3d cluster and install operator
 	IMG_DIRECTORY="" IMG_VERSION="${IMG_VERSION}" OPERATOR_IMG=$(OPERATOR_IMG) make -C components/operator docker-build-local
 	k3d image import $(OPERATOR_IMG) -c kyma
 	RP_IMG=$(RP_IMG) make -C components/registry-proxy docker-build
@@ -73,7 +73,7 @@ run-local: create-k3d ## Setup local k3d cluster and install controller
 run-integration-local: run-local run-integration-test ## create k3d cluster and run integration test
 
 .PHONY: integration-dependencies
-integration-dependencies:  ## create k2d cluster and run integration test
+integration-dependencies:  ## create k3d cluster and run integration test
 	# connectivity proxy
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml

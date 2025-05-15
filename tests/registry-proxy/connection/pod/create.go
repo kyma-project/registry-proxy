@@ -12,7 +12,7 @@ import (
 )
 
 func Create(utils *utils.TestUtils) error {
-	rp, err := getRP(utils)
+	rp, err := getConnection(utils)
 	if err != nil {
 		return err
 	}
@@ -40,18 +40,18 @@ func Create(utils *utils.TestUtils) error {
 	return utils.Client.Create(utils.Ctx, pod)
 }
 
-func getRP(utils *utils.TestUtils) (*v1alpha1.Connection, error) {
-	var rp v1alpha1.Connection
+func getConnection(utils *utils.TestUtils) (*v1alpha1.Connection, error) {
+	var connection v1alpha1.Connection
 	objectKey := client.ObjectKey{
-		Name:      utils.RegistryProxyName,
+		Name:      utils.ConnectionName,
 		Namespace: utils.Namespace,
 	}
 
-	if err := utils.Client.Get(utils.Ctx, objectKey, &rp); err != nil {
+	if err := utils.Client.Get(utils.Ctx, objectKey, &connection); err != nil {
 		return nil, err
 	}
 
-	return &rp, nil
+	return &connection, nil
 }
 
 func fixPod(utils *utils.TestUtils, rp *v1alpha1.Connection) (*v1.Pod, error) {
@@ -86,7 +86,7 @@ func getPodImage(utils *utils.TestUtils, rp *v1alpha1.Connection) (string, error
 		return "", fmt.Errorf("NodePort is not set in status")
 
 	}
-	return fmt.Sprintf("localhost:%d/%s", nodeport, utils.ImageName), nil
+	return fmt.Sprintf("localhost:%d/%s", nodeport, utils.TaggedImageName), nil
 }
 
 func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {

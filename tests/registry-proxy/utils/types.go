@@ -12,11 +12,10 @@ type TestUtils struct {
 	Logger *zap.SugaredLogger
 	Client client.Client
 
-	Namespace         string
-	RegistryProxyName string
-	ProxyURL          string
-	TargetHost                string
-	// image name with tag
-	ImageName string
-	TestPod   string
+	Namespace       string
+	ConnectionName  string
+	ProxyURL        string
+	TargetHost      string
+	TaggedImageName string
+	TestPod         string
 }

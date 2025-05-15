@@ -1,10 +1,10 @@
-package rp
+package connection
 
 import (
 	"fmt"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/tests/registry-proxy/rp/deployment"
+	"github.tools.sap/kyma/registry-proxy/tests/registry-proxy/connection/deployment"
 	"github.tools.sap/kyma/registry-proxy/tests/registry-proxy/utils"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -21,31 +21,31 @@ func VerifyDeletion(utils *utils.TestUtils) error {
 }
 
 func Verify(utils *utils.TestUtils) error {
-	var rp v1alpha1.Connection
+	var connection v1alpha1.Connection
 	objectKey := client.ObjectKey{
-		Name:      utils.RegistryProxyName,
+		Name:      utils.ConnectionName,
 		Namespace: utils.Namespace,
 	}
 
-	if err := utils.Client.Get(utils.Ctx, objectKey, &rp); err != nil {
+	if err := utils.Client.Get(utils.Ctx, objectKey, &connection); err != nil {
 		return err
 	}
 
-	if err := verifyState(utils, &rp); err != nil {
+	if err := verifyState(&connection); err != nil {
 		return err
 	}
 
-	if err := verifyStatus(&rp); err != nil {
+	if err := verifyStatus(&connection); err != nil {
 		return err
 	}
 
-	return deployment.VerifyEnvs(utils, &rp)
+	return deployment.VerifyEnvs(utils, &connection)
 }
 
 // check if all data from the spec is reflected in the status
-func verifyStatus(rp *v1alpha1.Connection) error {
-	status := rp.Status
-	spec := rp.Spec
+func verifyStatus(connection *v1alpha1.Connection) error {
+	status := connection.Status
+	spec := connection.Spec
 
 	if err := isSpecValueReflectedInStatus(spec.ProxyURL, status.ProxyURL); err != nil {
 		return err
@@ -71,7 +71,7 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 	return nil
 }
 
-func verifyState(utils *utils.TestUtils, rp *v1alpha1.Connection) error {
+func verifyState(rp *v1alpha1.Connection) error {
 	for _, condition := range rp.Status.Conditions {
 		if condition.Type == string(v1alpha1.ConditionReady) {
 			if condition.Reason == string(v1alpha1.ConditionReasonProbeSuccess) &&

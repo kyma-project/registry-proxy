@@ -1,4 +1,4 @@
-package rp
+package connection
 
 import (
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
@@ -7,15 +7,15 @@ import (
 )
 
 func Create(utils *utils.TestUtils) error {
-	rpObj := fixRegistryProxy(utils)
+	rpObj := fixConnection(utils)
 
 	return utils.Client.Create(utils.Ctx, rpObj)
 }
 
-func fixRegistryProxy(testUtils *utils.TestUtils) *v1alpha1.Connection {
+func fixConnection(testUtils *utils.TestUtils) *v1alpha1.Connection {
 	return &v1alpha1.Connection{
 		ObjectMeta: v1.ObjectMeta{
-			Name:      testUtils.RegistryProxyName,
+			Name:      testUtils.ConnectionName,
 			Namespace: testUtils.Namespace,
 		},
 		Spec: v1alpha1.ConnectionSpec{

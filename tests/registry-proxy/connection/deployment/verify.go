@@ -13,7 +13,7 @@ import (
 func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.Connection) error {
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
-		Name:      utils.RegistryProxyName,
+		Name:      utils.ConnectionName,
 		Namespace: utils.Namespace,
 	}
 

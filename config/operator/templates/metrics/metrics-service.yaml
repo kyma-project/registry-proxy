@@ -8,10 +8,10 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
 spec:
   ports:
-    - port: 8443
-      targetPort: 8443
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
-      name: https
+      name: http
   selector:
     control-plane: controller-manager
 {{- end }}

@@ -5,7 +5,7 @@ controllerManager:
     image: controller:latest
     args:
       - "--leader-elect"
-      - "--metrics-bind-address=:8443"
+      - "--metrics-bind-address=:8080"
       - "--health-probe-bind-address=:8081"
     resources:
       limits:
@@ -44,7 +44,7 @@ rbac:
 
 # [METRICS]: Set to true to generate manifests for exporting metrics.
 # To disable metrics export set false, and ensure that the
-# ControllerManager argument "--metrics-bind-address=:8443" is removed.
+# ControllerManager argument "--metrics-bind-address=:8080" is removed.
 metrics:
   enable: true
 

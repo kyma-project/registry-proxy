@@ -1,5 +1,5 @@
-apiVersion: operator.kyma-project.io/v1alpha1
-kind: RegistryProxy
+apiVersion: registry-proxy.kyma-project.io/v1alpha1
+kind: Connection
 metadata:
   name: registry-proxy-minimal
   namespace: proxy

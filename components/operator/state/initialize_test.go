@@ -9,7 +9,6 @@ import (
 	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -20,7 +19,7 @@ func Test_sFnInitialize(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				RegistryProxy: v1alpha1.RegistryProxy{
-					ObjectMeta: v1.ObjectMeta{
+					ObjectMeta: metav1.ObjectMeta{
 						Name:      registryProxyName,
 						Namespace: registryProxyNamespace,
 						Finalizers: []string{
@@ -48,7 +47,7 @@ func Test_sFnInitialize(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				RegistryProxy: v1alpha1.RegistryProxy{
-					ObjectMeta: v1.ObjectMeta{
+					ObjectMeta: metav1.ObjectMeta{
 						Name:      registryProxyName,
 						Namespace: registryProxyNamespace,
 						Finalizers: []string{

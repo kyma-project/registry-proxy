@@ -23,10 +23,8 @@ func Create(utils *utils.TestUtils) error {
 		return err
 	}
 
-	secret, err := fixSecret(utils, rp, dockerCreds)
-	if err != nil {
-		return err
-	}
+	secret := fixSecret(utils, rp, dockerCreds)
+
 	err = utils.Client.Create(utils.Ctx, secret)
 	if err != nil {
 		return err
@@ -104,7 +102,7 @@ func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {
 }
 
 // we have to convert secret to kubernetes.io/dockerconfigjson
-func fixSecret(utils *utils.TestUtils, rp *v1alpha1.Connection, dockerSecret *v1.Secret) (*v1.Secret, error) {
+func fixSecret(utils *utils.TestUtils, rp *v1alpha1.Connection, dockerSecret *v1.Secret) *v1.Secret {
 	username := string(dockerSecret.Data["username"])
 	password := string(dockerSecret.Data["password"])
 	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
@@ -123,5 +121,5 @@ func fixSecret(utils *utils.TestUtils, rp *v1alpha1.Connection, dockerSecret *v1
 		},
 	}
 
-	return secret, nil
+	return secret
 }

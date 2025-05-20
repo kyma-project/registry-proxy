@@ -211,7 +211,7 @@ func TestHandleProbe(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			handleProbe(tt.rp, tt.podIP, tt.probe, v1alpha1.ConditionType(tt.expectedCondition.Type))
+			_ = handleProbe(tt.rp, tt.podIP, tt.probe, v1alpha1.ConditionType(tt.expectedCondition.Type))
 			requireContainsCondition(t, tt.rp.Status,
 				v1alpha1.ConditionType(tt.expectedCondition.Type),
 				tt.expectedCondition.Status,

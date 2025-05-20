@@ -92,7 +92,7 @@ func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, erro
 
 	m.State.Service.Spec.Ports = wantedService.Spec.Ports
 	m.State.Service.Spec.Selector = wantedService.Spec.Selector
-	m.State.Service.ObjectMeta.Labels = wantedService.ObjectMeta.Labels
+	m.State.Service.Labels = wantedService.Labels
 	m.State.Service.Spec.Type = wantedService.Spec.Type
 
 	return updateService(ctx, m)
@@ -102,7 +102,7 @@ func serviceChanged(got, wanted *corev1.Service) bool {
 	gotS := got.Spec
 	wantedS := wanted.Spec
 
-	labelsChanged := !reflect.DeepEqual(got.ObjectMeta.Labels, wanted.ObjectMeta.Labels)
+	labelsChanged := !reflect.DeepEqual(got.Labels, wanted.Labels)
 	portChanged := !reflect.DeepEqual(gotS.Ports[0].Port, wantedS.Ports[0].Port)
 	protocolChanged := !reflect.DeepEqual(gotS.Ports[0].Protocol, wantedS.Ports[0].Protocol)
 	targetChanged := !reflect.DeepEqual(gotS.Ports[0].TargetPort, wantedS.Ports[0].TargetPort)

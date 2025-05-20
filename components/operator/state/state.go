@@ -34,6 +34,7 @@ func stopWithEventualError(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 
+// nolint:unused
 func stopWithErrorOrRequeue(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, requeueResult, err
 }

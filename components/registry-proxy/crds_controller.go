@@ -70,7 +70,7 @@ func (r *CrdsReconciler) isConnectivityProxy(crd *apiextensionsv1.CustomResource
 // Reconcile reads that state of the cluster for a CRD object and makes changes based on the state read
 func (r *CrdsReconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
 	crd := apiextensionsv1.CustomResourceDefinition{}
-	err := r.Client.Get(ctx, request.NamespacedName, &crd)
+	err := r.Get(ctx, request.NamespacedName, &crd)
 
 	if err != nil {
 		r.Cache.Set(false)

@@ -6,7 +6,6 @@ import (
 
 	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 	"go.uber.org/zap"
-	"k8s.io/client-go/rest"
 
 	"github.com/stretchr/testify/require"
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
@@ -14,12 +13,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
-
-func fakeRestConfig() *rest.Config {
-	return &rest.Config{
-		Host: "https://fake-host",
-	}
-}
 
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {

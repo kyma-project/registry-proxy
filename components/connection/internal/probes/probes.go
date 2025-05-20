@@ -22,7 +22,7 @@ func getReadyz(registryProxyConnection string, log *zap.SugaredLogger) http.Hand
 		if err != nil {
 			log.Warnf("couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)
 			w.WriteHeader(http.StatusServiceUnavailable)
-			_, _ = w.Write([]byte(fmt.Sprintf("couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)))
+			_, _ = fmt.Fprintf(w, "couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)
 			return
 		}
 
@@ -37,7 +37,7 @@ func getReadyz(registryProxyConnection string, log *zap.SugaredLogger) http.Hand
 		if err != nil {
 			log.Warnf("couldn't read response body from registry proxy connection at %s: %v", registryProxyConnection, err)
 			w.WriteHeader(http.StatusServiceUnavailable)
-			_, _ = w.Write([]byte(fmt.Sprintf("couldn't read response body from registry proxy connection at %s: %v", registryProxyConnection, err)))
+			_, _ = fmt.Fprintf(w, "couldn't read response body from registry proxy connection at %s: %v", registryProxyConnection, err)
 			return
 		}
 

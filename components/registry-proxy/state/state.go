@@ -8,6 +8,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+// nolint:unused
 var requeueResult = &ctrl.Result{
 	Requeue: true,
 }
@@ -16,6 +17,7 @@ func nextState(next fsm.StateFn) (fsm.StateFn, *ctrl.Result, error) {
 	return next, nil, nil
 }
 
+// nolint:unused
 func requeue() (fsm.StateFn, *ctrl.Result, error) {
 	return nil, requeueResult, nil
 }
@@ -34,6 +36,7 @@ func stopWithEventualError(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 
+// nolint:unused
 func stopWithErrorOrRequeue(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, requeueResult, err
 }

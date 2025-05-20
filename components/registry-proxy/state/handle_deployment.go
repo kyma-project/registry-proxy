@@ -119,7 +119,7 @@ func deploymentChanged(got, wanted *appsv1.Deployment) bool {
 	wantedC := wanted.Spec.Template.Spec.Containers[0]
 
 	imageChanged := gotC.Image != wantedC.Image
-	labelsChanged := !reflect.DeepEqual(got.Spec.Template.ObjectMeta.Labels, wanted.Spec.Template.ObjectMeta.Labels)
+	labelsChanged := !reflect.DeepEqual(got.Spec.Template.Labels, wanted.Spec.Template.Labels)
 	replicasChanged := (got.Spec.Replicas == nil && wanted.Spec.Replicas != nil) ||
 		(got.Spec.Replicas != nil && wanted.Spec.Replicas == nil) ||
 		(got.Spec.Replicas != nil && wanted.Spec.Replicas != nil && *got.Spec.Replicas != *wanted.Spec.Replicas)

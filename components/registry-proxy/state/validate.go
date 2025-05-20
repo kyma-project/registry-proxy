@@ -18,7 +18,7 @@ func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fs
 			v1alpha1.ConditionConfigured,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonConnectivityProxyCrdUnknownn,
-			fmt.Sprintf("Connectivity Proxy not installed. This module is required. "),
+			"Connectivity Proxy not installed. This module is required.",
 		)
 		return requeueAfter(time.Minute)
 	}

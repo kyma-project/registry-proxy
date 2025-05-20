@@ -41,6 +41,7 @@ func setServedStatus(ctx context.Context, m *fsm.StateMachine) error {
 		// one served Registry Proxy already exists, add condition to this one and stop
 		m.State.RegistryProxy.Status.Served = v1alpha1.ServedFalse
 		m.State.RegistryProxy.Status.State = v1alpha1.StateWarning
+		//nolint: staticcheck // linter is unhappy about the capital letter and a dot at the end
 		err = fmt.Errorf("Only one instance of RegistryProxy is allowed (current served instance: %s/%s). This RegistryProxy CR is redundant. Remove it to fix the problem.",
 			servedRegistryProxy.GetNamespace(), servedRegistryProxy.GetName())
 		m.State.RegistryProxy.UpdateCondition(

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 
@@ -75,7 +74,7 @@ func requireContainsCondition(t *testing.T, status v1alpha1.ConnectionStatus,
 func minimalScheme(t *testing.T) *k8sruntime.Scheme {
 	scheme := k8sruntime.NewScheme()
 	require.NoError(t, corev1.AddToScheme(scheme))
-	require.NoError(t, v1alpha2.AddToScheme(scheme))
+	require.NoError(t, v1alpha1.AddToScheme(scheme))
 	require.NoError(t, appsv1.AddToScheme(scheme))
 	return scheme
 }

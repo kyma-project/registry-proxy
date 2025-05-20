@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources"
 	"go.uber.org/zap"
@@ -38,12 +38,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -80,12 +80,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -113,12 +113,12 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -136,12 +136,12 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is empty, requeue", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -178,12 +178,12 @@ func Test_sFnHandleService(t *testing.T) {
 		require.NotNil(t, m.State.Service)
 	})
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is ready, update RP status", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -222,12 +222,12 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Equal(t, int32(1234), m.State.NodePort)
 	})
 	t.Run("when service exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -267,12 +267,12 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},

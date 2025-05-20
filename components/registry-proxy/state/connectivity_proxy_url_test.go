@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -70,12 +70,12 @@ func TestGetReverseProxyURL(t *testing.T) {
 func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 	t.Run("user provided proxyURL", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -109,12 +109,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL from connectivity proxy", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				TargetHost: "dummy",
 			},
 		}
@@ -141,12 +141,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL missing", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				TargetHost: "dummy",
 			},
 		}

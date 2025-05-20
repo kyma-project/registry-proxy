@@ -10,7 +10,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -42,7 +41,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -75,7 +74,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
@@ -114,7 +113,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",

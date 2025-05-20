@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	v1alpha2 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources"
 
@@ -40,12 +40,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -64,9 +64,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.False(t, updateWasCalled)
 
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
-			v1alpha2.ConditionRunning,
+			v1alpha1.ConditionRunning,
 			metav1.ConditionUnknown,
-			v1alpha2.ConditionReasonDeploymentCreated,
+			v1alpha1.ConditionReasonDeploymentCreated,
 			"Deployment rp created")
 
 		appliedDeployment := &appsv1.Deployment{}
@@ -99,12 +99,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -133,12 +133,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha2.Connection{
+				RegistryProxy: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "rp",
 						Namespace: "maslo",
 					},
-					Spec: v1alpha2.ConnectionSpec{
+					Spec: v1alpha1.ConnectionSpec{
 						ProxyURL:   "http://test-proxy-url",
 						TargetHost: "dummy",
 					},
@@ -155,18 +155,18 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
-			v1alpha2.ConditionRunning,
+			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
-			v1alpha2.ConditionReasonDeploymentFailed,
+			v1alpha1.ConditionReasonDeploymentFailed,
 			"Deployment rp create failed: funny error message")
 	})
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -206,12 +206,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, m.State.Deployment)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -245,9 +245,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
-			v1alpha2.ConditionRunning,
+			v1alpha1.ConditionRunning,
 			metav1.ConditionUnknown,
-			v1alpha2.ConditionReasonDeploymentUpdated,
+			v1alpha1.ConditionReasonDeploymentUpdated,
 			"Deployment rp updated")
 		require.False(t, createWasCalled)
 		updatedDeployment := &appsv1.Deployment{}
@@ -261,12 +261,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "TARGET_HOST", Value: "fresh"})
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha2.Connection{
+		rp := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "rp",
 				Namespace: "maslo",
 			},
-			Spec: v1alpha2.ConnectionSpec{
+			Spec: v1alpha1.ConnectionSpec{
 				ProxyURL:   "http://test-proxy-url",
 				TargetHost: "dummy",
 			},
@@ -297,9 +297,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
-			v1alpha2.ConditionRunning,
+			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
-			v1alpha2.ConditionReasonDeploymentFailed,
+			v1alpha1.ConditionReasonDeploymentFailed,
 			"Deployment rp update failed: sad error message")
 	})
 }

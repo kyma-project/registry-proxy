@@ -114,7 +114,7 @@ func New(client client.Client, config *rest.Config, instance *v1alpha1.RegistryP
 		nextFn: startState,
 		State: SystemState{
 			RegistryProxy: *instance,
-			ChartConfig:   chartConfig(context.Background(), client, config, log, chartCache),
+			ChartConfig:   chartConfig(context.Background(), client, config, log, chartCache, instance.Namespace),
 		},
 		Log:    log,
 		Client: client,
@@ -137,7 +137,7 @@ func updateProxyStatus(ctx context.Context, m *StateMachine) error {
 	return nil
 }
 
-func chartConfig(ctx context.Context, client client.Client, config *rest.Config, log *zap.SugaredLogger, cache chart.ManifestCache) *chart.Config {
+func chartConfig(ctx context.Context, client client.Client, config *rest.Config, log *zap.SugaredLogger, cache chart.ManifestCache, namespace string) *chart.Config {
 	return &chart.Config{
 		Ctx:        ctx,
 		Log:        log,
@@ -150,7 +150,7 @@ func chartConfig(ctx context.Context, client client.Client, config *rest.Config,
 		},
 		Release: chart.Release{
 			ChartPath: chartPath,
-			Namespace: "kyma-system",
+			Namespace: namespace,
 			Name:      "registry-proxy",
 		},
 	}

@@ -13,7 +13,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// run serverless chart installation
+// run registry-proxy chart installation
 func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	// set condition Installed if it does not exist
 	if !m.State.RegistryProxy.IsConditionSet(v1alpha1.ConditionTypeInstalled) {

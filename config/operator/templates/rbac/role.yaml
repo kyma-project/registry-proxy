@@ -96,6 +96,20 @@ rules:
   - update
   - watch
 - apiGroups:
+  - registry-proxy.kyma-project.io
+  resources:
+  - connections
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - registry-proxy.kyma-project.io
+  resources:
+  - connections/status
+  verbs:
+  - get
+- apiGroups:
   - scheduling.k8s.io
   resources:
   - priorityclasses

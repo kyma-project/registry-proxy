@@ -3,9 +3,9 @@ package pod
 import (
 	"encoding/base64"
 	"fmt"
+	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/tests/registry-proxy/utils"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"

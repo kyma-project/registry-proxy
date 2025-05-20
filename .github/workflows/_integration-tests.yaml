@@ -46,8 +46,46 @@ jobs:
           echo "path: ${PATH}"
           export PATH
           make -C components/operator install-registry-proxy-operator
+          make run-integration-test-operator
+        env:
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          # TODO: do we need all of these or just the operator?
+          OPERATOR_IMG: ${{ inputs.operator_image }}
+          CONNECTION_IMG: ${{ inputs.connection_image }}
+          RP_IMG: ${{ inputs.rp_image }}
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
+  registry-proxy-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: [self-hosted, solinas]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - name: compute github commit sha
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          CLI_TMPDIR=cli-$(date "+%Y-%m-%d_%H:%M:%S")
+          mkdir -p ${CLI_TMPDIR}
+          VERSION=$(curl -H "Authorization: Bearer ${GH_TOKEN}" -s https://api.github.com/repos/kyma-project/cli/releases/latest | jq -r '.tag_name')
+          echo "Downloading https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz"
+          curl -sL "https://github.com/kyma-project/cli/releases/download/${VERSION}/kyma_$(uname -s)_$(uname -m).tar.gz" -o ${CLI_TMPDIR}/cli.tar.gz
+          echo "unpacking kyma cli"
+          tar --force-local -zxvf ${CLI_TMPDIR}/cli.tar.gz kyma
+          mv kyma ./bin/kyma
+          echo "removing ${CLI_TMPDIR}"
+          rm -r ${CLI_TMPDIR}
+          PATH=$(pwd)/bin:$PATH
+          echo "path: ${PATH}"
+          export PATH
+          make -C components/operator install-registry-proxy-operator
           kubectl apply -f config/samples/default-registry-proxy-cr.yaml
-          make run-integration-test
+          make run-integration-test-registry-proxy
         env:
           GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
           # TODO: do we need all of these or just the operator?

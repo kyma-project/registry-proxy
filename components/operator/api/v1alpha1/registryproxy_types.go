@@ -27,7 +27,6 @@ const (
 	ServedTrue  Served = "True"
 	ServedFalse Served = "False"
 
-	// TODO: check these, basically a copy-paste from serverless, some may be unused
 	// installation and deletion details
 	ConditionTypeInstalled = ConditionType("Installed")
 

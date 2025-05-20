@@ -1,6 +1,8 @@
 package namespace
 
-import "github.tools.sap/kyma/registry-proxy/tests/registry-proxy/utils"
+import (
+	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+)
 
 func Delete(utils *utils.TestUtils) error {
 	namespace := fixNamespace(utils)

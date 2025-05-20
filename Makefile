@@ -56,8 +56,8 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 	make -C components/operator manifests
 	make -C components/registry-proxy manifests
 
-.PHONY: run-local
-run-local: create-k3d ## Setup local k3d cluster and install operator
+.PHONY: run-local-operator
+run-local-operator: create-k3d ## Setup local k3d cluster and install operator
 	IMG_DIRECTORY="" IMG_VERSION="${IMG_VERSION}" OPERATOR_IMG=$(OPERATOR_IMG) make -C components/operator docker-build-local
 	k3d image import $(OPERATOR_IMG) -c kyma
 	RP_IMG=$(RP_IMG) make -C components/registry-proxy docker-build
@@ -66,8 +66,11 @@ run-local: create-k3d ## Setup local k3d cluster and install operator
 	k3d image import $(CONNECTION_IMG) -c kyma
 	## make sure helm is installed or binary is present
 	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator --namespace=kyma-system --set controllerManager.container.image="$(OPERATOR_IMG)"
-	kubectl apply -f $(PROJECT_ROOT)/config/samples/default-registry-proxy-cr.yaml
 	# TODO: wait for ready status
+
+.PHONY: run-local
+run-local: ## Setup local k3d cluster and install operator with sample CR
+	kubectl apply -f $(PROJECT_ROOT)/config/samples/default-registry-proxy-cr.yaml
 
 .PHONY: run-integration-local
 run-integration-local: run-local run-integration-test ## create k3d cluster and run integration test
@@ -88,9 +91,12 @@ integration-dependencies:  ## create k3d cluster and run integration test
 	sleep 5
 	$(KYMA) alpha registry image-import alpine:3.21.3
 
-.PHONY: run-integration-test
-run-integration-test: integration-dependencies ## run integration test
+.PHONY: run-integration-test-operator
+run-integration-test-operator: integration-dependencies ## run integration test
 	make -C tests/operator test
+
+.PHONY: run-integration-test-registry-proxy
+run-integration-test-registry-proxy: integration-dependencies 
 	make -C tests/registry-proxy test
 
 # TODO: move somewhere else

@@ -6,7 +6,8 @@ import (
 	"os/user"
 	"path/filepath"
 
-	v1alpha1 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	operatorv1alpha1 "github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
+	rpv1alpha1 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -20,7 +21,11 @@ func GetKuberentesClient() (client.Client, error) {
 		return nil, err
 	}
 
-	err = v1alpha1.AddToScheme(scheme.Scheme)
+	err = operatorv1alpha1.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return nil, err
+	}
+	err = rpv1alpha1.AddToScheme(scheme.Scheme)
 	if err != nil {
 		return nil, err
 	}

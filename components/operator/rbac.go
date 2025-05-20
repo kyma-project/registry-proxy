@@ -18,3 +18,7 @@ package operator
 // +kubebuilder:rbac:groups="rbac.authorization.k8s.io",resources=clusterrolebindings;clusterroles;rolebindings;roles,verbs=list;get;watch;create;update;patch;delete;bind;escalate
 
 // +kubebuilder:rbac:groups="scheduling.k8s.io",resources=priorityclasses,verbs=list;get;watch;create;update;patch;delete
+
+// connections, used for delection detection
+// +kubebuilder:rbac:groups=registry-proxy.kyma-project.io,resources=connections,verbs=get;list;watch
+// +kubebuilder:rbac:groups=registry-proxy.kyma-project.io,resources=connections/status,verbs=get

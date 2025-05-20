@@ -2,7 +2,7 @@ package connection
 
 import (
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/tests/registry-proxy/utils"
+	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

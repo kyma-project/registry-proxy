@@ -3,11 +3,8 @@ package chart
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type FilterFunc func(unstructured.Unstructured) bool
@@ -26,11 +23,6 @@ func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 	err2 := uninstallObjects(config, objs, filterFunc...)
 	if err2 != nil {
 		return err2
-	}
-
-	err3 := uninstallOrphanedResources(config)
-	if err3 != nil {
-		return err3
 	}
 
 	return config.Cache.Delete(config.Ctx, config.CacheKey)
@@ -112,49 +104,4 @@ func fitToFilters(u unstructured.Unstructured, filterFunc ...FilterFunc) bool {
 	}
 
 	return true
-}
-
-func uninstallOrphanedResources(config *Config) error {
-	//TODO: move this to finalizers logic in controller
-	var namespaces corev1.NamespaceList
-	if err := config.Cluster.Client.List(config.Ctx, &namespaces); err != nil {
-		return errors.Wrap(err, "couldn't get namespaces during RegistryProxy uninstallation")
-	}
-
-	if err := uninstallOrphanedConfigMaps(config, namespaces); err != nil {
-		return err
-	}
-	if err := uninstallOrphanedServiceAccounts(config, namespaces); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func uninstallOrphanedServiceAccounts(config *Config, namespaces corev1.NamespaceList) error {
-	for _, namespace := range namespaces.Items {
-		err := config.Cluster.Client.DeleteAllOf(config.Ctx, &corev1.ServiceAccount{},
-			client.InNamespace(namespace.GetName()),
-			client.MatchingLabels{"registry-proxy.kyma-project.io/config": "service-account"})
-		if err != nil {
-			return errors.Wrapf(err,
-				"couldn't delete ServiceAccount from namespace \"%s\" during RegistryProxy uninstallation",
-				namespace.GetName())
-		}
-	}
-	return nil
-}
-
-func uninstallOrphanedConfigMaps(config *Config, namespaces corev1.NamespaceList) error {
-	for _, namespace := range namespaces.Items {
-		err := config.Cluster.Client.DeleteAllOf(config.Ctx, &corev1.ConfigMap{},
-			client.InNamespace(namespace.GetName()),
-			client.MatchingLabels{"registry-proxy.kyma-project.io/config": "runtime"})
-		if err != nil {
-			return errors.Wrapf(err,
-				"couldn't delete ConfigMap from namespace \"%s\" during RegistryProxy uninstallation",
-				namespace.GetName())
-		}
-	}
-	return nil
 }

@@ -4,8 +4,6 @@ package operator
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=registryproxies/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=operator.kyma-project.io,resources=registryproxies/finalizers,verbs=update
 
-// +kubebuilder:rbac:groups="",resources=configmaps;serviceaccounts,verbs=get;list;watch;create;update;patch;delete;deletecollection
-// +kubebuilder:rbac:groups="",resources=namespaces,verbs=list;get;watch
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=list;get;watch;create;update;patch;delete
 
 // +kubebuilder:rbac:groups="",resources=serviceaccounts,verbs=list;get;watch;create;update;patch;delete

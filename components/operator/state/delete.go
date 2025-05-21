@@ -43,7 +43,7 @@ func sFnSafeDeletionState(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 }
 
 func deleteResources(m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	resourceTypesToUninstall := []string{"Secret", "ConfigMap"}
+	resourceTypesToUninstall := []string{"Secret"}
 
 	for _, resourceType := range resourceTypesToUninstall {
 		err, done := chart.UninstallResourcesByType(m.State.ChartConfig, resourceType)

@@ -1,0 +1,29 @@
+name: check manifests
+on:
+  pull_request:
+    paths:
+      - '**/*.go'
+      - 'Makefile'
+      - 'go.mod'
+      - 'go.sum'
+
+jobs:
+  check-manifests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-go
+
+      - name: Run make generate manifests
+        run: make generate manifests
+
+      - name: Check for uncommitted changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Manifests are not up to date. Run 'make generate manifests' and commit the changes."
+            git diff
+            exit 1
+          fi

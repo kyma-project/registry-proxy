@@ -6,6 +6,8 @@ Enables kyma users to setup a managed connection between kubelet and an onprem d
 
 This module allows users to download images from on-prem location through the Connectivity Proxy module.
 
+![Diagram](docs/assets/registry-proxy.drawio.svg)
+
 ## Getting Started
 
 ### Prerequisites

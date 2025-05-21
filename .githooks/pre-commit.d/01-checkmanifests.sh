@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "Running make generate manifests..."
+cd "$(git rev-parse --show-toplevel)" || exit 1
 make generate manifests
 
 if [[ -n $(git status --porcelain) ]]; then

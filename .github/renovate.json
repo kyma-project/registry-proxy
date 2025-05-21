@@ -16,5 +16,8 @@
             ],
             "groupName": "k8s.io"
         }
+    ],
+    "postUpdateOptions": [
+        "gomodTidy"
     ]
 }

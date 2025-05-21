@@ -1,11 +1,6 @@
 name: check manifests
 on:
   pull_request:
-    paths:
-      - '**/*.go'
-      - 'Makefile'
-      - 'go.mod'
-      - 'go.sum'
 
 jobs:
   check-manifests:

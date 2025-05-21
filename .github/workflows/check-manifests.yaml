@@ -9,7 +9,7 @@ on:
 
 jobs:
   check-manifests:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, solinas]
 
     steps:
       - name: Checkout code

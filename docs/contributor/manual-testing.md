@@ -80,29 +80,32 @@ Inside the `registry-proxy` repository:
 kubectl create namespace ${NAMESPACE}
 ```
 
-<!-- TODO: broken RN -->
-
 2. You can get images for your changes by pushing them and grabbing them from the build job or build the Docker images yourself for Controller and Registry Proxy and push them.
 
 ```bash
-	make -C components/registry-proxy docker-build CTRL_IMG="registry-proxy-controller:main"
-	make -C components/connection docker-build IMG="registry-proxy-connection:main"
+make -C components/operator docker-build IMG_DIRECTORY="" IMG_VERSION="main" OPERATOR_IMG=registry-proxy-operator:main
+make -C components/registry-proxy docker-build RP_IMG="registry-proxy-controller:main"
+make -C components/connection docker-build CONNECTION_IMG="registry-proxy-connection:main"
 ```
 
-3. Install the Helm chart.
+3. Install the operator.
 
 ```bash
-helm install registry-proxy config/registry-proxy -n ${NAMESPACE} \
-  --set controllerManager.container.image.repository="<registry-proxy-controller>" \
-  --set controllerManager.container.image.tag="<latest>" \
-  --set controllerManager.container.env.PROXY_IMAGE=<registry-proxy:latest>
+helm install registry-proxy-operator config/operator -n ${NAMESPACE} \
+  --set controllerManager.container.image=registry-proxy-operator:main
 ```
 
-4. Apply a minimalistic RegistryProxy CR.
+4. Apply the default Registry Proxy CR.
 
 ```yaml
-apiVersion: operator.kyma-project.io/v1alpha1
-kind: RegistryProxy
+kubectl apply -f config/samples/default-registry-proxy-cr.yaml
+```
+
+5. Apply a minimalistic RegistryProxy CR.
+
+```yaml
+apiVersion: registry-proxy.kyma-project.io/v1alpha1
+kind: Connection
 metadata:
   name: registry-proxy-myregistry
   namespace: <NAMESPACE>

@@ -72,9 +72,6 @@ run-local-operator: create-k3d ## Setup local k3d cluster and install operator
 run-local: ## Setup local k3d cluster and install operator with sample CR
 	kubectl apply -f $(PROJECT_ROOT)/config/samples/default-registry-proxy-cr.yaml
 
-.PHONY: run-integration-local
-run-integration-local: run-local run-integration-test ## create k3d cluster and run integration test
-
 .PHONY: integration-dependencies
 integration-dependencies:  ## create k3d cluster and run integration test
 	# connectivity proxy

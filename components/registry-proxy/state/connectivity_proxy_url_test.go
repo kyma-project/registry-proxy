@@ -70,9 +70,9 @@ func TestGetReverseProxyURL(t *testing.T) {
 func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 	t.Run("user provided proxyURL", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -92,7 +92,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -105,13 +105,13 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleDeployment, next)
 		require.False(t, getWasCalled)
-		require.Equal(t, rp.Spec.ProxyURL, m.State.ProxyURL)
+		require.Equal(t, connection.Spec.ProxyURL, m.State.ProxyURL)
 	})
 
 	t.Run("proxyURL from connectivity proxy", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -125,7 +125,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -141,9 +141,9 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 	})
 
 	t.Run("proxyURL missing", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -157,7 +157,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

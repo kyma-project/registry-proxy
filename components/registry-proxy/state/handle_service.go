@@ -22,7 +22,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	}
 
 	if service == nil {
-		m.State.RegistryProxy.Status.NodePort = 0
+		m.State.Connection.Status.NodePort = 0
 
 		return createService(ctx, m)
 	}
@@ -48,7 +48,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 func getService(ctx context.Context, m *fsm.StateMachine) (*corev1.Service, error) {
 	currentService := &corev1.Service{}
-	rp := m.State.RegistryProxy
+	rp := m.State.Connection
 
 	serviceErr := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: rp.GetNamespace(),
@@ -67,11 +67,11 @@ func getService(ctx context.Context, m *fsm.StateMachine) (*corev1.Service, erro
 }
 
 func createService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	service := resources.NewService(&m.State.RegistryProxy)
+	service := resources.NewService(&m.State.Connection)
 
 	// Set the ownerRef for the Service, ensuring that the Service
 	// will be deleted when the Function CR is deleted.
-	if err := controllerutil.SetControllerReference(&m.State.RegistryProxy, service, m.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(&m.State.Connection, service, m.Scheme); err != nil {
 		m.Log.Error(err, "failed to set controller reference on Service")
 		return stopWithEventualError(err)
 	}
@@ -85,7 +85,7 @@ func createService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 }
 
 func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, error) {
-	wantedService := resources.NewService(&m.State.RegistryProxy)
+	wantedService := resources.NewService(&m.State.Connection)
 	if !serviceChanged(m.State.Service, wantedService) {
 		return false, nil
 	}

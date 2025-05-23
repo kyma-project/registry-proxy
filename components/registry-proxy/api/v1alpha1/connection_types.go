@@ -92,7 +92,7 @@ func init() {
 	SchemeBuilder.Register(&Connection{}, &ConnectionList{})
 }
 
-func (rp *Connection) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
+func (connection *Connection) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             s,
@@ -100,5 +100,5 @@ func (rp *Connection) UpdateCondition(c ConditionType, s metav1.ConditionStatus,
 		Reason:             string(r),
 		Message:            msg,
 	}
-	meta.SetStatusCondition(&rp.Status.Conditions, condition)
+	meta.SetStatusCondition(&connection.Status.Conditions, condition)
 }

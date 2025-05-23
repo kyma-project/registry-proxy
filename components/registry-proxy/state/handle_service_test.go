@@ -38,9 +38,9 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -80,9 +80,9 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -113,9 +113,9 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -136,9 +136,9 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is empty, requeue", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -146,7 +146,7 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&rp)
+		service := resources.NewService(&connection)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
@@ -162,7 +162,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -174,13 +174,13 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
+		require.Empty(t, m.State.Connection.Status.Conditions)
 		require.NotNil(t, m.State.Service)
 	})
 	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is ready, update RP status", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -188,7 +188,7 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&rp)
+		service := resources.NewService(&connection)
 		service.Spec.Ports[0].NodePort = 1234
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
@@ -205,7 +205,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -217,14 +217,14 @@ func Test_sFnHandleService(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleStatus, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
+		require.Empty(t, m.State.Connection.Status.Conditions)
 		require.NotNil(t, m.State.Service)
 		require.Equal(t, int32(1234), m.State.NodePort)
 	})
 	t.Run("when service exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -232,7 +232,7 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&rp)
+		service := resources.NewService(&connection)
 		service.Spec.Type = corev1.ServiceTypeClusterIP
 		scheme := minimalScheme(t)
 		createWasCalled := false
@@ -245,7 +245,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -259,7 +259,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.False(t, createWasCalled)
 		updatedService := &corev1.Service{}
 		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
-			Name:      "rp",
+			Name:      "connection",
 			Namespace: "maslo",
 		}, updatedService)
 		require.NoError(t, getErr)
@@ -267,9 +267,9 @@ func Test_sFnHandleService(t *testing.T) {
 	})
 
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -277,7 +277,7 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&rp)
+		service := resources.NewService(&connection)
 		service.Spec.Type = corev1.ServiceTypeClusterIP
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
@@ -288,7 +288,7 @@ func Test_sFnHandleService(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
+				Connection: connection,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

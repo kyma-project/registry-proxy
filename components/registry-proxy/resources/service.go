@@ -8,12 +8,12 @@ import (
 )
 
 type service struct {
-	registryProxy *v1alpha1.Connection
+	connection *v1alpha1.Connection
 }
 
-func NewService(rp *v1alpha1.Connection) *corev1.Service {
+func NewService(connection *v1alpha1.Connection) *corev1.Service {
 	s := &service{
-		registryProxy: rp,
+		connection: connection,
 	}
 	return s.construct()
 }
@@ -21,9 +21,9 @@ func NewService(rp *v1alpha1.Connection) *corev1.Service {
 func (s *service) construct() *corev1.Service {
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      s.registryProxy.Name,
-			Namespace: s.registryProxy.Namespace,
-			Labels:    labels(s.registryProxy, "service"),
+			Name:      s.connection.Name,
+			Namespace: s.connection.Namespace,
+			Labels:    labels(s.connection, "service"),
 		},
 		Spec: corev1.ServiceSpec{
 			Type: corev1.ServiceTypeNodePort,
@@ -35,7 +35,7 @@ func (s *service) construct() *corev1.Service {
 				},
 			},
 			Selector: map[string]string{
-				v1alpha1.LabelApp: s.registryProxy.Name,
+				v1alpha1.LabelApp: s.connection.Name,
 			},
 		},
 	}

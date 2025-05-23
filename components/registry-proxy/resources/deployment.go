@@ -23,26 +23,26 @@ const (
 )
 
 type deployment struct {
-	registryProxy *v1alpha1.Connection
-	proxyURL      string
+	connection *v1alpha1.Connection
+	proxyURL   string
 }
 
-func NewDeployment(rp *v1alpha1.Connection, proxyURL string) *appsv1.Deployment {
+func NewDeployment(connection *v1alpha1.Connection, proxyURL string) *appsv1.Deployment {
 	d := &deployment{
-		registryProxy: rp,
-		proxyURL:      proxyURL,
+		connection: connection,
+		proxyURL:   proxyURL,
 	}
 	return d.construct()
 }
 
 func (d *deployment) construct() *appsv1.Deployment {
-	deploymentLabels := labels(d.registryProxy, "deployment")
+	deploymentLabels := labels(d.connection, "deployment")
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      d.registryProxy.Name,
-			Namespace: d.registryProxy.Namespace,
-			Labels:    labels(d.registryProxy, "deployment"),
+			Name:      d.connection.Name,
+			Namespace: d.connection.Namespace,
+			Labels:    labels(d.connection, "deployment"),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
@@ -64,7 +64,7 @@ func (d *deployment) podSpec() corev1.PodSpec {
 	return corev1.PodSpec{
 		Containers: []corev1.Container{
 			{
-				Name:  d.registryProxy.Name,
+				Name:  d.connection.Name,
 				Image: os.Getenv("PROXY_IMAGE"),
 				Command: []string{
 					os.Getenv("PROXY_COMMAND"),
@@ -133,8 +133,8 @@ func (d *deployment) podSpec() corev1.PodSpec {
 }
 
 func (d *deployment) resourceConfiguration() corev1.ResourceRequirements {
-	if d.registryProxy.Spec.Resources != nil {
-		return *d.registryProxy.Spec.Resources
+	if d.connection.Spec.Resources != nil {
+		return *d.connection.Spec.Resources
 	}
 
 	return defaultResources()
@@ -161,14 +161,14 @@ func (d *deployment) envs() []corev1.EnvVar {
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: d.registryProxy.Spec.TargetHost,
+			Value: d.connection.Spec.TargetHost,
 		},
 	}
 
-	if d.registryProxy.Spec.LogLevel != "" {
+	if d.connection.Spec.LogLevel != "" {
 		envVariables = append(envVariables, corev1.EnvVar{
 			Name:  "LOG_LEVEL",
-			Value: d.registryProxy.Spec.LogLevel,
+			Value: d.connection.Spec.LogLevel,
 		})
 	}
 

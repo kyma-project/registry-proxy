@@ -3,6 +3,7 @@ package pod
 import (
 	"encoding/base64"
 	"fmt"
+
 	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
@@ -17,7 +18,7 @@ func Create(utils *utils.TestUtils) error {
 		return err
 	}
 
-	// docker-registry module credentials point to the docker-registry service, we ahve to convert that to our rp nodePort
+	// docker-registry module credentials point to the docker-registry service, we have to convert that to our connection nodePort
 	dockerCreds, err := getDockerCredentials(utils)
 	if err != nil {
 		return err
@@ -52,8 +53,8 @@ func getConnection(utils *utils.TestUtils) (*v1alpha1.Connection, error) {
 	return &connection, nil
 }
 
-func fixPod(utils *utils.TestUtils, rp *v1alpha1.Connection) (*v1.Pod, error) {
-	podImage, err := getPodImage(utils, rp)
+func fixPod(utils *utils.TestUtils, connection *v1alpha1.Connection) (*v1.Pod, error) {
+	podImage, err := getPodImage(utils, connection)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +79,8 @@ func fixPod(utils *utils.TestUtils, rp *v1alpha1.Connection) (*v1.Pod, error) {
 	}, nil
 }
 
-func getPodImage(utils *utils.TestUtils, rp *v1alpha1.Connection) (string, error) {
-	nodeport := rp.Status.NodePort
+func getPodImage(utils *utils.TestUtils, connection *v1alpha1.Connection) (string, error) {
+	nodeport := connection.Status.NodePort
 	if nodeport == 0 {
 		return "", fmt.Errorf("NodePort is not set in status")
 
@@ -102,11 +103,11 @@ func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {
 }
 
 // we have to convert secret to kubernetes.io/dockerconfigjson
-func fixSecret(utils *utils.TestUtils, rp *v1alpha1.Connection, dockerSecret *v1.Secret) *v1.Secret {
+func fixSecret(utils *utils.TestUtils, connection *v1alpha1.Connection, dockerSecret *v1.Secret) *v1.Secret {
 	username := string(dockerSecret.Data["username"])
 	password := string(dockerSecret.Data["password"])
 	auth := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", username, password)))
-	nodePort := rp.Status.NodePort
+	nodePort := connection.Status.NodePort
 
 	secret := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{

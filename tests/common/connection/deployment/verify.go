@@ -2,15 +2,16 @@ package deployment
 
 import (
 	"fmt"
+
 	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	connection "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.Connection) error {
+func VerifyEnvs(utils *utils.TestUtils, connection *connection.Connection) error {
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
 		Name:      utils.ConnectionName,
@@ -22,18 +23,18 @@ func VerifyEnvs(utils *utils.TestUtils, rp *v1alpha1.Connection) error {
 		return err
 	}
 
-	return verifyDeployEnvs(&deploy, rp)
+	return verifyDeployEnvs(&deploy, connection)
 }
 
-func verifyDeployEnvs(deploy *appsv1.Deployment, rp *v1alpha1.Connection) error {
+func verifyDeployEnvs(deploy *appsv1.Deployment, connection *connection.Connection) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
 			Name:  "PROXY_URL",
-			Value: rp.Status.ProxyURL,
+			Value: connection.Status.ProxyURL,
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: rp.Spec.TargetHost,
+			Value: connection.Spec.TargetHost,
 		},
 	}
 

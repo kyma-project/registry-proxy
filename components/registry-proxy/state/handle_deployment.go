@@ -47,7 +47,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment, error) {
 	currentDeployment := &appsv1.Deployment{}
-	rp := m.State.RegistryProxy
+	rp := m.State.Connection
 	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: rp.GetNamespace(),
 		Name:      rp.GetName(),
@@ -64,13 +64,13 @@ func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment
 }
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deployment := resources.NewDeployment(&m.State.RegistryProxy, m.State.ProxyURL)
+	deployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the RP CR is deleted.
-	if err := controllerutil.SetControllerReference(&m.State.RegistryProxy, deployment, m.Scheme); err != nil {
+	if err := controllerutil.SetControllerReference(&m.State.Connection, deployment, m.Scheme); err != nil {
 		m.Log.Error(err, "failed to set controller reference on Deployment")
-		m.State.RegistryProxy.UpdateCondition( // We update the condition on every possible return to make sure it's up to date
+		m.State.Connection.UpdateCondition( // We update the condition on every possible return to make sure it's up to date
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
@@ -80,7 +80,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 	if err := m.Client.Create(ctx, deployment); err != nil {
 		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
-		m.State.RegistryProxy.UpdateCondition(
+		m.State.Connection.UpdateCondition(
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
@@ -88,7 +88,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		)
 		return stopWithEventualError(err)
 	}
-	m.State.RegistryProxy.UpdateCondition(
+	m.State.Connection.UpdateCondition(
 		v1alpha1.ConditionRunning,
 		metav1.ConditionUnknown,
 		v1alpha1.ConditionReasonDeploymentCreated,
@@ -99,7 +99,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 }
 
 func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, error) {
-	wantedDeployment := resources.NewDeployment(&m.State.RegistryProxy, m.State.ProxyURL)
+	wantedDeployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL)
 	if !deploymentChanged(m.State.Deployment, wantedDeployment) {
 		return false, nil
 	}
@@ -140,14 +140,14 @@ func updateDeployment(ctx context.Context, m *fsm.StateMachine) (bool, error) {
 	m.Log.Info("Updating Deployment %s/%s", m.State.Deployment.GetNamespace(), m.State.Deployment.GetName())
 	if err := m.Client.Update(ctx, m.State.Deployment); err != nil {
 		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", m.State.Deployment.GetNamespace(), "Deployment.Name", m.State.Deployment.GetName())
-		m.State.RegistryProxy.UpdateCondition(
+		m.State.Connection.UpdateCondition(
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			fmt.Sprintf("Deployment %s update failed: %s", m.State.Deployment.GetName(), err.Error()))
 		return false, err
 	}
-	m.State.RegistryProxy.UpdateCondition(
+	m.State.Connection.UpdateCondition(
 		v1alpha1.ConditionRunning,
 		metav1.ConditionUnknown,
 		v1alpha1.ConditionReasonDeploymentUpdated,

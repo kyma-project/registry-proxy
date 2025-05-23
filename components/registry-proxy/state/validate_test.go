@@ -17,9 +17,9 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 	t.Run("when function is valid should go to the next state", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -40,14 +40,14 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleDeployment, next)
 		// function conditions remain unchanged
-		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
+		require.Empty(t, m.State.Connection.Status.Conditions)
 	})
 	t.Run("when function is invalid should stop processing", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -67,7 +67,7 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 		// with expected next state
 		require.Nil(t, next)
 		// function has proper condition
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionReady,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInvalidProxyURL,
@@ -80,9 +80,9 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 	t.Run("when Connectivity Proxy CRD is not installed should update condition and requeue", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 				},
@@ -96,7 +96,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, time.Minute, result.RequeueAfter)
 		require.Nil(t, err)
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionConfigured,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonConnectivityProxyCrdUnknownn,
@@ -106,9 +106,9 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 	t.Run("when Connectivity Proxy CRD is installed should update condition and proceed to next state", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 				},
@@ -123,7 +123,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		requireEqualFunc(t, sFnValidateReverseProxyURL, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConnectivityProxyCrdFound,

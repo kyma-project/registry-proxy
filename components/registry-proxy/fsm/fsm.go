@@ -22,7 +22,7 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	RegistryProxy  v1alpha1.Connection
+	Connection     v1alpha1.Connection
 	statusSnapshot v1alpha1.ConnectionStatus
 	ProxyURL       string
 	NodePort       int32
@@ -31,7 +31,7 @@ type SystemState struct {
 }
 
 func (s *SystemState) saveStatusSnapshot() {
-	result := s.RegistryProxy.Status.DeepCopy()
+	result := s.Connection.Status.DeepCopy()
 	if result == nil {
 		result = &v1alpha1.ConnectionStatus{}
 	}
@@ -98,7 +98,7 @@ func New(client client.Client, instance *v1alpha1.Connection, startState StateFn
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
-			RegistryProxy: *instance,
+			Connection: *instance,
 		},
 		Log:    log,
 		Client: client,
@@ -111,9 +111,9 @@ func New(client client.Client, instance *v1alpha1.Connection, startState StateFn
 
 func updateProxyStatus(ctx context.Context, m *StateMachine) error {
 	s := &m.State
-	if !reflect.DeepEqual(s.RegistryProxy.Status, s.statusSnapshot) {
-		m.Log.Debug(fmt.Sprintf("updating registry proxy status to '%+v'", s.RegistryProxy.Status))
-		err := m.Client.Status().Update(ctx, &s.RegistryProxy)
+	if !reflect.DeepEqual(s.Connection.Status, s.statusSnapshot) {
+		m.Log.Debug(fmt.Sprintf("updating registry proxy status to '%+v'", s.Connection.Status))
+		err := m.Client.Status().Update(ctx, &s.Connection)
 		//emitEvent(r, s)
 		s.saveStatusSnapshot()
 		return err

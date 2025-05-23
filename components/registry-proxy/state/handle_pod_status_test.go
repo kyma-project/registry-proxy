@@ -41,9 +41,9 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 				},
@@ -58,8 +58,8 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
-		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionRunning, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
 	})
 
 	t.Run("one pod exists", func(t *testing.T) {
@@ -74,9 +74,9 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 				},
@@ -113,9 +113,9 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 				},
@@ -130,7 +130,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.Nil(t, result)
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleService, next)
-		requireContainsCondition(t, m.State.RegistryProxy.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
 	})
 }
 
@@ -228,7 +228,7 @@ func minimalPod(probesURL *url.URL) *corev1.Pod {
 			Name:      "rp-pod",
 			Namespace: "wherever",
 			Labels: map[string]string{
-				v1alpha1.LabelApp: "rp",
+				v1alpha1.LabelApp: "connection",
 			},
 		},
 		Spec: corev1.PodSpec{

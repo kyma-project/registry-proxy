@@ -18,7 +18,7 @@ import (
 func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	podList := &corev1.PodList{}
 	matchLabels := client.MatchingLabels{}
-	matchLabels[v1alpha1.LabelApp] = m.State.RegistryProxy.Name
+	matchLabels[v1alpha1.LabelApp] = m.State.Connection.Name
 	err := m.Client.List(ctx, podList, matchLabels)
 	if err != nil {
 		return nil, nil, err
@@ -26,13 +26,13 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	// check pod's healthz and readyz
 	if len(podList.Items) < 1 {
 		// no pod exists, reset conditions and retry
-		m.State.RegistryProxy.UpdateCondition(
+		m.State.Connection.UpdateCondition(
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonProbeError,
 			"no pod exists",
 		)
-		m.State.RegistryProxy.UpdateCondition(
+		m.State.Connection.UpdateCondition(
 			v1alpha1.ConditionReady,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonProbeError,
@@ -46,11 +46,11 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 		// podIP is not instantly set, sometimes we have to wait for it
 		return requeueAfter(time.Second * 10)
 	}
-	err = handleProbe(&m.State.RegistryProxy, pod.Status.PodIP, pod.Spec.Containers[0].LivenessProbe, v1alpha1.ConditionRunning)
+	err = handleProbe(&m.State.Connection, pod.Status.PodIP, pod.Spec.Containers[0].LivenessProbe, v1alpha1.ConditionRunning)
 	if err != nil {
 		return stopWithEventualError(err)
 	}
-	err = handleProbe(&m.State.RegistryProxy, pod.Status.PodIP, pod.Spec.Containers[0].ReadinessProbe, v1alpha1.ConditionReady)
+	err = handleProbe(&m.State.Connection, pod.Status.PodIP, pod.Spec.Containers[0].ReadinessProbe, v1alpha1.ConditionReady)
 	if err != nil {
 		return stopWithEventualError(err)
 	}

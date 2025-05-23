@@ -34,12 +34,12 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	log := r.Log.With("request", req)
 	log.Info("reconciliation started")
 
-	var registryProxy v1alpha1.Connection
-	if err := r.Get(ctx, req.NamespacedName, &registryProxy); err != nil {
+	var connection v1alpha1.Connection
+	if err := r.Get(ctx, req.NamespacedName, &connection); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	sm := fsm.New(r.Client, &registryProxy, state.StartState(), r.Scheme, log, r.Cache)
+	sm := fsm.New(r.Client, &connection, state.StartState(), r.Scheme, log, r.Cache)
 	return sm.Reconcile(ctx)
 }
 

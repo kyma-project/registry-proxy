@@ -40,9 +40,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -63,22 +63,22 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, next)
 		require.False(t, updateWasCalled)
 
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionRunning,
 			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonDeploymentCreated,
-			"Deployment rp created")
+			"Deployment connection created")
 
 		appliedDeployment := &appsv1.Deployment{}
 		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
-			Name:      "rp",
+			Name:      "connection",
 			Namespace: "maslo",
 		}, appliedDeployment)
 		require.NoError(t, getErr)
 
 		require.NotEmpty(t, appliedDeployment.OwnerReferences)
 		require.Equal(t, "Connection", appliedDeployment.OwnerReferences[0].Kind)
-		require.Equal(t, "rp", appliedDeployment.OwnerReferences[0].Name)
+		require.Equal(t, "connection", appliedDeployment.OwnerReferences[0].Name)
 	})
 	t.Run("when cannot get deployment from kubernetes should stop processing", func(t *testing.T) {
 		scheme := minimalScheme(t)
@@ -99,9 +99,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -133,9 +133,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: v1alpha1.Connection{
+				Connection: v1alpha1.Connection{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "rp",
+						Name:      "connection",
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
@@ -154,16 +154,16 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.ErrorContains(t, err, "funny error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
-			"Deployment rp create failed: funny error message")
+			"Deployment connection create failed: funny error message")
 	})
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -171,7 +171,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -187,8 +187,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
-				ProxyURL:      rp.Spec.ProxyURL,
+				Connection: connection,
+				ProxyURL:   connection.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -202,13 +202,13 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandlePodStatus, next)
 		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.RegistryProxy.Status.Conditions)
+		require.Empty(t, m.State.Connection.Status.Conditions)
 		require.NotNil(t, m.State.Deployment)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -216,7 +216,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		createWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -226,12 +226,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			},
 		}).Build()
 
-		rp.Spec.TargetHost = "fresh"
+		connection.Spec.TargetHost = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
-				ProxyURL:      rp.Spec.ProxyURL,
+				Connection: connection,
+				ProxyURL:   connection.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -244,15 +244,15 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionRunning,
 			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonDeploymentUpdated,
-			"Deployment rp updated")
+			"Deployment connection updated")
 		require.False(t, createWasCalled)
 		updatedDeployment := &appsv1.Deployment{}
 		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
-			Name:      "rp",
+			Name:      "connection",
 			Namespace: "maslo",
 		}, updatedDeployment)
 		require.NoError(t, getErr)
@@ -261,9 +261,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "TARGET_HOST", Value: "fresh"})
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
-		rp := v1alpha1.Connection{
+		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rp",
+				Name:      "connection",
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
@@ -271,7 +271,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&rp, rp.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
@@ -279,12 +279,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			},
 		}).Build()
 
-		rp.Spec.TargetHost = "fresh"
+		connection.Spec.TargetHost = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				RegistryProxy: rp,
-				ProxyURL:      rp.Spec.ProxyURL,
+				Connection: connection,
+				ProxyURL:   connection.Spec.ProxyURL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -296,10 +296,10 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.ErrorContains(t, err, "sad error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.RegistryProxy.Status,
+		requireContainsCondition(t, m.State.Connection.Status,
 			v1alpha1.ConditionRunning,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
-			"Deployment rp update failed: sad error message")
+			"Deployment connection update failed: sad error message")
 	})
 }

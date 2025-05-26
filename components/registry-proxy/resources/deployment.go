@@ -16,8 +16,8 @@ import (
 const (
 	defaultLimitCPU      = "100m"
 	defaultLimitMemory   = "64Mi"
-	defaultRequestCPU    = "50m"
-	defaultRequestMemory = "32Mi"
+	defaultRequestCPU    = "5m"
+	defaultRequestMemory = "16Mi"
 	registryProxyPort    = 8080
 	probesPort           = 8081
 )

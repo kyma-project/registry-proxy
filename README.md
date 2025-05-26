@@ -1,12 +1,9 @@
 # Registry Proxy
 
-Enables kyma users to setup a managed connection between kubelet and an onprem docker registry
 
-## Description
+The Registry Proxy module helps ensure security compliance for organizations with strict security policies, for which exposing an internal Docker registry to the public internet is not acceptable. 
 
-This module allows users to download images from on-prem location through the Connectivity Proxy module.
-
-![Diagram](docs/assets/registry-proxy.drawio.svg)
+With the Registry Proxy module, you can set up a managed connection between kubelet and the Connectivity Proxy service inside your Kyma cluster. Combined with a properly configured SAP Cloud Connector targeting your on-premises Docker registry, you can run workloads in your Kyma cluster using container images hosted on your own infrastructure without exposing your internal registry directly to the internet.
 
 ## Install
 

@@ -34,7 +34,7 @@ func sFnValidateReverseProxyURL(_ context.Context, m *fsm.StateMachine) (fsm.Sta
 	_, err := url.Parse(m.State.Connection.Spec.ProxyURL)
 	if err != nil {
 		m.State.Connection.UpdateCondition(
-			v1alpha1.ConditionReady,
+			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInvalidProxyURL,
 			fmt.Sprintf("Invalid Connectivity Proxy URL: %s", err.Error()))

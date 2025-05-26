@@ -68,7 +68,7 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 		require.Nil(t, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Connection.Status,
-			v1alpha1.ConditionReady,
+			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInvalidProxyURL,
 			"Invalid Connectivity Proxy URL: parse \":thisURLisbroken\": missing protocol scheme")

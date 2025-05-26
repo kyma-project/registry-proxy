@@ -77,14 +77,14 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 
 func verifyState(rp *v1alpha1.Connection) error {
 	for _, condition := range rp.Status.Conditions {
-		if condition.Type == string(v1alpha1.ConditionReady) {
-			if condition.Reason == string(v1alpha1.ConditionReasonProbeSuccess) &&
+		if condition.Type == string(v1alpha1.ConditionConnectionReady) {
+			if condition.Reason == string(v1alpha1.ConditionReasonEstabilished) &&
 				condition.Status == metav1.ConditionTrue &&
-				condition.Message == "" {
+				condition.Message == "Target registry reachable" {
 				return nil
 			}
-			return fmt.Errorf("ConditionReady is not in expected state: %v", condition)
+			return fmt.Errorf("ConditionConnectionReady is not in expected state: %v", condition)
 		}
 	}
-	return fmt.Errorf("ConditionReady not found")
+	return fmt.Errorf("ConditionConnectionReady not found")
 }

@@ -58,8 +58,8 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
-		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionRunning, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
-		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonProbeError, "no pod exists")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionDeployed, metav1.ConditionFalse, v1alpha1.ConditionReasonResourcesNotReady, "no pod exists")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonNotEstabilished, "no pod exists")
 	})
 
 	t.Run("one pod exists", func(t *testing.T) {
@@ -130,7 +130,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.Nil(t, result)
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleService, next)
-		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionRunning, metav1.ConditionTrue, v1alpha1.ConditionReasonProbeSuccess, "")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionDeployed, metav1.ConditionTrue, v1alpha1.ConditionReasonResourcesDeployed, "Reverse-proxy ready")
 	})
 }
 
@@ -163,10 +163,10 @@ func TestHandleProbe(t *testing.T) {
 				},
 			},
 			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionRunning),
+				Type:    string(v1alpha1.ConditionConnectionDeployed),
 				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonProbeError),
-				Message: "cannot read health probe:Get \"http://127.0.0.1:8080/healthz\": dial tcp 127.0.0.1:8080: connect: connection refused",
+				Reason:  string(v1alpha1.ConditionReasonError),
+				Message: "Reverse-proxy not ready: Get \"http://127.0.0.1:8080/healthz\": dial tcp 127.0.0.1:8080: connect: connection refused",
 			},
 		},
 		{
@@ -182,10 +182,10 @@ func TestHandleProbe(t *testing.T) {
 				},
 			},
 			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionRunning),
+				Type:    string(v1alpha1.ConditionConnectionDeployed),
 				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonProbeFailure),
-				Message: "/healthz probe has returned 418 status",
+				Reason:  string(v1alpha1.ConditionReasonResourcesNotReady),
+				Message: "Reverse-proxy not ready: probe has returned status 418",
 			},
 		},
 		{
@@ -201,17 +201,105 @@ func TestHandleProbe(t *testing.T) {
 				},
 			},
 			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionRunning),
+				Type:    string(v1alpha1.ConditionConnectionDeployed),
 				Status:  metav1.ConditionTrue,
-				Reason:  string(v1alpha1.ConditionReasonProbeSuccess),
-				Message: "",
+				Reason:  string(v1alpha1.ConditionReasonResourcesDeployed),
+				Message: "Reverse-proxy ready",
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_ = handleProbe(tt.rp, tt.podIP, tt.probe, v1alpha1.ConditionType(tt.expectedCondition.Type))
+			_ = handleLivenessProbe(tt.rp, tt.podIP, tt.probe)
+			requireContainsCondition(t, tt.rp.Status,
+				v1alpha1.ConditionType(tt.expectedCondition.Type),
+				tt.expectedCondition.Status,
+				v1alpha1.ConditionReason(tt.expectedCondition.Reason),
+				tt.expectedCondition.Message,
+			)
+		})
+	}
+}
+
+func TestHandleReadinessProbe(t *testing.T) {
+
+	failureServer := httptest.NewServer(http.HandlerFunc(probeHandleFailure))
+	successServer := httptest.NewServer(http.HandlerFunc(probeHandleSuccess))
+	failureURL, err := url.Parse(failureServer.URL)
+	require.NoError(t, err)
+	successURL, err := url.Parse(successServer.URL)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name              string
+		rp                *v1alpha1.Connection
+		podIP             string
+		probe             *corev1.Probe
+		expectedCondition metav1.Condition
+	}{
+		{
+			name:  "should return error on broken probe",
+			rp:    &v1alpha1.Connection{},
+			podIP: "127.0.0.1",
+			probe: &corev1.Probe{
+				ProbeHandler: corev1.ProbeHandler{
+					HTTPGet: &corev1.HTTPGetAction{
+						Port: intstr.FromInt(8080),
+						Path: "/healthz",
+					},
+				},
+			},
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionFalse,
+				Reason:  string(v1alpha1.ConditionReasonError),
+				Message: "Target registry not reachable: Get \"http://127.0.0.1:8080/healthz\": dial tcp 127.0.0.1:8080: connect: connection refused",
+			},
+		},
+		{
+			name:  "should return probe failure",
+			rp:    &v1alpha1.Connection{},
+			podIP: failureURL.Hostname(),
+			probe: &corev1.Probe{
+				ProbeHandler: corev1.ProbeHandler{
+					HTTPGet: &corev1.HTTPGetAction{
+						Port: intstr.FromString(failureURL.Port()),
+						Path: "/healthz",
+					},
+				},
+			},
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionFalse,
+				Reason:  string(v1alpha1.ConditionReasonNotEstabilished),
+				Message: "Target registry not reachable: probe has returned status 418",
+			},
+		},
+		{
+			name:  "should return probe success",
+			rp:    &v1alpha1.Connection{},
+			podIP: successURL.Hostname(),
+			probe: &corev1.Probe{
+				ProbeHandler: corev1.ProbeHandler{
+					HTTPGet: &corev1.HTTPGetAction{
+						Port: intstr.FromString(successURL.Port()),
+						Path: "/healthz",
+					},
+				},
+			},
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionTrue,
+				Reason:  string(v1alpha1.ConditionReasonEstabilished),
+				Message: "Target registry reachable",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_ = handleReadinessProbe(tt.rp, tt.podIP, tt.probe)
 			requireContainsCondition(t, tt.rp.Status,
 				v1alpha1.ConditionType(tt.expectedCondition.Type),
 				tt.expectedCondition.Status,

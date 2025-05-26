@@ -64,7 +64,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.False(t, updateWasCalled)
 
 		requireContainsCondition(t, m.State.Connection.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonDeploymentCreated,
 			"Deployment connection created")
@@ -155,7 +155,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.Connection.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			"Deployment connection create failed: funny error message")
@@ -245,7 +245,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.Connection.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonDeploymentUpdated,
 			"Deployment connection updated")
@@ -297,7 +297,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.Connection.Status,
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			"Deployment connection update failed: sad error message")

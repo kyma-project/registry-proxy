@@ -71,7 +71,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	if err := controllerutil.SetControllerReference(&m.State.Connection, deployment, m.Scheme); err != nil {
 		m.Log.Error(err, "failed to set controller reference on Deployment")
 		m.State.Connection.UpdateCondition( // We update the condition on every possible return to make sure it's up to date
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			"failed to set controller reference on Deployment")
@@ -81,7 +81,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	if err := m.Client.Create(ctx, deployment); err != nil {
 		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
 		m.State.Connection.UpdateCondition(
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			fmt.Sprintf("Deployment %s create failed: %s", deployment.GetName(), err.Error()),
@@ -89,7 +89,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		return stopWithEventualError(err)
 	}
 	m.State.Connection.UpdateCondition(
-		v1alpha1.ConditionRunning,
+		v1alpha1.ConditionConnectionDeployed,
 		metav1.ConditionUnknown,
 		v1alpha1.ConditionReasonDeploymentCreated,
 		fmt.Sprintf("Deployment %s created", deployment.GetName()),
@@ -141,14 +141,14 @@ func updateDeployment(ctx context.Context, m *fsm.StateMachine) (bool, error) {
 	if err := m.Client.Update(ctx, m.State.Deployment); err != nil {
 		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", m.State.Deployment.GetNamespace(), "Deployment.Name", m.State.Deployment.GetName())
 		m.State.Connection.UpdateCondition(
-			v1alpha1.ConditionRunning,
+			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeploymentFailed,
 			fmt.Sprintf("Deployment %s update failed: %s", m.State.Deployment.GetName(), err.Error()))
 		return false, err
 	}
 	m.State.Connection.UpdateCondition(
-		v1alpha1.ConditionRunning,
+		v1alpha1.ConditionConnectionDeployed,
 		metav1.ConditionUnknown,
 		v1alpha1.ConditionReasonDeploymentUpdated,
 		fmt.Sprintf("Deployment %s updated", m.State.Deployment.GetName()))

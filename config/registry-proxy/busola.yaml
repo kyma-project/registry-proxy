@@ -1,0 +1,84 @@
+general:
+  resource:
+    kind: Connection
+    group: registry-proxy.kyma-project.io
+    version: v1alpha1
+  urlPath: connections
+  category: Discovery and Network
+  name: Connection
+  scope: namespace
+  features:
+    actions:
+      disableCreate: false
+      disableDelete: false
+  description: >-
+    {{[Registry Proxy custom resource](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Registry Proxy module.
+details: #Inside "Resource Details" view
+  status:
+    body:
+      - name: status.conditions
+        widget: ConditionList
+        source: status.conditions
+        fullWidth: true
+  health:
+  body:
+    - widget: EventList
+      filter: "$matchEvents($$, $root.kind, $root.metadata.name)"
+      name: events
+      defaultType: information
+
+list: #Inside "Connection" list view
+  - name: list.configured
+    source: status.conditions[type="Configured"].status
+    highlights:
+      positive:
+        - "true"
+        - "True"
+      warning:
+        - "unknown"
+        - "Unknown"
+      critical:
+        - "false"
+        - "False"
+        - $item < 0
+    widget: Badge
+  - name: list.running
+    source: status.conditions[type="Running"].status
+    highlights:
+      positive:
+        - "true"
+        - "True"
+      warning:
+        - "unknown"
+        - "Unknown"
+      critical:
+        - "false"
+        - "False"
+        - $item < 0
+    widget: Badge
+  - name: list.ready
+    source: status.conditions[type="Ready"].status
+    highlights:
+      positive:
+        - "true"
+        - "True"
+      warning:
+        - "unknown"
+        - "Unknown"
+      critical:
+        - "false"
+        - "False"
+        - $item < 0
+    widget: Badge
+translations:
+  en:
+    status:
+      conditions: Conditions
+    details:
+      state: State
+    list:
+      state: State
+      conditions: Conditions
+      configured: Configured
+      running: Running
+      ready: Ready

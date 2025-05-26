@@ -1,0 +1,45 @@
+general:
+  resource:
+    kind: RegistryProxy
+    group: operator.kyma-project.io
+    version: v1alpha1
+  urlPath: registryproxies
+  category: Kyma
+  name: Registry Proxy
+  scope: namespace
+  features:
+    actions:
+      disableCreate: true
+      disableDelete: true
+  description: >-
+    {{[Registry Proxy custom resource](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Registry Proxy module.
+details:
+  header:
+    - name: details.state
+      widget: Badge
+      source: status.state
+  status:
+    body:
+      - name: status.conditions
+        widget: ConditionList
+        source: status.conditions
+        fullWidth: true
+  health:
+  body:
+    - widget: EventList
+      filter: "$matchEvents($$, $root.kind, $root.metadata.name)"
+      name: events
+      defaultType: information
+
+list:
+  - name: list.state
+    source: status.state
+    widget: Badge
+translations:
+  en:
+    status:
+      conditions: Conditions
+    details:
+      state: State
+    list:
+      state: State

@@ -52,3 +52,7 @@ metrics:
 # [NETWORK POLICIES]: To enable NetworkPolicies set true
 networkPolicy:
   enable: false
+
+# [Busola]: To enable Busola UI extension set true
+busola:
+  enable: true

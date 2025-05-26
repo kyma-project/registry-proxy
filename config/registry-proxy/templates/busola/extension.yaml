@@ -1,0 +1,16 @@
+{{- if .Values.busola.enable -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+    busola.io/extension: resource
+    busola.io/extension-version: "0.5"
+  name: connections.registry-proxy.kyma-project.io
+  namespace: {{ .Release.Namespace }}
+data:
+  general: |- {{ (.Files.Get "busola.yaml" | fromYaml).general | toYaml | nindent 4 }}
+  details: |- {{ (.Files.Get "busola.yaml" | fromYaml).details | toYaml | nindent 4 }}
+  list: |- {{ (.Files.Get "busola.yaml" | fromYaml).list | toYaml | nindent 4 }}
+  translations: |- {{ (.Files.Get "busola.yaml" | fromYaml).translations | toYaml | nindent 4 }}
+{{- end}}

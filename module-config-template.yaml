@@ -1,7 +1,7 @@
 name: kyma-project.io/module/registry-proxy
 channel: {{ .Channel }}
 version: {{ .Version }}
-# defaultCR: hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
+defaultCR: config/samples/default-registry-proxy-cr.yaml
 manifest: registry-proxy.yaml
 # annotations:
 # "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/registry-proxy/user/README"

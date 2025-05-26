@@ -4,13 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       rp_tag:
-        description: "RP tag to promote (`x.x.x`)"
+        description: "Registry Proxy tag to promote (`x.x.x`)"
         default: ""
         required: true
       channel:
         type: choice
         description: "Module channel"
         options:
+          - fast
+          - regular
+          - experimental
           - dev
         required: true
 
@@ -67,8 +70,9 @@ jobs:
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
           mkdir -p modules/registry-proxy/${CHANNEL}
-          cp ../registry-proxy.yaml modules/registry-proxy/${CHANNEL}/registry-proxy.yaml
+          cp ../registry-proxy-operator.yaml modules/registry-proxy/${CHANNEL}/registry-proxy-operator.yaml
           cp ../module-config.yaml modules/registry-proxy/${CHANNEL}/module-config.yaml
+          cp ../default-registry-proxy-cr.yaml modules/registry-proxy/${CHANNEL}/default-registry-proxy-cr.yaml
 
           git add .
           git commit -m "promote rp ${MODULE_VERSION} to ${CHANNEL} channel"

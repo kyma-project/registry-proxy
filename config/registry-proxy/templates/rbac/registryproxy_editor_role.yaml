@@ -5,7 +5,7 @@ kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: registryproxy-editor-role
+  name: registry-proxy-controller-editor-role
 rules:
   - apiGroups:
       - operator.kyma-project.io

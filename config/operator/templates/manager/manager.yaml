@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: registry-proxy-operator-controller-manager
+  name: registry-proxy-operator
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: manager
+        kubectl.kubernetes.io/default-container: operator
       labels:
         {{- include "chart.labels" . | nindent 8 }}
         control-plane: controller-manager
@@ -26,7 +26,7 @@ spec:
         {{- end }}
     spec:
       containers:
-        - name: manager
+        - name: operator
           args:
             {{- range .Values.controllerManager.container.args }}
             - {{ . }}
@@ -53,23 +53,7 @@ spec:
             {{- toYaml .Values.controllerManager.container.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.controllerManager.container.securityContext | nindent 12 }}
-          {{- if and .Values.certmanager.enable .Values.metrics.enable }}
-          volumeMounts:
-            {{- if and .Values.metrics.enable .Values.certmanager.enable }}
-            - name: metrics-certs
-              mountPath: /tmp/k8s-metrics-server/metrics-certs
-              readOnly: true
-            {{- end }}
-          {{- end }}
       securityContext:
         {{- toYaml .Values.controllerManager.securityContext | nindent 8 }}
       serviceAccountName: {{ .Values.controllerManager.serviceAccountName }}
       terminationGracePeriodSeconds: {{ .Values.controllerManager.terminationGracePeriodSeconds }}
-      {{- if and .Values.certmanager.enable .Values.metrics.enable }}
-      volumes:
-        {{- if and .Values.metrics.enable .Values.certmanager.enable }}
-        - name: metrics-certs
-          secret:
-            secretName: metrics-server-cert
-        {{- end }}
-      {{- end }}

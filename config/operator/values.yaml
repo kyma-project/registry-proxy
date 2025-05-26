@@ -36,7 +36,7 @@ controllerManager:
     seccompProfile:
       type: RuntimeDefault
   terminationGracePeriodSeconds: 10
-  serviceAccountName: registry-proxy-operator-controller-manager
+  serviceAccountName: registry-proxy-operator
 
 # [RBAC]: To enable RBAC (Permissions) configurations
 rbac:
@@ -47,14 +47,7 @@ rbac:
 # ControllerManager argument "--metrics-bind-address=:8080" is removed.
 metrics:
   enable: true
-
-# [PROMETHEUS]: To enable a ServiceMonitor to export metrics to Prometheus set true
-prometheus:
-  enable: false
-
-# [CERT-MANAGER]: To enable cert-manager injection to webhooks set true
-certmanager:
-  enable: false
+  port: 8080
 
 # [NETWORK POLICIES]: To enable NetworkPolicies set true
 networkPolicy:

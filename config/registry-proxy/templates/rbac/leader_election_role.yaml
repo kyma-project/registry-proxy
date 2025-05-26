@@ -6,7 +6,7 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
-  name: registry-proxy-leader-election-role
+  name: registry-proxy-controller-leader-election-role
 rules:
 - apiGroups:
   - ""

@@ -5,11 +5,11 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
-  name: registry-proxy-leader-election-rolebinding
+  name: registry-proxy-controller-leader-election-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: registry-proxy-leader-election-role
+  name: registry-proxy-controller-leader-election-role
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.controllerManager.serviceAccountName }}

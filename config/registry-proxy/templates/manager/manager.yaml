@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: registry-proxy-controller-manager
+  name: registry-proxy-controller
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
@@ -16,9 +16,6 @@ spec:
     metadata:
       annotations:
         kubectl.kubernetes.io/default-container: manager
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
       labels:
         {{- include "chart.labels" . | nindent 8 }}
         control-plane: controller-manager
@@ -72,14 +69,6 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-          {{- if and .Values.certmanager.enable (or .Values.webhook.enable .Values.metrics.enable) }}
-          volumeMounts:
-            {{- if and .Values.metrics.enable .Values.certmanager.enable }}
-            - name: metrics-certs
-              mountPath: /tmp/k8s-metrics-server/metrics-certs
-              readOnly: true
-            {{- end }}
-          {{- end }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -88,11 +77,3 @@ spec:
           type: RuntimeDefault
       serviceAccountName: {{ .Values.controllerManager.serviceAccountName }}
       terminationGracePeriodSeconds: 10
-      {{- if and .Values.certmanager.enable (or .Values.webhook.enable .Values.metrics.enable) }}
-      volumes:
-        {{- if and .Values.metrics.enable .Values.certmanager.enable }}
-        - name: metrics-certs
-          secret:
-            secretName: metrics-server-cert
-        {{- end }}
-      {{- end }}

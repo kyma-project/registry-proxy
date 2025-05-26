@@ -11,7 +11,7 @@ kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: registryproxy-admin-role
+  name: registry-proxy-operator-admin-role
 rules:
 - apiGroups:
   - operator.kyma-project.io

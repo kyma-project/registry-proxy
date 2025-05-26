@@ -4,11 +4,11 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: registry-proxy-metrics-auth-rolebinding
+  name: registry-proxy-controller-metrics-auth-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: registry-proxy-metrics-auth-role
+  name: registry-proxy-controller-metrics-auth-role
 subjects:
 - kind: ServiceAccount
   name: {{ .Values.controllerManager.serviceAccountName }}

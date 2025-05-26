@@ -4,7 +4,7 @@ kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: registry-proxy-operator-manager-role
+  name: registry-proxy-operator-role
 rules:
 - apiGroups:
   - ""

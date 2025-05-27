@@ -17,7 +17,7 @@ const (
 	defaultLimitCPU      = "100m"
 	defaultLimitMemory   = "64Mi"
 	defaultRequestCPU    = "5m"
-	defaultRequestMemory = "16Mi"
+	defaultRequestMemory = "32Mi"
 	registryProxyPort    = 8080
 	probesPort           = 8081
 )

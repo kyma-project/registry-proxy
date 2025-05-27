@@ -13,4 +13,5 @@ data:
   details: |- {{ (.Files.Get "busola.yaml" | fromYaml).details | toYaml | nindent 4 }}
   list: |- {{ (.Files.Get "busola.yaml" | fromYaml).list | toYaml | nindent 4 }}
   translations: |- {{ (.Files.Get "busola.yaml" | fromYaml).translations | toYaml | nindent 4 }}
+  form: |- {{ (.Files.Get "busola.yaml" | fromYaml).form | toYaml | nindent 4 }}
 {{- end}}

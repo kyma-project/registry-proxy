@@ -12,7 +12,7 @@ general:
       disableCreate: false
       disableDelete: false
   description: >-
-    {{[Registry Proxy custom resource](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Registry Proxy module.
+    {{[Connection](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Connection resource.
 details: #Inside "Resource Details" view
   status:
     body:
@@ -70,6 +70,17 @@ list: #Inside "Connection" list view
         - "False"
         - $item < 0
     widget: Badge
+form:
+  - path: spec.logLevel
+    enum:
+        - "debug"
+        - "info"
+        - "warn"
+        - "error"
+        - "fatal"
+  - path: spec.proxyURL
+  - path: spec.targetHost
+
 translations:
   en:
     status:

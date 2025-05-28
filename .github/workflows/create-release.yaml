@@ -73,17 +73,6 @@ jobs:
     name: Create draft release
     needs: create-tag
     runs-on: [self-hosted, solinas]
-
-  run-integration-test:
-    needs: create-draft
-    secrets: inherit
-    uses: ./.github/workflows/_integration-tests.yaml
-    with:
-      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.event.inputs.name }}
-      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.event.inputs.name }}
-      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.event.inputs.name }}
-
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -117,7 +106,14 @@ jobs:
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
 
-  ##here add DevOps-Insights if needed and/or wanted
+  run-integration-test:
+    needs: create-draft
+    secrets: inherit
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.event.inputs.name }}
+      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.event.inputs.name }}
+      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.event.inputs.name }}
 
   publish-release:
     name: Publish release

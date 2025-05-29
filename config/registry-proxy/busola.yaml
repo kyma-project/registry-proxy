@@ -21,6 +21,12 @@ details: #Inside "Resource Details" view
         widget: ConditionList
         source: status.conditions
         fullWidth: true
+      - name: status.nodePort
+        widget: Text
+        source: status.nodePort
+      - name: status.proxyURL
+        widget: Text
+        source: status.proxyURL
   health:
   body:
     - widget: EventList
@@ -29,7 +35,7 @@ details: #Inside "Resource Details" view
       defaultType: information
 
 list: #Inside "Connection" list view
-# to Add after TimeFromNow widget is updated
+# to Add after TimeFromNow widget is updated track progress https://github.com/kyma-project/busola/issues/3938
 #  - name: "Age"
 #    widget: TimeFromNow
   - name: list.targetHost
@@ -79,6 +85,8 @@ list: #Inside "Connection" list view
     widget: Badge
 
 form:
+  - path: spec.targetHost
+    required: true
   - path: spec.logLevel
     enum:
         - "debug"
@@ -87,13 +95,13 @@ form:
         - "error"
         - "fatal"
   - path: spec.proxyURL
-  - path: spec.targetHost
-    required: true
 
 translations:
   en:
     status:
       conditions: Conditions
+      nodePort: Node Port
+      proxyURL: Proxy URL
     details:
       state: State
     list:

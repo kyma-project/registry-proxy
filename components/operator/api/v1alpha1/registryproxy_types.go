@@ -28,24 +28,29 @@ const (
 	ServedFalse Served = "False"
 
 	// installation and deletion details
-	ConditionTypeInstalled = ConditionType("Installed")
+	ConditionTypeInstalled ConditionType = "Installed"
 
 	// prerequisites and soft dependencies
-	ConditionTypeConfigured = ConditionType("Configured")
+	ConditionTypeConfigured ConditionType = "Configured"
 
 	// deletion
-	ConditionTypeDeleted = ConditionType("Deleted")
+	ConditionTypeDeleted ConditionType = "Deleted"
 
-	ConditionReasonConfiguration           = ConditionReason("Configuration")
-	ConditionReasonConfigurationErr        = ConditionReason("ConfigurationErr")
-	ConditionReasonConfigured              = ConditionReason("Configured")
-	ConditionReasonInstallation            = ConditionReason("Installation")
-	ConditionReasonInstallationErr         = ConditionReason("InstallationErr")
-	ConditionReasonInstalled               = ConditionReason("Installed")
-	ConditionReasonRegistryProxyDuplicated = ConditionReason("RegistryProxyDuplicated")
-	ConditionReasonDeletion                = ConditionReason("Deletion")
-	ConditionReasonDeletionErr             = ConditionReason("DeletionErr")
-	ConditionReasonDeleted                 = ConditionReason("Deleted")
+	// connectivity proxy prerequisite
+	ConditionPrerequisitesSatisfied ConditionType = "PrerequisitesSatisfied"
+
+	ConditionReasonConfiguration               ConditionReason = "Configuration"
+	ConditionReasonConfigurationErr            ConditionReason = "ConfigurationErr"
+	ConditionReasonConfigured                  ConditionReason = "Configured"
+	ConditionReasonInstallation                ConditionReason = "Installation"
+	ConditionReasonInstallationErr             ConditionReason = "InstallationErr"
+	ConditionReasonInstalled                   ConditionReason = "Installed"
+	ConditionReasonRegistryProxyDuplicated     ConditionReason = "RegistryProxyDuplicated"
+	ConditionReasonDeletion                    ConditionReason = "Deletion"
+	ConditionReasonDeletionErr                 ConditionReason = "DeletionErr"
+	ConditionReasonDeleted                     ConditionReason = "Deleted"
+	ConditionReasonConnectivityProxyCrdUnknown ConditionReason = "ConnectivityProxyCrdUnknown"
+	ConditionReasonConnectivityProxyCrdFound   ConditionReason = "ConnectivityProxyCrdFound"
 
 	Finalizer = "registry-proxy-operator.kyma-project.io/deletion-hook"
 )

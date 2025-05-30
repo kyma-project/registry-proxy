@@ -38,24 +38,20 @@ const (
 	ConditionConnectionDeployed ConditionType = "ConnectionDeployed"
 	// pod readyz
 	ConditionConnectionReady ConditionType = "ConnectionReady"
-	// connectivity proxy prerequisite
-	ConditionConfigured ConditionType = "Configured"
 )
 
 type ConditionReason string
 
 const (
-	ConditionReasonDeploymentCreated            ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated            ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed             ConditionReason = "DeploymentFailed"
-	ConditionReasonInvalidProxyURL              ConditionReason = "InvalidProxyURL"
-	ConditionReasonResourcesDeployed            ConditionReason = "ConnectionResourcesDeployed"
-	ConditionReasonResourcesNotReady            ConditionReason = "ConnectionResourcesNotReady"
-	ConditionReasonEstabilished                 ConditionReason = "ConnectionEstabilished"
-	ConditionReasonNotEstabilished              ConditionReason = "ConnectionNotEstabilished"
-	ConditionReasonError                        ConditionReason = "ConnectionError"
-	ConditionReasonConnectivityProxyCrdUnknownn ConditionReason = "ConnectivityProxyCrdUnknown"
-	ConditionReasonConnectivityProxyCrdFound    ConditionReason = "ConnectivityProxyCrdFound"
+	ConditionReasonDeploymentCreated ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed  ConditionReason = "DeploymentFailed"
+	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
+	ConditionReasonResourcesDeployed ConditionReason = "ConnectionResourcesDeployed"
+	ConditionReasonResourcesNotReady ConditionReason = "ConnectionResourcesNotReady"
+	ConditionReasonEstabilished      ConditionReason = "ConnectionEstabilished"
+	ConditionReasonNotEstabilished   ConditionReason = "ConnectionNotEstabilished"
+	ConditionReasonError             ConditionReason = "ConnectionError"
 )
 
 const (

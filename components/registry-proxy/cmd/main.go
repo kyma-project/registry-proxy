@@ -152,15 +152,6 @@ func main() {
 
 	boolCache := cache.NewInMemoryBoolCache()
 
-	if err = (&controller.CrdsReconciler{
-		Client: mgr.GetClient(),
-		Log:    reconcilerLogger.Sugar(),
-		Cache:  boolCache,
-	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "ConnectivityProxyCrd")
-		os.Exit(1)
-	}
-
 	if err = (&controller.RegistryProxyReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),

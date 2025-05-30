@@ -42,5 +42,5 @@ func stopWithErrorOrRequeue(err error) (fsm.StateFn, *ctrl.Result, error) {
 }
 
 func StartState() fsm.StateFn {
-	return sFnValidateConnectivityProxyCRD
+	return sFnValidateReverseProxyURL
 }

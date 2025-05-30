@@ -158,6 +158,16 @@ func main() {
 	}
 	// +kubebuilder:scaffold:builder
 
+	if err = (&controller.CrdsReconciler{
+		Client: mgr.GetClient(),
+		Log:    reconcilerLogger.Sugar(),
+		Cache:  boolCache,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "ConnectivityProxyCrd")
+		os.Exit(1)
+	}
+	// +kubebuilder:scaffold:builder
+
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
 		os.Exit(1)

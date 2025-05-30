@@ -7,9 +7,11 @@ set -o pipefail # prevents errors in a pipeline from being masked
 
 MODULE_VERSION=${MODULE_VERSION?"Define MODULE_VERSION env"} # module version used to set common labels
 PROJECT_ROOT=${PWD}
+CONFIG=${PWD}/config
 
 echo "ensure helm..."
 PROJECT_ROOT=${PROJECT_ROOT} make -C ${PROJECT_ROOT} helm
 
 echo "upgrade helm chart..."
-cd config/registry-proxy && yq --inplace ".version=\"${MODULE_VERSION}\"" Chart.yaml && yq --inplace ".appVersion=\"${MODULE_VERSION}\"" Chart.yaml
+cd ${CONFIG}/registry-proxy && yq --inplace ".version=\"${MODULE_VERSION}\"" Chart.yaml && yq --inplace ".appVersion=\"${MODULE_VERSION}\"" Chart.yaml
+cd ${CONFIG}/operator && yq --inplace ".version=\"${MODULE_VERSION}\"" Chart.yaml && yq --inplace ".appVersion=\"${MODULE_VERSION}\"" Chart.yaml

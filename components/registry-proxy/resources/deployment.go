@@ -38,7 +38,7 @@ func NewDeployment(connection *v1alpha1.Connection, proxyURL string) *appsv1.Dep
 func (d *deployment) construct() *appsv1.Deployment {
 	deploymentSelectorLabels := labels(d.connection, "deployment")
 	deploymentLabels := labels(d.connection, "deployment")
-	deploymentLabels["sidecar.istio.io/inject"] = "enabled"
+	deploymentLabels["sidecar.istio.io/inject"] = "true"
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{

@@ -45,7 +45,7 @@ func TestGetReverseProxyURL(t *testing.T) {
 
 		proxyURL, err := getReverseProxyURL(context.Background(), &m)
 		require.Nil(t, err)
-		require.Equal(t, "http://connectivity-proxy.kyma-system.svc.cluster.local:8080", proxyURL)
+		require.Equal(t, "https://connectivity-proxy.kyma-system.svc.cluster.local:8080", proxyURL)
 	})
 
 	t.Run("Conenctivity proxy exists, but http proxy is missing", func(t *testing.T) {
@@ -137,7 +137,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.Nil(t, result)
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleDeployment, next)
-		require.Equal(t, "http://connectivity-proxy.kyma-system.svc.cluster.local:8080", m.State.ProxyURL)
+		require.Equal(t, "https://connectivity-proxy.kyma-system.svc.cluster.local:8080", m.State.ProxyURL)
 	})
 
 	t.Run("proxyURL missing", func(t *testing.T) {

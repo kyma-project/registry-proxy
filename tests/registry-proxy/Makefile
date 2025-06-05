@@ -3,8 +3,10 @@ include ${PROJECT_ROOT}/hack/help.mk
 
 .PHONY: test
 test: ## Run integration test.
+	@while ! kubectl get crd connections.registry-proxy.kyma-project.io; \
+		do echo "Waiting for CRD Connection..."; sleep 1; done
+	@kubectl wait --for condition=established crd/connections.registry-proxy.kyma-project.io
 	go run main.go
-
 
 #TODO: refactor, common part with operator
 .PHONY: cluster-info

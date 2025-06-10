@@ -116,6 +116,9 @@ func handleReadinessProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.P
 
 // getProbeStatus checks status of a HTTPGet probe
 func getProbeStatus(podIP string, probe *corev1.Probe) (int, error) {
+	if probe == nil || probe.HTTPGet == nil {
+		return 0, fmt.Errorf("probe is nil")
+	}
 	probeURL := fmt.Sprintf("http://%s:%s%s", podIP, probe.HTTPGet.Port.String(), probe.HTTPGet.Path)
 	res, err := http.Get(probeURL)
 	if err != nil {

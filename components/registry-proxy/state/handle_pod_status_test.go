@@ -295,6 +295,32 @@ func TestHandleReadinessProbe(t *testing.T) {
 				Message: "Target registry reachable",
 			},
 		},
+		{
+			name:  "empty HTTP probe",
+			rp:    &v1alpha1.Connection{},
+			podIP: successURL.Hostname(),
+			probe: &corev1.Probe{
+				ProbeHandler: corev1.ProbeHandler{},
+			},
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionFalse,
+				Reason:  string(v1alpha1.ConditionReasonError),
+				Message: "Target registry not reachable: probe is nil",
+			},
+		},
+		{
+			name:  "empty probe",
+			rp:    &v1alpha1.Connection{},
+			podIP: successURL.Hostname(),
+			probe: nil,
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionFalse,
+				Reason:  string(v1alpha1.ConditionReasonError),
+				Message: "Target registry not reachable: probe is nil",
+			},
+		},
 	}
 
 	for _, tt := range tests {

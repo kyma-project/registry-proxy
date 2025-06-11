@@ -4,6 +4,7 @@ kind: kyma
 bdba:
   - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
   - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
+  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:main
 mend:
   language: golang-mod
   exclude:

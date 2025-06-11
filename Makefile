@@ -121,5 +121,5 @@ cluster-info:
 ##@ Actions
 .PHONY: module-config
 module-config:
-	yq " .version = \"${MODULE_VERSION}\" | .defaultCR = \"https://github.tools.sap/kyma/registry-proxy/releases/download/${MODULE_VERSION}/default-registry-proxy-cr.yaml\" | .manifest = \"https://github.tools.sap/kyma/registry-proxy/releases/download/${MODULE_VERSION}/registry-proxy-operator.yaml\"  "\
-    	module-config-template.yaml > module-config.yaml
+	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
+    module-config-template.yaml > module-config.yaml

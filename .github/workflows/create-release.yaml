@@ -55,79 +55,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           ref: ${{ github.ref_name }} # Checkout to latest branch changes
-      - uses: ./.github/actions/setup-go
+
+      - name: Tag latest
+        if: ${{ github.event.inputs.latest_release }}
+        # tag commit to inform another workload, responsible for creating right release
+        # that this release should be the latest one
+        run: |
+          git tag --force latest
+          git push  --force origin latest
+
       - name: Create tag
         run: |
           git tag ${{ github.event.inputs.name }}
           git push origin ${{ github.event.inputs.name }}
-
-  builds:
-    needs: create-tag
-    uses: ./.github/workflows/_build.yaml
-    with:
-      tag: "${{ github.event.inputs.name }}"
-
-  create-draft:
-    name: Create draft release
-    needs: create-tag
-    runs-on: [self-hosted, solinas]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
-
-      - uses: ./.github/actions/setup-go
-
-      - name: Create changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: ./.github/scripts/create-changelog.sh ${{ github.event.inputs.name }}
-
-      - name: Create draft release
-        id: create-draft
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: |
-          RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
-          echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
-
-      - name: Create release assets
-        id: create-assets
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-          RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
-          TAG: ${{ github.event.inputs.name}}
-        run: ./.github/scripts/release.sh
-
-    outputs:
-      release_id: ${{ steps.create-draft.outputs.release_id }}
-
-  run-integration-test:
-    needs: create-draft
-    secrets: inherit
-    uses: ./.github/workflows/_integration-tests.yaml
-    with:
-      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.event.inputs.name }}
-      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.event.inputs.name }}
-      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.event.inputs.name }}
-
-  publish-release:
-    name: Publish release
-    needs: [run-integration-test, create-draft]
-    runs-on: [self-hosted, solinas]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
-
-      - name: Publish release
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${{ github.event.inputs.latest_release }}

@@ -77,6 +77,7 @@ type RegistryProxyStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="age",type="date",JSONPath=".metadata.creationTimestamp"
 // +kubebuilder:printcolumn:name="Installed",type="string",JSONPath=".status.conditions[?(@.type=='Installed')].status"
+// +kubebuilder:printcolumn:name="Prerequisites Satisfied",type="string",JSONPath=".status.conditions[?(@.type=='PrerequisitesSatisfied')].status"
 // +kubebuilder:printcolumn:name="state",type="string",JSONPath=".status.state"
 
 // RegistryProxy is the Schema for the RegistryProxies API.

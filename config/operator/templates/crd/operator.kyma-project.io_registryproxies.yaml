@@ -24,6 +24,9 @@ spec:
     - jsonPath: .status.conditions[?(@.type=='Installed')].status
       name: Installed
       type: string
+    - jsonPath: .status.conditions[?(@.type=='PrerequisitesSatisfied')].status
+      name: Prerequisites Satisfied
+      type: string
     - jsonPath: .status.state
       name: state
       type: string

@@ -80,4 +80,9 @@ jobs:
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${{ github.event.inputs.latest_release }}
+        run: |
+          latest_release="false"
+          if test $(git rev-parse latest) == $(git rev-parse ${{ github.ref_name }} ); then
+            latest_release="true"
+          fi
+          ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${latest_release}

@@ -35,14 +35,14 @@ jobs:
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: ./.github/scripts/create-changelog.sh ${{ github.event.inputs.name }}
+        run: ./.github/scripts/create-changelog.sh ${{ github.ref_name }}
 
       - name: Create draft release
         id: create-draft
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
-          RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.event.inputs.name }})
+          RELEASE_ID=$(./.github/scripts/create-draft-release.sh ${{ github.ref_name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
 
       - name: Create release assets
@@ -50,7 +50,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
           RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
-          TAG: ${{ github.event.inputs.name}}
+          TAG: ${{ github.ref_name }}
         run: ./.github/scripts/release.sh
 
     outputs:
@@ -61,9 +61,9 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
-      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.event.inputs.name }}
-      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.event.inputs.name }}
-      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.event.inputs.name }}
+      operator_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${{ github.ref_name }}
+      rp_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:${{ github.ref_name }}
+      connection_image: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:${{ github.ref_name }}
 
   publish-release:
     name: Publish release

@@ -2,7 +2,7 @@ apiVersion: v2
 name: registry-proxy-operator
 description: A Helm chart to distribute the project registry-proxy-operator
 type: application
-version: 0.6.0
-appVersion: "0.6.0"
+version: 0.6.1
+appVersion: "0.6.1"
 icon: "https://example.com/icon.png"
 # TODO: update

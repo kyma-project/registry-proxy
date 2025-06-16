@@ -4,11 +4,11 @@ global:
   images:
     registry_proxy:
       name: "registry-proxy-controller"
-      version: "0.6.0"
+      version: "0.6.1"
       directory: "prod"
     connection:
       name: "registry-proxy-connection"
-      version: "0.6.0"
+      version: "0.6.1"
       directory: "prod"
 controllerManager:
   container:

@@ -15,7 +15,7 @@ spec:
   template:
     metadata:
       annotations:
-        kubectl.kubernetes.io/default-container: operator
+        kubectl.kubernetes.io/default-container: registry-proxy-operator
       labels:
         {{- include "chart.labels" . | nindent 8 }}
         control-plane: controller-manager
@@ -27,7 +27,7 @@ spec:
         {{- end }}
     spec:
       containers:
-        - name: operator
+        - name: registry-proxy-operator
           args:
             {{- range .Values.controllerManager.container.args }}
             - {{ . }}

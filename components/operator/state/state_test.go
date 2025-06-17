@@ -49,7 +49,7 @@ func requireEqualFunc(t *testing.T, expected, actual fsm.StateFn) {
 
 func getDirectFnName(nameSuffix string) string {
 	elements := strings.Split(nameSuffix, ".")
-	return elements[len(elements)-2]
+	return elements[len(elements)-1]
 }
 
 func getFnName(fn fsm.StateFn) string {

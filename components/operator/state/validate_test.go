@@ -2,14 +2,16 @@ package state
 
 import (
 	"context"
+
 	"github.com/stretchr/testify/require"
 	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 	"time"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
@@ -46,7 +48,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
 
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnInitialize, next)
+		requireEqualFunc(t, sFnAddFinalizer, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 		requireContainsCondition(t, m.State.RegistryProxy.Status,

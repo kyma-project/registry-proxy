@@ -2,8 +2,9 @@ package state
 
 import (
 	"context"
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 	"testing"
+
+	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 
 	"github.com/stretchr/testify/require"
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
@@ -63,7 +64,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		next, result, err := sFnDeleteResources(context.Background(), m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnRemoveFinalizer, next)
+		requireEqualFunc(t, sFnSafeDeletionState, next)
 
 		status := m.State.RegistryProxy.Status
 		require.Equal(t, v1alpha1.StateDeleting, status.State)

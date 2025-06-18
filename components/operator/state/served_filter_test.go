@@ -46,6 +46,8 @@ func Test_sFnServedFilter(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnAddFinalizer, nextFn)
+		require.Equal(t, v1alpha1.StateProcessing, m.State.RegistryProxy.Status.State,
+			"State should be set to Processing when served is true.")
 	})
 
 	t.Run("set served value from nil to true when there is no served registry proxy on cluster", func(t *testing.T) {
@@ -68,6 +70,8 @@ func Test_sFnServedFilter(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnAddFinalizer, next)
 		require.Equal(t, v1alpha1.ServedTrue, m.State.RegistryProxy.Status.Served)
+		require.Equal(t, v1alpha1.StateProcessing, m.State.RegistryProxy.Status.State,
+			"State should be set to Processing when served was nil.")
 	})
 
 	t.Run("set served value from nil to false and set condition to error when there is at lease one served registry proxy on cluster", func(t *testing.T) {

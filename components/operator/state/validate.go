@@ -2,11 +2,12 @@ package state
 
 import (
 	"context"
+	"time"
+
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"time"
 )
 
 func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
@@ -24,5 +25,5 @@ func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fs
 		metav1.ConditionTrue,
 		v1alpha1.ConditionReasonConnectivityProxyCrdFound,
 		"Connectivity Proxy installed.")
-	return nextState(sFnAddFinalizer)
+	return nextState(sFnApplyResources)
 }

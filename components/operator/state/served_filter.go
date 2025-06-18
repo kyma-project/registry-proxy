@@ -24,7 +24,7 @@ func sFnServedFilter(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	if m.State.RegistryProxy.Status.Served == v1alpha1.ServedFalse {
 		return stop()
 	}
-	return nextState(sFnValidateConnectivityProxyCRD)
+	return nextState(sFnAddFinalizer)
 }
 
 func setServedStatus(ctx context.Context, m *fsm.StateMachine) error {

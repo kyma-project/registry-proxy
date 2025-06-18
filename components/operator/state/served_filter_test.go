@@ -45,7 +45,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), &m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnValidateConnectivityProxyCRD, nextFn)
+		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 	})
 
 	t.Run("set served value from nil to true when there is no served registry proxy on cluster", func(t *testing.T) {
@@ -66,7 +66,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		next, result, err := sFnServedFilter(context.TODO(), &m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnValidateConnectivityProxyCRD, next)
+		requireEqualFunc(t, sFnAddFinalizer, next)
 		require.Equal(t, v1alpha1.ServedTrue, m.State.RegistryProxy.Status.Served)
 	})
 

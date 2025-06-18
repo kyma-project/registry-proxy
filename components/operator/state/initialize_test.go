@@ -37,7 +37,7 @@ func Test_sFnInitialize(t *testing.T) {
 		next, result, err := sFnInitialize(context.Background(), &m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
+		requireEqualFunc(t, sFnValidateConnectivityProxyCRD, next)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {

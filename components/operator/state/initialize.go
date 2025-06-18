@@ -16,5 +16,5 @@ func sFnInitialize(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.R
 	}
 
 	// TODO: install resources
-	return nextState(sFnApplyResources)
+	return nextState(sFnValidateConnectivityProxyCRD)
 }

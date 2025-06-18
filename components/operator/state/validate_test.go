@@ -48,7 +48,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
 
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnAddFinalizer, next)
+		requireEqualFunc(t, sFnApplyResources, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 		requireContainsCondition(t, m.State.RegistryProxy.Status,

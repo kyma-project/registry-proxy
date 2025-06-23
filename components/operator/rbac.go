@@ -14,6 +14,7 @@ package operator
 // +kubebuilder:rbac:groups="apps",resources=daemonsets,verbs=list;get;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="apps",resources=deployments,verbs=list;get;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="apps",resources=replicasets,verbs=list
+// +kubebuilder:rbac:groups="apps",resources=statefulsets,verbs=list;get;watch
 // +kubebuilder:rbac:groups="apps",resources=deployments/status,verbs=list;get;watch;create;update;patch;delete
 
 // +kubebuilder:rbac:groups="rbac.authorization.k8s.io",resources=clusterrolebindings;clusterroles;rolebindings;roles,verbs=list;get;watch;create;update;patch;delete;bind;escalate

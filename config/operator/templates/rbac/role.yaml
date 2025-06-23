@@ -54,6 +54,14 @@ rules:
   verbs:
   - list
 - apiGroups:
+  - apps
+  resources:
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
   - operator.kyma-project.io
   resources:
   - registryproxies

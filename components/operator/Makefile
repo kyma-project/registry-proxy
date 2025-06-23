@@ -125,11 +125,11 @@ run: manifests generate fmt vet ## Run a controller from your host.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: ## Build docker image with the operator.
-	$(CONTAINER_TOOL) build -t ${OPERATOR_IMG} ${PROJECT_ROOT} -f ${PROJECT_ROOT}/components/operator/Dockerfile --build-arg=PURPOSE="dev" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
+	$(CONTAINER_TOOL) build -t ${OPERATOR_IMG} ${PROJECT_ROOT} -f ${PROJECT_ROOT}/components/operator/Dockerfile --build-arg=PURPOSE="dev" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)" --build-arg=CONTAINER_REGISTRY="$(CONTAINER_REGISTRY)"
 
 .PHONY: docker-build-local
 docker-build-local: ## Build docker image with the operator.
-	$(CONTAINER_TOOL) build -t ${OPERATOR_IMG} ${PROJECT_ROOT} -f ${PROJECT_ROOT}/components/operator/Dockerfile --build-arg=PURPOSE="local" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
+	$(CONTAINER_TOOL) build -t ${OPERATOR_IMG} ${PROJECT_ROOT} -f ${PROJECT_ROOT}/components/operator/Dockerfile --build-arg=PURPOSE="local" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)" --build-arg=CONTAINER_REGISTRY="$(CONTAINER_REGISTRY)"
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.

@@ -18,7 +18,9 @@ fi
 
 VALUES_FILE=${PROJECT_ROOT}/config/registry-proxy/values.yaml
 
-if [[ ${PURPOSE} == "local" ]]; then
+if [[ -n "${CONTAINER_REGISTRY}" ]]; then
+  yq -i ".global.containerRegistry.path=\"${CONTAINER_REGISTRY}\"" "${VALUES_FILE}"
+elif [[ ${PURPOSE} == "local" ]]; then
   echo "Changing container registry to k3d-kyma-registry.localhost:5000"
   # TOOD: why won't it work with k3d registry path?
   yq -i '.global.containerRegistry.path=""' "${VALUES_FILE}"

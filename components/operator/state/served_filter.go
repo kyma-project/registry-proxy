@@ -23,8 +23,6 @@ func sFnServedFilter(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	// instance is marked, we can now decide what to do with it
 	if m.State.RegistryProxy.Status.Served == v1alpha1.ServedFalse {
 		return stop()
-	} else {
-		m.State.RegistryProxy.Status.State = v1alpha1.StateProcessing
 	}
 	return nextState(sFnAddFinalizer)
 }
@@ -40,7 +38,6 @@ func setServedStatus(ctx context.Context, m *fsm.StateMachine) error {
 		m.State.RegistryProxy.Status.Served = v1alpha1.ServedTrue
 		m.State.RegistryProxy.Status.State = v1alpha1.StateProcessing
 	} else {
-
 		// one served Registry Proxy already exists, add condition to this one and stop
 		m.State.RegistryProxy.Status.Served = v1alpha1.ServedFalse
 		m.State.RegistryProxy.Status.State = v1alpha1.StateWarning

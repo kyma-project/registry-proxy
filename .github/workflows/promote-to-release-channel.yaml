@@ -70,10 +70,7 @@ jobs:
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
           mkdir -p modules/registry-proxy/${CHANNEL}
-          cp ../module-config.yaml modules/registry-proxy/${CHANNEL}/module-config.yaml
-          cp ../default-registry-proxy-cr.yaml modules/registry-proxy/${CHANNEL}/default-registry-proxy-cr.yaml
-          cp ../registry-proxy-operator.yaml modules/registry-proxy/${CHANNEL}/registry-proxy-operator.yaml
-
+          cp ../module-config.yaml modules/registry-proxy/${CHANNEL}/${MODULE_VERSION}/module-config.yaml
 
           git add .
           git commit -m "promote rp ${MODULE_VERSION} to ${CHANNEL} channel"

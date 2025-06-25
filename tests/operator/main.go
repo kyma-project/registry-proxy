@@ -11,6 +11,7 @@ import (
 	"github.tools.sap/kyma/registry-proxy/tests/common/logger"
 	"github.tools.sap/kyma/registry-proxy/tests/common/namespace"
 	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+	"github.tools.sap/kyma/registry-proxy/tests/operator/connectivityproxy"
 	"github.tools.sap/kyma/registry-proxy/tests/operator/manager"
 )
 
@@ -59,12 +60,15 @@ func runScenario(testutil *utils.TestUtils) error {
 		return err
 	}
 
-	// create connection
-	// **** verify - pod wstał/Cr conenction ready
-	// try delete RP CR
-	// verify it's stuck in deleting
-	// delete connection
-	// verify RP is gone
+	testutil.Logger.Info("Creating connectivity-proxy mock")
+	if err := connectivityproxy.CreateMockStatefulSet(testutil); err != nil {
+		return fmt.Errorf("failed to create connectivity-proxy mock: %w", err)
+	}
+
+	testutil.Logger.Infof("Verifying connectivity-proxy mock")
+	if err := utils.WithRetry(testutil, connectivityproxy.VerifyMockStatefulSet); err != nil {
+		return fmt.Errorf("failed to verify connectivity-proxy mock: %w", err)
+	}
 
 	testutil.Logger.Infof("Creating registry proxy '%s'", testutil.RegistryProxyName)
 	if err := manager.Create(testutil); err != nil {
@@ -97,11 +101,17 @@ func runScenario(testutil *utils.TestUtils) error {
 		return err
 	}
 
+	testutil.Logger.Infof("Deleting connectivity-proxy mock")
+	if err := connectivityproxy.DeleteMockStatefulSet(testutil); err != nil {
+		return fmt.Errorf("failed to delete connectivity-proxy mock: %w", err)
+	}
+
 	testutil.Logger.Infof("Deleting registry proxy '%s'", testutil.RegistryProxyName)
 	if err := manager.Delete(testutil); err != nil {
 		// TODO: check if it's stuck in deleting
 		return err
 	}
+
 	testutil.Logger.Infof("Verifying registry proxy '%s' deletion is stuck", testutil.RegistryProxyName)
 	if err := utils.WithRetry(testutil, manager.VerifyDeletionStuck); err != nil {
 		return err
@@ -119,6 +129,11 @@ func runScenario(testutil *utils.TestUtils) error {
 	testutil.Logger.Infof("Verifying registry proxy '%s' deletion", testutil.RegistryProxyName)
 	if err := utils.WithRetry(testutil, manager.VerifyDeletion); err != nil {
 		return err
+	}
+
+	testutil.Logger.Infof("Verifying connectivity-proxy mock deletion")
+	if err := utils.WithRetry(testutil, connectivityproxy.VerifyMockStatefulSetDeletion); err != nil {
+		return fmt.Errorf("failed to verify connectivity-proxy mock deletion: %w", err)
 	}
 
 	testutil.Logger.Infof("Deleting namespace '%s'", testutil.Namespace)

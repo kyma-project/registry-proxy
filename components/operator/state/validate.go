@@ -16,15 +16,15 @@ func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fs
 		m.State.RegistryProxy.UpdateCondition(
 			v1alpha1.ConditionPrerequisitesSatisfied,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonConnectivityProxyCrdUnknown,
-			"Connectivity Proxy not installed. This module is required.",
+			v1alpha1.ConditionReasonConnectivityProxyUnavailable,
+			"Connectivity Proxy is unavailable. This module is required.",
 		)
 		return requeueAfter(time.Minute)
 	}
 	m.State.RegistryProxy.UpdateCondition(
 		v1alpha1.ConditionPrerequisitesSatisfied,
 		metav1.ConditionTrue,
-		v1alpha1.ConditionReasonConnectivityProxyCrdFound,
+		v1alpha1.ConditionReasonConnectivityProxyAvailable,
 		"Connectivity Proxy installed.")
 	return nextState(sFnApplyResources)
 }

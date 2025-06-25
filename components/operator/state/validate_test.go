@@ -32,8 +32,8 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha1.ConditionPrerequisitesSatisfied,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonConnectivityProxyCrdUnknown,
-			"Connectivity Proxy not installed. This module is required.")
+			v1alpha1.ConditionReasonConnectivityProxyUnavailable,
+			"Connectivity Proxy is unavailable. This module is required.")
 		require.Equal(t, v1alpha1.StateWarning, m.State.RegistryProxy.Status.State,
 			"State should be set to Warning when prerequisites are not satisfied.")
 	})
@@ -56,7 +56,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 		requireContainsCondition(t, m.State.RegistryProxy.Status,
 			v1alpha1.ConditionPrerequisitesSatisfied,
 			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConnectivityProxyCrdFound,
+			v1alpha1.ConditionReasonConnectivityProxyAvailable,
 			"Connectivity Proxy installed.")
 	})
 }

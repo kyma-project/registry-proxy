@@ -1,0 +1,22 @@
+# StatefulSet mock for connectivity-proxy
+# This file is used in the integration tests to mock the connectivity-proxy StatefulSet.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: connectivity-proxy
+  namespace: kyma-system
+spec:
+  selector:
+    matchLabels:
+      app: connectivity-proxy
+  serviceName: connectivity-proxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: connectivity-proxy
+    spec:
+      containers:
+      - name: connectivity-proxy
+        image: alpine:latest
+        command: ["/bin/sh", "-c", "echo 'Connectivity Proxy is running'; sleep infinity"]

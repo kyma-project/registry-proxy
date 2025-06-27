@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
@@ -42,15 +41,11 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	}
 
 	pod := GetLatestPod(podList)
-	if pod.Status.PodIP == "" {
-		// podIP is not instantly set, sometimes we have to wait for it
-		return requeueAfter(time.Second * 10)
-	}
-	err = handleLivenessProbe(&m.State.Connection, pod.Status.PodIP, pod.Spec.Containers[0].LivenessProbe)
+	err = handleLivenessStatus(&m.State.Connection, pod.Status.Phase)
 	if err != nil {
 		return stopWithEventualError(err)
 	}
-	err = handleReadinessProbe(&m.State.Connection, pod.Status.PodIP, pod.Spec.Containers[0].ReadinessProbe)
+	err = handleReadinessStatus(&m.State.Connection, pod.Status.Conditions)
 	if err != nil {
 		return stopWithEventualError(err)
 	}
@@ -58,17 +53,8 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 	return nextState(sFnHandleService)
 }
 
-func handleLivenessProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.Probe) error {
-	probeStatus, err := getProbeStatus(podIP, probe)
-	if err != nil {
-		rp.UpdateCondition(
-			v1alpha1.ConditionConnectionDeployed,
-			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonError,
-			fmt.Sprintf("Reverse-proxy not ready: %s", err),
-		)
-		return err
-	} else if probeSuccessful(probeStatus) {
+func handleLivenessStatus(rp *v1alpha1.Connection, phase corev1.PodPhase) error {
+	if phase == corev1.PodRunning {
 		rp.UpdateCondition(
 			v1alpha1.ConditionConnectionDeployed,
 			metav1.ConditionTrue,
@@ -77,26 +63,31 @@ func handleLivenessProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.Pr
 		)
 		return nil
 	}
+	//nolint: staticcheck
+	err := fmt.Errorf("Reverse-proxy not ready: pod is in phase %s", phase)
 	rp.UpdateCondition(
 		v1alpha1.ConditionConnectionDeployed,
 		metav1.ConditionFalse,
-		v1alpha1.ConditionReasonResourcesNotReady,
-		fmt.Sprintf("Reverse-proxy not ready: probe has returned status %d", probeStatus),
+		v1alpha1.ConditionReasonError,
+		err.Error(),
 	)
-	return nil
+	return err
 }
 
-func handleReadinessProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.Probe) error {
-	probeStatus, err := getProbeStatus(podIP, probe)
-	if err != nil {
+func handleReadinessStatus(rp *v1alpha1.Connection, conditions []corev1.PodCondition) error {
+	condition := getCondition(conditions, corev1.PodReady)
+	if condition == nil {
+		//nolint: staticcheck
+		err := fmt.Errorf("Target registry not reachable: no condition found")
 		rp.UpdateCondition(
 			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonError,
-			fmt.Sprintf("Target registry not reachable: %s", err),
+			v1alpha1.ConditionReasonNotEstabilished,
+			err.Error(),
 		)
 		return err
-	} else if probeSuccessful(probeStatus) {
+	}
+	if condition.Status == corev1.ConditionTrue {
 		rp.UpdateCondition(
 			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionTrue,
@@ -105,26 +96,24 @@ func handleReadinessProbe(rp *v1alpha1.Connection, podIP string, probe *corev1.P
 		)
 		return nil
 	}
+	//nolint: staticcheck
+	err := fmt.Errorf("Target registry not reachable: %s", condition.Reason)
 	rp.UpdateCondition(
 		v1alpha1.ConditionConnectionReady,
 		metav1.ConditionFalse,
 		v1alpha1.ConditionReasonNotEstabilished,
-		fmt.Sprintf("Target registry not reachable: probe has returned status %d", probeStatus),
+		err.Error(),
 	)
-	return nil
+	return err
 }
 
-// getProbeStatus checks status of a HTTPGet probe
-func getProbeStatus(podIP string, probe *corev1.Probe) (int, error) {
-	if probe == nil || probe.HTTPGet == nil {
-		return 0, fmt.Errorf("probe is nil")
+func getCondition(conditions []corev1.PodCondition, conditionType corev1.PodConditionType) *corev1.PodCondition {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return &condition
+		}
 	}
-	probeURL := fmt.Sprintf("http://%s:%s%s", podIP, probe.HTTPGet.Port.String(), probe.HTTPGet.Path)
-	res, err := http.Get(probeURL)
-	if err != nil {
-		return 0, err
-	}
-	return res.StatusCode, nil
+	return nil
 }
 
 func GetLatestPod(podList *corev1.PodList) *corev1.Pod {
@@ -141,8 +130,4 @@ func GetLatestPod(podList *corev1.PodList) *corev1.Pod {
 		}
 	}
 	return &podList.Items[latestPod]
-}
-
-func probeSuccessful(status int) bool {
-	return status >= 200 && status < 300
 }

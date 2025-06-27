@@ -2,9 +2,6 @@ package state
 
 import (
 	"context"
-	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"testing"
 	"time"
 
@@ -14,18 +11,9 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
-
-func probeHandleSuccess(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-}
-
-func probeHandleFailure(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusTeapot)
-}
 
 func Test_sFnHandlePodStatus(t *testing.T) {
 	t.Run("no pod exists", func(t *testing.T) {
@@ -63,10 +51,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 	})
 
 	t.Run("one pod exists", func(t *testing.T) {
-		successServer := httptest.NewServer(http.HandlerFunc(probeHandleSuccess))
-		successURL, err := url.Parse(successServer.URL)
-		require.NoError(t, err)
-		onePod := minimalPod(successURL)
+		onePod := minimalPod(true)
 		onePod.CreationTimestamp = metav1.NewTime(time.Now().Add(-time.Hour))
 		scheme := minimalScheme(t)
 
@@ -93,18 +78,10 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		requireEqualFunc(t, sFnHandleService, next)
 	})
 	t.Run("multiple pods exist", func(t *testing.T) {
-		// create two distinctive fake probes to check if we really took the correct pod depending on returned condition
-		failureServer := httptest.NewServer(http.HandlerFunc(probeHandleFailure))
-		failureURL, err := url.Parse(failureServer.URL)
-		require.NoError(t, err)
-		successServer := httptest.NewServer(http.HandlerFunc(probeHandleSuccess))
-		successURL, err := url.Parse(successServer.URL)
-		require.NoError(t, err)
-
 		// create two pods with different creation timestamps, the first has failing probes
-		firstPod := minimalPod(failureURL)
+		firstPod := minimalPod(false)
 		firstPod.CreationTimestamp = metav1.NewTime(time.Now().Add(-time.Hour))
-		secondPod := minimalPod(successURL)
+		secondPod := minimalPod(true)
 		secondPod.Name = "rp-pod2"
 		secondPod.CreationTimestamp = metav1.NewTime(time.Now().Add(-time.Minute))
 		scheme := minimalScheme(t)
@@ -135,71 +112,27 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 }
 
 func TestHandleProbe(t *testing.T) {
-
-	failureServer := httptest.NewServer(http.HandlerFunc(probeHandleFailure))
-	successServer := httptest.NewServer(http.HandlerFunc(probeHandleSuccess))
-	failureURL, err := url.Parse(failureServer.URL)
-	require.NoError(t, err)
-	successURL, err := url.Parse(successServer.URL)
-	require.NoError(t, err)
-
 	tests := []struct {
 		name              string
 		rp                *v1alpha1.Connection
-		podIP             string
-		probe             *corev1.Probe
+		phase             corev1.PodPhase
 		expectedCondition metav1.Condition
 	}{
 		{
-			name:  "should return error on broken probe",
+			name:  "should return error not ready",
 			rp:    &v1alpha1.Connection{},
-			podIP: "127.0.0.1",
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromInt(8080),
-						Path: "/healthz",
-					},
-				},
-			},
+			phase: corev1.PodPending,
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionDeployed),
 				Status:  metav1.ConditionFalse,
 				Reason:  string(v1alpha1.ConditionReasonError),
-				Message: "Reverse-proxy not ready: Get \"http://127.0.0.1:8080/healthz\": dial tcp 127.0.0.1:8080: connect: connection refused",
+				Message: "Reverse-proxy not ready: pod is in phase Pending",
 			},
 		},
 		{
-			name:  "should return probe failure",
+			name:  "should return success",
 			rp:    &v1alpha1.Connection{},
-			podIP: failureURL.Hostname(),
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromString(failureURL.Port()),
-						Path: "/healthz",
-					},
-				},
-			},
-			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionConnectionDeployed),
-				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonResourcesNotReady),
-				Message: "Reverse-proxy not ready: probe has returned status 418",
-			},
-		},
-		{
-			name:  "should return probe success",
-			rp:    &v1alpha1.Connection{},
-			podIP: successURL.Hostname(),
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromString(successURL.Port()),
-						Path: "/healthz",
-					},
-				},
-			},
+			phase: corev1.PodRunning,
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionDeployed),
 				Status:  metav1.ConditionTrue,
@@ -211,7 +144,7 @@ func TestHandleProbe(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_ = handleLivenessProbe(tt.rp, tt.podIP, tt.probe)
+			_ = handleLivenessStatus(tt.rp, tt.phase)
 			requireContainsCondition(t, tt.rp.Status,
 				v1alpha1.ConditionType(tt.expectedCondition.Type),
 				tt.expectedCondition.Status,
@@ -222,70 +155,51 @@ func TestHandleProbe(t *testing.T) {
 	}
 }
 
-func TestHandleReadinessProbe(t *testing.T) {
-
-	failureServer := httptest.NewServer(http.HandlerFunc(probeHandleFailure))
-	successServer := httptest.NewServer(http.HandlerFunc(probeHandleSuccess))
-	failureURL, err := url.Parse(failureServer.URL)
-	require.NoError(t, err)
-	successURL, err := url.Parse(successServer.URL)
-	require.NoError(t, err)
-
+func TestHandleReadinessStatus(t *testing.T) {
 	tests := []struct {
 		name              string
 		rp                *v1alpha1.Connection
-		podIP             string
-		probe             *corev1.Probe
+		conditions        []corev1.PodCondition
 		expectedCondition metav1.Condition
 	}{
 		{
-			name:  "should return error on broken probe",
-			rp:    &v1alpha1.Connection{},
-			podIP: "127.0.0.1",
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromInt(8080),
-						Path: "/healthz",
-					},
-				},
-			},
-			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionConnectionReady),
-				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonError),
-				Message: "Target registry not reachable: Get \"http://127.0.0.1:8080/healthz\": dial tcp 127.0.0.1:8080: connect: connection refused",
-			},
-		},
-		{
-			name:  "should return probe failure",
-			rp:    &v1alpha1.Connection{},
-			podIP: failureURL.Hostname(),
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromString(failureURL.Port()),
-						Path: "/healthz",
-					},
+			name: "should return error on unready pod",
+			rp:   &v1alpha1.Connection{},
+			conditions: []corev1.PodCondition{
+				{
+					Type:    corev1.PodReady,
+					Status:  corev1.ConditionFalse,
+					Reason:  "ContainersNotReady",
+					Message: "containers with unready status: [a]",
 				},
 			},
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionReady),
 				Status:  metav1.ConditionFalse,
 				Reason:  string(v1alpha1.ConditionReasonNotEstabilished),
-				Message: "Target registry not reachable: probe has returned status 418",
+				Message: "Target registry not reachable: ContainersNotReady",
 			},
 		},
 		{
-			name:  "should return probe success",
-			rp:    &v1alpha1.Connection{},
-			podIP: successURL.Hostname(),
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{
-					HTTPGet: &corev1.HTTPGetAction{
-						Port: intstr.FromString(successURL.Port()),
-						Path: "/healthz",
-					},
+			name:       "should return error on missing condition",
+			rp:         &v1alpha1.Connection{},
+			conditions: []corev1.PodCondition{},
+			expectedCondition: metav1.Condition{
+				Type:    string(v1alpha1.ConditionConnectionReady),
+				Status:  metav1.ConditionFalse,
+				Reason:  string(v1alpha1.ConditionReasonNotEstabilished),
+				Message: "Target registry not reachable: no condition found",
+			},
+		},
+		{
+			name: "should return success",
+			rp:   &v1alpha1.Connection{},
+			conditions: []corev1.PodCondition{
+				{
+					Type:    corev1.PodReady,
+					Status:  corev1.ConditionTrue,
+					Reason:  "ContainersReady",
+					Message: "all containers in pod are ready",
 				},
 			},
 			expectedCondition: metav1.Condition{
@@ -295,37 +209,11 @@ func TestHandleReadinessProbe(t *testing.T) {
 				Message: "Target registry reachable",
 			},
 		},
-		{
-			name:  "empty HTTP probe",
-			rp:    &v1alpha1.Connection{},
-			podIP: successURL.Hostname(),
-			probe: &corev1.Probe{
-				ProbeHandler: corev1.ProbeHandler{},
-			},
-			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionConnectionReady),
-				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonError),
-				Message: "Target registry not reachable: probe is nil",
-			},
-		},
-		{
-			name:  "empty probe",
-			rp:    &v1alpha1.Connection{},
-			podIP: successURL.Hostname(),
-			probe: nil,
-			expectedCondition: metav1.Condition{
-				Type:    string(v1alpha1.ConditionConnectionReady),
-				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonError),
-				Message: "Target registry not reachable: probe is nil",
-			},
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_ = handleReadinessProbe(tt.rp, tt.podIP, tt.probe)
+			_ = handleReadinessStatus(tt.rp, tt.conditions)
 			requireContainsCondition(t, tt.rp.Status,
 				v1alpha1.ConditionType(tt.expectedCondition.Type),
 				tt.expectedCondition.Status,
@@ -336,7 +224,23 @@ func TestHandleReadinessProbe(t *testing.T) {
 	}
 }
 
-func minimalPod(probesURL *url.URL) *corev1.Pod {
+func minimalPod(ready bool) *corev1.Pod {
+	conditions := []corev1.PodCondition{}
+	if ready {
+		conditions = append(conditions, corev1.PodCondition{
+			Type:    corev1.PodReady,
+			Status:  corev1.ConditionTrue,
+			Reason:  "ContainersReady",
+			Message: "all containers in pod are ready",
+		})
+	} else {
+		conditions = append(conditions, corev1.PodCondition{
+			Type:    corev1.PodReady,
+			Status:  corev1.ConditionFalse,
+			Reason:  "ContainersNotReady",
+			Message: "containers with unready status: [a]",
+		})
+	}
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "rp-pod",
@@ -345,30 +249,9 @@ func minimalPod(probesURL *url.URL) *corev1.Pod {
 				v1alpha1.LabelApp: "connection",
 			},
 		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					LivenessProbe: &corev1.Probe{
-						ProbeHandler: corev1.ProbeHandler{
-							HTTPGet: &corev1.HTTPGetAction{
-								Port: intstr.FromString(probesURL.Port()),
-								Path: "/probe",
-							},
-						},
-					},
-					ReadinessProbe: &corev1.Probe{
-						ProbeHandler: corev1.ProbeHandler{
-							HTTPGet: &corev1.HTTPGetAction{
-								Port: intstr.FromString(probesURL.Port()),
-								Path: "/probe",
-							},
-						},
-					},
-				},
-			},
-		},
 		Status: corev1.PodStatus{
-			PodIP: probesURL.Hostname(),
+			Conditions: conditions,
+			Phase:      corev1.PodRunning,
 		},
 	}
 }

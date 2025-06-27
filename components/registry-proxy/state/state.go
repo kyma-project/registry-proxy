@@ -22,6 +22,7 @@ func requeue() (fsm.StateFn, *ctrl.Result, error) {
 	return nil, requeueResult, nil
 }
 
+// nolint:unparam
 func requeueAfter(duration time.Duration) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, &ctrl.Result{
 		RequeueAfter: duration,

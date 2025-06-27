@@ -36,21 +36,23 @@ func NewDeployment(connection *v1alpha1.Connection, proxyURL string) *appsv1.Dep
 }
 
 func (d *deployment) construct() *appsv1.Deployment {
-	labels := labels(d.connection, "deployment")
+	podSelectorLabels := labels(d.connection, "deployment")
+	podLabels := labels(d.connection, "deployment")
+	podLabels["sidecar.istio.io/inject"] = "true"
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.connection.Name,
 			Namespace: d.connection.Namespace,
-			Labels:    labels,
+			Labels:    podSelectorLabels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
+				MatchLabels: podSelectorLabels,
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
+					Labels: podLabels,
 				},
 				Spec: d.podSpec(),
 			},

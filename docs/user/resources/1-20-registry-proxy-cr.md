@@ -40,13 +40,13 @@ Processing of a RegistryProxy CR can succeed, continue, or fail for one of these
 | `Configuration`               | `Configured` | The Registry Proxy is being configured.                      |
 | `ConfigurationErr`           | `Configured` | An error occurred during the configuration of the Registry Proxy.|
 | `Configured`            | `Configured` | The Registry Proxy has been successfully configured.                                          |
-| `InvalidProxyURL`             | `Installed` | The Registry Proxy is being installed.                                                        |
-| `ConnectionResourcesDeployed` | `Installed`    | An error occurred during the installation of the Registry Proxy.                             |
-| `ConnectionResourcesNotReady` | `Installed`    | The Registry Proxy has been successfully installed.                                          |
-| `ConnectionEstabilished`      | `Installed`    | A duplicate Registry Proxy was detected.                                                 |
-| `ConnectionNotEstabilished`   | `Deleted`    | The Registry Proxy is being deleted.                                                       |
-| `ConnectionError`             | `Deleted`    | An error occurred during the deletion of the Registry Proxy.                                           |
-| `ConnectionError`             | `Deleted`    | The Registry Proxy has been successfully deleted.                                        |
+| `Installation`             | `Installed` | The Registry Proxy is being installed.                                                        |
+| `InstallationErr` | `Installed`    | An error occurred during the installation of the Registry Proxy.                             |
+| `Installed` | `Installed`    | The Registry Proxy has been successfully installed.                                          |
+| `RegistryProxyDuplicated`      | `Installed`    | A duplicate Registry Proxy was detected.                                                 |
+| `Deletion`   | `Deleted`    | The Registry Proxy is being deleted.                                                       |
+| `DeletionErr`             | `Deleted`    | An error occurred during the deletion of the Registry Proxy.                                           |
+| `Deleted`             | `Deleted`    | The Registry Proxy has been successfully deleted.                                        |
 | `ConnectivityProxyCrdUnknown` | `PrerequisitesSatisfied`    | The Connectivity Proxy CRD status is unknown.                                       |
 | `ConnectivityProxyCrdFound`   | `PrerequisitesSatisfied`    | The Connectivity Proxy CRD was found and is ready.                                       |
 

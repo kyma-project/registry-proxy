@@ -65,8 +65,8 @@ const (
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-// +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
-// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
+// +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='ConnectionDeployed')].status"
+// +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='ConnectionReady')].status"
 // +kubebuilder:printcolumn:name="NodePort",type="string",JSONPath=".status.nodePort"
 // Connection is the Schema for the registryproxies API.
 type Connection struct {

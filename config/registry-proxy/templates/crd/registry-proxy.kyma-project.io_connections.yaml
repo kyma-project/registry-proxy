@@ -18,10 +18,10 @@ spec:
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
-    - jsonPath: .status.conditions[?(@.type=='Running')].status
+    - jsonPath: .status.conditions[?(@.type=='ConnectionDeployed')].status
       name: Running
       type: string
-    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+    - jsonPath: .status.conditions[?(@.type=='ConnectionReady')].status
       name: Ready
       type: string
     - jsonPath: .status.nodePort

@@ -56,6 +56,7 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true
+      build-engine: buildx
       build-args: |
         PURPOSE=${{ inputs.purpose }}
         IMG_DIRECTORY=${{ inputs.img_directory }}
@@ -70,6 +71,7 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true
+      build-engine: buildx
 
   build-registry-proxy-connection:
     needs: compute-tags
@@ -80,3 +82,4 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       context: .
       use-go-internal-sap-modules: true
+      build-engine: buildx

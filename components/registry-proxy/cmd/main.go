@@ -18,6 +18,7 @@ import (
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -40,6 +41,9 @@ func init() {
 	utilruntime.Must(apiextensionsv1.AddToScheme(scheme))
 	utilruntime.Must(v1alpha1.AddToScheme(scheme))
 	utilruntime.Must(connectivityproxy.AddToScheme(scheme))
+	if os.Getenv("ISTIO_INSTALLED") == "true" {
+		utilruntime.Must(securityclientv1.AddToScheme(scheme))
+	}
 	// +kubebuilder:scaffold:scheme
 }
 

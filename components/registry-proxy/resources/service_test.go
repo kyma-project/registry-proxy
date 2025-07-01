@@ -8,13 +8,13 @@ import (
 
 func TestNewService(t *testing.T) {
 	t.Run("create service", func(t *testing.T) {
-		rp := minimalRegistryProxy()
+		c := minimalConnection()
 
-		s := NewService(rp)
+		s := NewService(c)
 
 		require.NotNil(t, s)
-		require.Equal(t, "test-rp-name", s.GetName())
-		require.Equal(t, "test-rp-namespace", s.GetNamespace())
+		require.Equal(t, "test-c-name", s.GetName())
+		require.Equal(t, "test-c-namespace", s.GetNamespace())
 	})
 
 	t.Run("create service with desired NodePort", func(t *testing.T) {

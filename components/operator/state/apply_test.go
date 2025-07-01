@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 	"go.uber.org/zap"
 
@@ -31,7 +32,8 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					},
 				},
 			},
-			Log: zap.NewNop().Sugar(),
+			Log:            zap.NewNop().Sugar(),
+			IstioReadiness: cache.NewInMemoryBoolCache(),
 		}
 
 		next, result, err := sFnApplyResources(context.Background(), m)
@@ -65,7 +67,8 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					},
 				},
 			},
-			Log: zap.NewNop().Sugar(),
+			Log:            zap.NewNop().Sugar(),
+			IstioReadiness: cache.NewInMemoryBoolCache(),
 		}
 
 		// run installation process and return verificating state
@@ -87,7 +90,8 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					},
 				},
 			},
-			Log: zap.NewNop().Sugar(),
+			Log:            zap.NewNop().Sugar(),
+			IstioReadiness: cache.NewInMemoryBoolCache(),
 		}
 
 		// handle error and return update condition state

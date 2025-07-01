@@ -148,6 +148,13 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 				"app.kubernetes.io/managed-by": "registry-proxy-operator",
 			},
 		},
+		"controllerManager": map[string]interface{}{
+			"container": map[string]interface{}{
+				"env": map[string]interface{}{
+					"ISTIO_INSTALLED": "\"false\"",
+				},
+			},
+		},
 	}})
 
 	return cache

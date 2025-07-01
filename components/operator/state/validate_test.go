@@ -20,7 +20,7 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 			State: fsm.SystemState{
 				RegistryProxy: *testInstalledRegistryProxy.DeepCopy(),
 			},
-			Cache: cache.NewInMemoryBoolCache(),
+			ConnectivityProxyReadiness: cache.NewInMemoryBoolCache(),
 		}
 
 		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
@@ -43,9 +43,9 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 			State: fsm.SystemState{
 				RegistryProxy: *testInstalledRegistryProxy.DeepCopy(),
 			},
-			Cache: cache.NewInMemoryBoolCache(),
+			ConnectivityProxyReadiness: cache.NewInMemoryBoolCache(),
 		}
-		m.Cache.Set(true)
+		m.ConnectivityProxyReadiness.Set(true)
 
 		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
 

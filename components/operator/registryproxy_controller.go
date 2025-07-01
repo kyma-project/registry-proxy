@@ -26,10 +26,11 @@ import (
 type RegistryProxyReconciler struct {
 	client.Client
 	*rest.Config
-	Scheme     *runtime.Scheme
-	Log        *zap.SugaredLogger
-	Cache      cache.BoolCache
-	ChartCache chart.ManifestCache
+	Scheme                     *runtime.Scheme
+	Log                        *zap.SugaredLogger
+	ConnectivityProxyReadiness cache.BoolCache
+	IstioReadiness             cache.BoolCache
+	ChartCache                 chart.ManifestCache
 }
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
@@ -47,23 +48,33 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	sm := fsm.New(r.Client, r.Config, &registryProxy, state.StartState(), r.Scheme, log, r.Cache, r.ChartCache)
+	sm := fsm.New(r.Client, r.Config, &registryProxy, state.StartState(), r.Scheme, log, r.ConnectivityProxyReadiness, r.IstioReadiness, r.ChartCache)
 	return sm.Reconcile(ctx)
 }
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	watcher := &ConnectivityProxyReadinessWatcher{
-		Cache:  r.Cache,
+	connectivityProxyWatcher := &ConnectivityProxyReadinessWatcher{
+		Cache:  r.ConnectivityProxyReadiness,
 		Client: r.Client,
+		Log:    r.Log,
+	}
+	istioWatcher := &IstioReadinessWatcher{
+		Client: r.Client,
+		Cache:  r.IstioReadiness,
 		Log:    r.Log,
 	}
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.RegistryProxy{}).
 		Watches(
 			&appsv1.StatefulSet{},
-			handler.EnqueueRequestsFromMapFunc(watcher.triggerRegistryProxyRequeueOnChange),
-			builder.WithPredicates(watcher.buildPredicate()),
+			handler.EnqueueRequestsFromMapFunc(connectivityProxyWatcher.triggerRegistryProxyRequeueOnChange),
+			builder.WithPredicates(connectivityProxyWatcher.buildPredicate()),
+		).
+		Watches(
+			&appsv1.Deployment{},
+			handler.EnqueueRequestsFromMapFunc(istioWatcher.triggerRegistryProxyRequeueOnChange),
+			builder.WithPredicates(istioWatcher.buildPredicate()),
 		).
 		Named("registry-proxy").
 		Complete(r)
@@ -118,6 +129,85 @@ func (w *ConnectivityProxyReadinessWatcher) triggerRegistryProxyRequeueOnChange(
 		return nil
 	}
 
+	requests, err := getRegistryProxyReconcilationList(ctx, w.Client)
+	if err != nil {
+		w.Log.Errorf("failed to get RegistryProxy reconciliation list: %v", err)
+		return nil
+	}
+
+	w.Cache.Set(isCPReady)
+	return requests
+}
+
+func (w *ConnectivityProxyReadinessWatcher) isConnectivityProxyStatefulSet(obj client.Object) bool {
+	return obj.GetName() == "connectivity-proxy" && obj.GetNamespace() == "kyma-system"
+}
+
+type IstioReadinessWatcher struct {
+	client.Client
+	Log   *zap.SugaredLogger
+	Cache cache.BoolCache
+}
+
+func (w *IstioReadinessWatcher) buildPredicate() predicate.Predicate {
+	return predicate.Funcs{
+		CreateFunc: func(e event.CreateEvent) bool {
+			return w.isIstioDeployment(e.Object)
+		},
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			return w.isIstioDeployment(e.ObjectNew)
+		},
+		GenericFunc: func(e event.GenericEvent) bool {
+			return w.isIstioDeployment(e.Object)
+		},
+		DeleteFunc: func(e event.DeleteEvent) bool {
+			return w.isIstioDeployment(e.Object)
+		},
+	}
+}
+
+func (w *IstioReadinessWatcher) triggerRegistryProxyRequeueOnChange(ctx context.Context, obj client.Object) []reconcile.Request {
+	deployment, ok := obj.(*appsv1.Deployment)
+	if !ok {
+		w.Log.Errorf("object %s/%s is not a Deployment", obj.GetNamespace(), obj.GetName())
+		return nil
+	}
+
+	// has available replicas and is not being deleted
+	isIstioReady := deployment.Status.AvailableReplicas > 0 && deployment.GetDeletionTimestamp() == nil
+
+	if isIstioReady == w.Cache.Get() {
+		w.Log.Debugf("readiness state of Istio Deployment %s/%s has not changed, skipping requeue",
+			deployment.GetNamespace(), deployment.GetName())
+		return nil
+	}
+
+	w.Log.Infof("Connectivity Proxy readiness changed to: %t, retriggering all Connection CRs' reconciliation", isIstioReady)
+
+	list := &v1alpha1.RegistryProxyList{}
+	err := w.List(ctx, list)
+	if err != nil {
+		w.Log.Errorf("failed to list RegistryProxy objects: %v", err)
+		return nil
+	}
+
+	requests, err := getRegistryProxyReconcilationList(ctx, w.Client)
+	if err != nil {
+		w.Log.Errorf("failed to get RegistryProxy reconciliation list: %v", err)
+		return nil
+	}
+
+	w.Cache.Set(isIstioReady)
+	return requests
+}
+
+func getRegistryProxyReconcilationList(ctx context.Context, c client.Client) ([]reconcile.Request, error) {
+	list := &v1alpha1.RegistryProxyList{}
+	err := c.List(ctx, list)
+	if err != nil {
+		return nil, err
+	}
+
 	requests := []reconcile.Request{}
 	for _, rp := range list.Items {
 		// collect all RegistryProxy objects
@@ -128,11 +218,9 @@ func (w *ConnectivityProxyReadinessWatcher) triggerRegistryProxyRequeueOnChange(
 			},
 		})
 	}
-
-	w.Cache.Set(isCPReady)
-	return requests
+	return requests, nil
 }
 
-func (w *ConnectivityProxyReadinessWatcher) isConnectivityProxyStatefulSet(obj client.Object) bool {
-	return obj.GetName() == "connectivity-proxy" && obj.GetNamespace() == "kyma-system"
+func (w *IstioReadinessWatcher) isIstioDeployment(obj client.Object) bool {
+	return obj.GetName() == "istiod" && obj.GetNamespace() == "istio-system"
 }

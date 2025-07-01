@@ -11,7 +11,7 @@ import (
 )
 
 func sFnValidateConnectivityProxyCRD(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	if !m.Cache.Get() {
+	if !m.ConnectivityProxyReadiness.Get() {
 		m.State.RegistryProxy.Status.State = v1alpha1.StateWarning
 		m.State.RegistryProxy.UpdateCondition(
 			v1alpha1.ConditionPrerequisitesSatisfied,

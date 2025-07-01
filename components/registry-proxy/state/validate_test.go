@@ -2,9 +2,10 @@ package state
 
 import (
 	"context"
+	"testing"
+
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -35,7 +36,7 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConnectivityProxyURL, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Connection.Status.Conditions)
 	})

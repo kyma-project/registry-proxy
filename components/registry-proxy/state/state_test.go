@@ -11,6 +11,7 @@ import (
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/stretchr/testify/require"
+	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -49,7 +50,7 @@ func requireEqualFunc(t *testing.T, expected, actual fsm.StateFn) {
 
 func getDirectFnName(nameSuffix string) string {
 	elements := strings.Split(nameSuffix, ".")
-	return elements[len(elements)-2]
+	return elements[len(elements)-1]
 }
 
 func getFnName(fn fsm.StateFn) string {
@@ -73,6 +74,7 @@ func requireContainsCondition(t *testing.T, status v1alpha1.ConnectionStatus,
 
 func minimalScheme(t *testing.T) *k8sruntime.Scheme {
 	scheme := k8sruntime.NewScheme()
+	require.NoError(t, securityclientv1.AddToScheme(scheme))
 	require.NoError(t, corev1.AddToScheme(scheme))
 	require.NoError(t, v1alpha1.AddToScheme(scheme))
 	require.NoError(t, appsv1.AddToScheme(scheme))

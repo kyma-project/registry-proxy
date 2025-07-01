@@ -55,12 +55,13 @@ func (s *SystemState) saveStatusSnapshot() {
 
 // TODO: think if we can use generics here to have one state machine for both RegistryProxy and Connection
 type StateMachine struct {
-	nextFn StateFn
-	State  SystemState
-	Log    *zap.SugaredLogger
-	Client client.Client
-	Scheme *apimachineryruntime.Scheme
-	Cache  cache.BoolCache
+	nextFn                     StateFn
+	State                      SystemState
+	Log                        *zap.SugaredLogger
+	Client                     client.Client
+	Scheme                     *apimachineryruntime.Scheme
+	ConnectivityProxyReadiness cache.BoolCache
+	IstioReadiness             cache.BoolCache
 }
 
 func (m *StateMachine) stateFnName() string {
@@ -109,17 +110,18 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, config *rest.Config, instance *v1alpha1.RegistryProxy, startState StateFn, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, cache cache.BoolCache, chartCache chart.ManifestCache) StateMachineReconciler {
+func New(client client.Client, config *rest.Config, instance *v1alpha1.RegistryProxy, startState StateFn, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, connectivityProxyReadiness cache.BoolCache, istioReadiness cache.BoolCache, chartCache chart.ManifestCache) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
 			RegistryProxy: *instance,
 			ChartConfig:   chartConfig(context.Background(), client, config, log, chartCache, instance.Namespace),
 		},
-		Log:    log,
-		Client: client,
-		Scheme: scheme,
-		Cache:  cache,
+		Log:                        log,
+		Client:                     client,
+		Scheme:                     scheme,
+		ConnectivityProxyReadiness: connectivityProxyReadiness,
+		IstioReadiness:             istioReadiness,
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

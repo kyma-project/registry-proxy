@@ -140,18 +140,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	boolCache := cache.NewInMemoryBoolCache()
+	connectivityProxyReadiness := cache.NewInMemoryBoolCache()
+	istioReadiness := cache.NewInMemoryBoolCache()
 	chartCache := chart.NewSecretManifestCache(mgr.GetClient())
 
 	// TODO: ConnectivityProxy manager
 
 	if err = (&controller.RegistryProxyReconciler{
-		Client:     mgr.GetClient(),
-		Config:     mgr.GetConfig(),
-		Scheme:     mgr.GetScheme(),
-		Log:        reconcilerLogger.Sugar(),
-		Cache:      boolCache,
-		ChartCache: chartCache,
+		Client:                     mgr.GetClient(),
+		Config:                     mgr.GetConfig(),
+		Scheme:                     mgr.GetScheme(),
+		Log:                        reconcilerLogger.Sugar(),
+		ConnectivityProxyReadiness: connectivityProxyReadiness,
+		IstioReadiness:             istioReadiness,
+		ChartCache:                 chartCache,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "RegistryProxy")
 		os.Exit(1)

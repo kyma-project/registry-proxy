@@ -2,12 +2,14 @@ package controller
 
 import (
 	"context"
+	"os"
 
 	"github.tools.sap/kyma/registry-proxy/components/common/cache"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/state"
 	"go.uber.org/zap"
+	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -45,15 +47,18 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
+	controller := ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Connection{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Owns(&corev1.Pod{}).
-		// TODO: remove this comment after rename: rename was made here first to avoid conflits with operator
-		Named("connection").
-		Complete(r)
+		Named("connection")
+
+	if os.Getenv("ISTIO_INSTALLED") == "true" {
+		controller.Owns(&securityclientv1.PeerAuthentication{})
+	}
+	return controller.Complete(r)
 }
 
 func buildPredicates() predicate.Funcs {

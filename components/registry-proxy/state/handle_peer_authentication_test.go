@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 	"time"
 
@@ -11,7 +12,8 @@ import (
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources"
 	"go.uber.org/zap"
-	corev1 "k8s.io/api/core/v1"
+	apisecurityv1 "istio.io/api/security/v1"
+	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -19,17 +21,19 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/interceptor"
 )
 
-func Test_sFnHandleService(t *testing.T) {
-	t.Run("when service does not exist on kubernetes should create service and apply it", func(t *testing.T) {
-		someService := corev1.Service{
+func Test_sFnHandlePeerAuthentication(t *testing.T) {
+	os.Setenv("ISTIO_INSTALLED", "true")
+	t.Run("when PeerAuthentication does not exist on kubernetes should create PeerAuthentication and apply it", func(t *testing.T) {
+		somePeerAuthentication := securityclientv1.PeerAuthentication{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "serversome-service",
+				Name:      "serversome-peer",
 				Namespace: "wherever",
 			},
 		}
 		scheme := minimalScheme(t)
 		updateWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&someService).WithInterceptorFuncs(interceptor.Funcs{
+
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&somePeerAuthentication).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				updateWasCalled = true
 				return nil
@@ -53,7 +57,7 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleService(context.Background(), &m)
+		next, result, err := sFnHandlePeerAuthentication(context.Background(), &m)
 		require.Nil(t, err)
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
@@ -61,7 +65,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.False(t, updateWasCalled)
 	})
 
-	t.Run("when cannot get service from kubernetes should stop processing", func(t *testing.T) {
+	t.Run("when cannot get PeerAuthentication from kubernetes should stop processing", func(t *testing.T) {
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithInterceptorFuncs(interceptor.Funcs{
@@ -95,15 +99,14 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleService(context.Background(), &m)
+		next, result, err := sFnHandlePeerAuthentication(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "typical error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
 		require.False(t, createOrUpdateWasCalled)
 	})
-
-	t.Run("when service does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
+	t.Run("when PeerAuthentication does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
@@ -128,14 +131,14 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleService(context.Background(), &m)
+		next, result, err := sFnHandlePeerAuthentication(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "funny error message")
 		require.Nil(t, result)
 		require.Nil(t, next)
 	})
 
-	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is empty, requeue", func(t *testing.T) {
+	t.Run("when PeerAuthentication exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
 		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "connection",
@@ -146,97 +149,11 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&connection)
-		scheme := minimalScheme(t)
-		createOrUpdateWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
-			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
-				createOrUpdateWasCalled = true
-				return nil
-			},
-			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
-				createOrUpdateWasCalled = true
-				return nil
-			},
-		}).Build()
-
-		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				Connection: connection,
-			},
-			Log:    zap.NewNop().Sugar(),
-			Client: fakeClient,
-			Scheme: scheme,
-		}
-		next, result, err := sFnHandleService(context.Background(), &m)
-		require.Nil(t, err)
-		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
-		require.Nil(t, next)
-		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.Connection.Status.Conditions)
-		require.NotNil(t, m.State.Service)
-	})
-	t.Run("when deployment exists on kubernetes, no changes in Service needed, and NodePort is ready, update RP status", func(t *testing.T) {
-		connection := v1alpha1.Connection{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "connection",
-				Namespace: "maslo",
-			},
-			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
-			},
-		}
-		service := resources.NewService(&connection)
-		service.Spec.Ports[0].NodePort = 1234
-		scheme := minimalScheme(t)
-		createOrUpdateWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
-			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
-				createOrUpdateWasCalled = true
-				return nil
-			},
-			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
-				createOrUpdateWasCalled = true
-				return nil
-			},
-		}).Build()
-
-		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				Connection: connection,
-			},
-			Log:    zap.NewNop().Sugar(),
-			Client: fakeClient,
-			Scheme: scheme,
-		}
-		next, result, err := sFnHandleService(context.Background(), &m)
-		require.Nil(t, err)
-		require.Nil(t, result)
-		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandlePeerAuthentication, next)
-		require.False(t, createOrUpdateWasCalled)
-		require.Empty(t, m.State.Connection.Status.Conditions)
-		require.NotNil(t, m.State.Service)
-		require.Equal(t, int32(1234), m.State.NodePort)
-	})
-	t.Run("when service exists on kubernetes and we need changes should update it requeue", func(t *testing.T) {
-		connection := v1alpha1.Connection{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "connection",
-				Namespace: "maslo",
-			},
-			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
-			},
-		}
-		service := resources.NewService(&connection)
-		service.Spec.Type = corev1.ServiceTypeClusterIP
+		pa := resources.NewPeerAuthentication(&connection)
+		pa.Spec.Mtls.Mode = apisecurityv1.PeerAuthentication_MutualTLS_STRICT
 		scheme := minimalScheme(t)
 		createWasCalled := false
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(pa).WithInterceptorFuncs(interceptor.Funcs{
 			Create: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.CreateOption) error {
 				createWasCalled = true
 				return nil
@@ -251,22 +168,21 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleService(context.Background(), &m)
+		next, result, err := sFnHandlePeerAuthentication(context.Background(), &m)
 		require.Nil(t, err)
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		require.False(t, createWasCalled)
-		updatedService := &corev1.Service{}
+		updatedPA := &securityclientv1.PeerAuthentication{}
 		getErr := fakeClient.Get(context.Background(), client.ObjectKey{
 			Name:      "connection",
 			Namespace: "maslo",
-		}, updatedService)
+		}, updatedPA)
 		require.NoError(t, getErr)
-		require.Equal(t, updatedService.Spec.Type, corev1.ServiceTypeNodePort)
+		require.Equal(t, updatedPA.Spec.Mtls.Mode, apisecurityv1.PeerAuthentication_MutualTLS_PERMISSIVE)
 	})
-
-	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
+	t.Run("when PeerAuthentication exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "connection",
@@ -277,10 +193,10 @@ func Test_sFnHandleService(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		service := resources.NewService(&connection)
-		service.Spec.Type = corev1.ServiceTypeClusterIP
+		pa := resources.NewPeerAuthentication(&connection)
+		pa.Spec.Mtls.Mode = apisecurityv1.PeerAuthentication_MutualTLS_STRICT
 		scheme := minimalScheme(t)
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(service).WithInterceptorFuncs(interceptor.Funcs{
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(pa).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
 				return errors.New("sad error message")
 			},
@@ -294,7 +210,7 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: fakeClient,
 			Scheme: scheme,
 		}
-		next, result, err := sFnHandleService(context.Background(), &m)
+		next, result, err := sFnHandlePeerAuthentication(context.Background(), &m)
 		require.NotNil(t, err)
 		require.ErrorContains(t, err, "sad error message")
 		require.Nil(t, result)

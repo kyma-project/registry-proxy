@@ -14,14 +14,14 @@ import (
 
 func TestNewDeployment(t *testing.T) {
 	t.Run("create deployment", func(t *testing.T) {
-		rp := minimalRegistryProxy()
+		rp := minimalConnection()
 
 		d := NewDeployment(rp, rp.Spec.ProxyURL)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
-		require.Equal(t, "test-rp-name", d.GetName())
-		require.Equal(t, "test-rp-namespace", d.GetNamespace())
+		require.Equal(t, "test-c-name", d.GetName())
+		require.Equal(t, "test-c-namespace", d.GetNamespace())
 		require.Contains(t, d.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
 		require.Contains(t, d.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
 
@@ -29,7 +29,7 @@ func TestNewDeployment(t *testing.T) {
 	})
 
 	t.Run("create deployment with Resources", func(t *testing.T) {
-		rp := minimalRegistryProxy()
+		rp := minimalConnection()
 
 		resources := minimalResources()
 		rp.Spec.Resources = &resources
@@ -38,8 +38,8 @@ func TestNewDeployment(t *testing.T) {
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
-		require.Equal(t, "test-rp-name", d.GetName())
-		require.Equal(t, "test-rp-namespace", d.GetNamespace())
+		require.Equal(t, "test-c-name", d.GetName())
+		require.Equal(t, "test-c-namespace", d.GetNamespace())
 
 		require.Equal(t, resources, d.Spec.Template.Spec.Containers[0].Resources)
 
@@ -50,11 +50,11 @@ func TestNewDeployment(t *testing.T) {
 	})
 }
 
-func minimalRegistryProxy() *v1alpha1.Connection {
+func minimalConnection() *v1alpha1.Connection {
 	return &v1alpha1.Connection{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test-rp-name",
-			Namespace: "test-rp-namespace",
+			Name:      "test-c-name",
+			Namespace: "test-c-namespace",
 		},
 		Spec: v1alpha1.ConnectionSpec{
 			ProxyURL:   "http://test-proxy-url",

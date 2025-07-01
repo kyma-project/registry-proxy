@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
@@ -31,6 +32,13 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 		"global": map[string]interface{}{
 			"commonLabels": map[string]interface{}{
 				"app.kubernetes.io/managed-by": "registry-proxy-operator",
+			},
+		},
+		"controllerManager": map[string]interface{}{
+			"container": map[string]interface{}{
+				"env": map[string]interface{}{
+					"ISTIO_INSTALLED": fmt.Sprintf("\"%s\"", strconv.FormatBool(m.IstioReadiness.Get())),
+				},
 			},
 		},
 	}

@@ -43,16 +43,16 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	}
 
 	m.State.NodePort = m.State.Service.Spec.Ports[0].NodePort
-	return nextState(sFnHandleStatus)
+	return nextState(sFnHandlePeerAuthentication)
 }
 
 func getService(ctx context.Context, m *fsm.StateMachine) (*corev1.Service, error) {
 	currentService := &corev1.Service{}
-	rp := m.State.Connection
+	c := m.State.Connection
 
 	serviceErr := m.Client.Get(ctx, client.ObjectKey{
-		Namespace: rp.GetNamespace(),
-		Name:      rp.GetName(),
+		Namespace: c.GetNamespace(),
+		Name:      c.GetName(),
 	}, currentService)
 	if serviceErr != nil {
 		// Service not existing is expected behavior

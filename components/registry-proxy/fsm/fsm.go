@@ -12,6 +12,7 @@ import (
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 	"go.uber.org/zap"
+	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
@@ -22,12 +23,13 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	Connection     v1alpha1.Connection
-	statusSnapshot v1alpha1.ConnectionStatus
-	ProxyURL       string
-	NodePort       int32
-	Deployment     *appsv1.Deployment
-	Service        *corev1.Service
+	Connection         v1alpha1.Connection
+	statusSnapshot     v1alpha1.ConnectionStatus
+	ProxyURL           string
+	NodePort           int32
+	Deployment         *appsv1.Deployment
+	Service            *corev1.Service
+	PeerAuthentication *securityclientv1.PeerAuthentication
 }
 
 func (s *SystemState) saveStatusSnapshot() {

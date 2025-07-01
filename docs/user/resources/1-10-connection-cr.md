@@ -33,6 +33,7 @@ spec:
 | **targetHost** (required) | string                         | Specifies the target host.                                                       |
 | **resources**             | object                         | Defines compute resource requirements for the Connection, such as CPU or memory. |
 | **logLevel**              | string                         | Sets the desired log level to be used. The default value is `"info"`.            |
+| **nodePort**              | integer                        | Sets the desired service NodePort number.                                    |
 
 **Status:**
 

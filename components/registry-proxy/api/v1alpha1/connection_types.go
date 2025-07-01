@@ -17,6 +17,9 @@ type ConnectionSpec struct {
 	Resources  *corev1.ResourceRequirements `json:"resources,omitempty"`
 	// Sets desired log level to be used. The default value is "info"
 	LogLevel string `json:"logLevel,omitempty"`
+	// NodePort is the port on which the service is exposed on each node.
+	// If not specified, a random port will be assigned.
+	NodePort int32 `json:"nodePort,omitempty,omitzero"`
 }
 
 // ConnectionStatus defines the observed state of ConnectionStatus.

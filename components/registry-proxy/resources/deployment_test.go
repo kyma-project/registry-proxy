@@ -63,6 +63,20 @@ func minimalRegistryProxy() *v1alpha1.Connection {
 	}
 }
 
+func minimalRegistryProxyWithPort(desiredNodePort int32) *v1alpha1.Connection {
+	return &v1alpha1.Connection{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-rp-name",
+			Namespace: "test-rp-namespace",
+		},
+		Spec: v1alpha1.ConnectionSpec{
+			ProxyURL:   "http://test-proxy-url",
+			TargetHost: "dummy",
+			NodePort:   desiredNodePort,
+		},
+	}
+}
+
 func minimalResources() corev1.ResourceRequirements {
 	return corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{

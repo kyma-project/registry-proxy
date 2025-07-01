@@ -47,8 +47,8 @@ Processing of a RegistryProxy CR can succeed, continue, or fail for one of these
 | `Deletion`   | `Deleted`    | The Registry Proxy is being deleted.                                                       |
 | `DeletionErr`             | `Deleted`    | An error occurred during the deletion of the Registry Proxy.                                           |
 | `Deleted`             | `Deleted`    | The Registry Proxy has been successfully deleted.                                        |
-| `ConnectivityProxyCrdUnknown` | `PrerequisitesSatisfied`    | The Connectivity Proxy CRD status is unknown.                                       |
-| `ConnectivityProxyCrdFound`   | `PrerequisitesSatisfied`    | The Connectivity Proxy CRD was found and is ready.                                       |
+| `ConnectivityProxyUnavailable` | `PrerequisitesSatisfied`    | The Connectivity Proxy StatefulSet status is unknown.                                       |
+| `ConnectivityProxyAvailable`   | `PrerequisitesSatisfied`    | The Connectivity Proxy StatefulSet is ready.                                       |
 
 ## Related Resources and Components
 

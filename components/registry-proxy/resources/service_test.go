@@ -16,4 +16,15 @@ func TestNewService(t *testing.T) {
 		require.Equal(t, "test-rp-name", s.GetName())
 		require.Equal(t, "test-rp-namespace", s.GetNamespace())
 	})
+
+	t.Run("create service with desired NodePort", func(t *testing.T) {
+		rp := minimalRegistryProxyWithPort(3001)
+
+		s := NewService(rp)
+
+		require.NotNil(t, s)
+		require.Equal(t, "test-rp-name", s.GetName())
+		require.Equal(t, "test-rp-namespace", s.GetNamespace())
+		require.Equal(t, int32(3001), s.Spec.Ports[0].NodePort)
+	})
 }

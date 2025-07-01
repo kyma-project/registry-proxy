@@ -56,6 +56,12 @@ spec:
                 description: Sets desired log level to be used. The default value
                   is "info"
                 type: string
+              nodePort:
+                description: |-
+                  NodePort is the port on which the service is exposed on each node.
+                  If not specified, a random port will be assigned.
+                format: int32
+                type: integer
               proxyURL:
                 description: URL of the Connectivity Proxy, with protocol
                 type: string

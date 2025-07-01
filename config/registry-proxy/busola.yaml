@@ -87,7 +87,9 @@ list: #Inside "Connection" list view
 form:
   - path: spec.targetHost
     required: true
+    name: form.targetHost
   - path: spec.logLevel
+    name: form.logLevel
     enum:
         - "debug"
         - "info"
@@ -95,9 +97,17 @@ form:
         - "error"
         - "fatal"
   - path: spec.proxyURL
+    name: form.proxyURL
+  - path: spec.nodePort
+    name: form.nodePort
 
 translations:
   en:
+    form:
+      targetHost: Target Host
+      logLevel: Log Level
+      proxyURL: Proxy URL
+      nodePort: Node Port
     status:
       conditions: Conditions
       nodePort: Node Port

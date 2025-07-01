@@ -19,6 +19,14 @@ func NewService(connection *v1alpha1.Connection) *corev1.Service {
 }
 
 func (s *service) construct() *corev1.Service {
+	port := corev1.ServicePort{
+		Port:       80,
+		Protocol:   corev1.ProtocolTCP,
+		TargetPort: intstr.FromInt(registryProxyPort),
+	}
+	if s.connection.Spec.NodePort != 0 {
+		port.NodePort = s.connection.Spec.NodePort
+	}
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      s.connection.Name,
@@ -28,11 +36,7 @@ func (s *service) construct() *corev1.Service {
 		Spec: corev1.ServiceSpec{
 			Type: corev1.ServiceTypeNodePort,
 			Ports: []corev1.ServicePort{
-				{
-					Port:       80,
-					Protocol:   corev1.ProtocolTCP,
-					TargetPort: intstr.FromInt(registryProxyPort),
-				},
+				port,
 			},
 			Selector: map[string]string{
 				v1alpha1.LabelApp: s.connection.Name,

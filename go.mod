@@ -2,7 +2,7 @@ module github.tools.sap/kyma/registry-proxy
 
 go 1.24.0
 
-toolchain go1.24.3
+toolchain go1.24.4
 
 require (
 	github.com/go-logr/zapr v1.3.0

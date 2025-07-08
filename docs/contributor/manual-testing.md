@@ -56,13 +56,13 @@ helm install registry-proxy-operator config/operator -n ${NAMESPACE} \
 
 4. Apply the default Registry Proxy CR in the default namespace.
 
-```yaml
+```bash
 cat << EOF | kubectl apply -f -
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: RegistryProxy
 metadata:
   name: default
-  namespace: default
+  namespace: ${NAMESPACE}
 spec: {}
 EOF
 ```

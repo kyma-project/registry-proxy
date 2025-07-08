@@ -145,12 +145,12 @@ EOF
 docker run -d \
 		-v docker-reg-vol:/var/lib/registry \
 		-v $(pwd)/certs:/certs \
-		-v $(pwd)/config/config.yml:/etc/docker/registry/config.yml \
+		-v $(pwd)/config/config.yml:/etc/distribution/config.yml \
 		-v $(pwd)/secret/htpasswd:/secret/htpasswd \
 		-p 25002:443 \
 		--restart=always \
 		--name on-prem-docker-registry \
-		registry:2.8.3
+		registry:3.0.0
 ```
 
 6. Edit the `/etc/hosts` file and add the following line: `127.0.0.1 myregistry.kyma`

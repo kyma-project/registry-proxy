@@ -20,6 +20,10 @@ type ConnectionSpec struct {
 	// NodePort is the port on which the service is exposed on each node.
 	// If not specified, a random port will be assigned.
 	NodePort int32 `json:"nodePort,omitempty,omitzero"`
+
+	// Location ID of the connection
+	// used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
+	LocationID string `json:"locationID,omitempty"`
 }
 
 // ConnectionStatus defines the observed state of ConnectionStatus.
@@ -71,6 +75,7 @@ const (
 // +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='ConnectionDeployed')].status"
 // +kubebuilder:printcolumn:name="Ready",type="string",JSONPath=".status.conditions[?(@.type=='ConnectionReady')].status"
 // +kubebuilder:printcolumn:name="NodePort",type="string",JSONPath=".status.nodePort"
+
 // Connection is the Schema for the registryproxies API.
 type Connection struct {
 	metav1.TypeMeta   `json:",inline"`

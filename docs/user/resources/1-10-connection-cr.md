@@ -1,4 +1,4 @@
-# Connection   
+# Connection
 
 The `connections.registry-proxy.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the kind of data and the format used to manage **Connections** within Kyma. It facilitates establishing a connection to a target container registry through the Connectivity Proxy. To get the up-to-date CRD and show the output in the YAML format, run this command:
 
@@ -27,21 +27,22 @@ spec:
 
 **Spec:**
 
-| Parameter                 | Type | Description                                                                      |
-|---------------------------| ----------- |----------------------------------------------------------------------------------|
-| **proxyURL**              | string                         | URL of the Connectivity Proxy, with protocol.                                    |
-| **targetHost** (required) | string                         | Specifies the target host.                                                       |
-| **resources**             | object                         | Defines compute resource requirements for the Connection, such as CPU or memory. |
-| **logLevel**              | string                         | Sets the desired log level to be used. The default value is `"info"`.            |
-| **nodePort**              | integer                        | Sets the desired service NodePort number.                                    |
+| Parameter                 | Type                           | Description                                                                                 |
+|---------------------------| ------------------------------ |---------------------------------------------------------------------------------------------|
+| **proxyURL**              | string                         | URL of the Connectivity Proxy, with protocol.                                               |
+| **targetHost** (required) | string                         | Specifies the target host.                                                                  |
+| **resources**             | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
+| **logLevel**              | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
+| **nodePort**              | integer                        | Sets the desired service NodePort number.                                                   |
+| **locationID**            | string                         | Sets the `SAP-Connectivity-SCC-Location_ID` header with given ID on every forwarded request |
 
 **Status:**
 
-| Parameter | Type | Description                                                                       |
-| ---- | ----------- |-----------------------------------------------------------------------------------|
+| Parameter          | Type                           | Description                                                                       |
+| ------------------ | ------------------------------ |-----------------------------------------------------------------------------------|
 | **nodePort**       | integer                        | Specifies the service NodePort number. Use `localhost:<nodeport>` to pull images. |
 | **proxyURL**       | string                         | URL of the Connectivity Proxy.                                                    |
-| **conditions**     | \[\]object                    | Specifies an array of conditions describing the status of the Connection.         |
+| **conditions**     | \[\]object                     | Specifies an array of conditions describing the status of the Connection.         |
 
 <!-- TABLE-END -->
 
@@ -49,8 +50,8 @@ spec:
 
 Processing of a `Connection` CR can succeed, continue, or fail for one of these reasons:
 
-| Reason                           | Type                 | Description                                                                                     |
-| -------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------- |
+| Reason                           | Type                 | Description                                                                                    |
+| -------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------- |
 | `DeploymentCreated`              | `ConnectionDeployed` | A new Deployment referencing the Connection's configuration was created.                       |
 | `DeploymentUpdated`              | `ConnectionDeployed` | The existing Deployment was updated after applying changes to the Connection's configuration.  |
 | `DeploymentFailed`               | `ConnectionDeployed` | The Connection's Deployment failed due to an error.                                            |
@@ -65,13 +66,13 @@ Processing of a `Connection` CR can succeed, continue, or fail for one of these 
 
 These are the resources related to this CR:
 
-| Custom resource                                                                                              | Description                                                                             |
+| Custom resource                                                                                       | Description                                                                             |
 | ----------------------------------------------------------------------------------------------------- |-----------------------------------------------------------------------------------------|
 | [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)                   | Manages the Pods required for the Connection functionality.                             |
 | [Service](https://kubernetes.io/docs/concepts/services-networking/service/)                           | Exposes the Connection's Deployment as a network service inside the Kubernetes cluster. |
 
 These components use this CR:
 
-| Component           | Description                                                                                                  |
-|---------------------| ------------------------------------------------------------------------------------------------------------ |
+| Component             | Description                                                                                                  |
+|-----------------------| ------------------------------------------------------------------------------------------------------------ |
 | Connection Controller | Manages the lifecycle of the Connection CR and ensures the connection to the target registry is established. |

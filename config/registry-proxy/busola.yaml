@@ -100,6 +100,8 @@ form:
     name: form.proxyURL
   - path: spec.nodePort
     name: form.nodePort
+  - path: spec.locationID
+    name: form.locationID
 
 translations:
   en:
@@ -108,6 +110,7 @@ translations:
       logLevel: Log Level
       proxyURL: Proxy URL
       nodePort: Node Port
+      locationID: Location ID
     status:
       conditions: Conditions
       nodePort: Node Port

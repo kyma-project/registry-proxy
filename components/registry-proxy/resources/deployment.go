@@ -121,8 +121,8 @@ func (d *deployment) podSpec() corev1.PodSpec {
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: corev1.SeccompProfileTypeRuntimeDefault,
 					},
-					AllowPrivilegeEscalation: ptr.To[bool](false),
-					RunAsNonRoot:             ptr.To[bool](true),
+					AllowPrivilegeEscalation: ptr.To(false),
+					RunAsNonRoot:             ptr.To(true),
 					Capabilities: &corev1.Capabilities{
 						Drop: []corev1.Capability{
 							"All",
@@ -164,6 +164,10 @@ func (d *deployment) envs() []corev1.EnvVar {
 		{
 			Name:  "TARGET_HOST",
 			Value: d.connection.Spec.TargetHost,
+		},
+		{
+			Name:  "LOCATION_ID",
+			Value: d.connection.Spec.LocationID,
 		},
 	}
 

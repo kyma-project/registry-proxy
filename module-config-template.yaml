@@ -1,8 +1,11 @@
 name: kyma-project.io/module/registry-proxy
-channel: {{ .Channel }}
-version: {{ .Version }}
+version:
 defaultCR: default-registry-proxy-cr.yaml
 manifest: registry-proxy-operator.yaml
-annotations:
-  "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/registry-proxy/user/README"
-moduleRepo: https://github.tools.sap/kyma/registry-proxy.git
+documentation: "https://kyma-project.io/#/registry-proxy/user/README"
+repository: https://github.tools.sap/kyma/registry-proxy.git
+security: sec-scanners-config.yaml
+icons:
+  - name: module-icon
+    # TODO: provide rp icon
+    link: https://raw.githubusercontent.com/kyma-project/kyma/refs/heads/main/docs/assets/logo_icon.svg

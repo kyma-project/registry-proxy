@@ -120,5 +120,5 @@ cluster-info:
 ##@ Actions
 .PHONY: module-config
 module-config:
-	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
+	yq ".version = \"${MODULE_VERSION}\""\
     module-config-template.yaml > module-config.yaml

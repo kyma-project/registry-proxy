@@ -75,8 +75,6 @@ run-local: ## Setup local k3d cluster and install operator with sample CR
 .PHONY: integration-dependencies
 integration-dependencies:  ## create k3d cluster and run integration test
 	# connectivity proxy
-	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-crd.yaml
-	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/connectivity-proxy-default-cr.yaml
 	kubectl apply -f $(PROJECT_ROOT)/hack/connectivity-proxy/stateful-set-mock.yaml
 	# docker registry
 	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/dockerregistry-operator.yaml

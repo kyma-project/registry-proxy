@@ -41,20 +41,6 @@ list: #Inside "Connection" list view
   - name: list.targetHost
     source: spec.targetHost
     widget: Text
-  - name: list.configured
-    source: status.conditions[type="Configured"].status
-    highlights:
-      positive:
-        - "true"
-        - "True"
-      warning:
-        - "unknown"
-        - "Unknown"
-      critical:
-        - "false"
-        - "False"
-        - $item < 0
-    widget: Badge
   - name: list.running
     source: status.conditions[type="ConnectionDeployed"].status
     highlights:
@@ -120,7 +106,6 @@ translations:
     list:
       state: State
       conditions: Conditions
-      configured: Configured
       running: Deployed
       ready: Ready
       targetHost: "Target Host"

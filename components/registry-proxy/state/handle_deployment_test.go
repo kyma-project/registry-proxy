@@ -171,7 +171,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -216,7 +216,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
 		scheme := minimalScheme(t)
 		createWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -271,7 +271,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				TargetHost: "dummy",
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL)
+		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {

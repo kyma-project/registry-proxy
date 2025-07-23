@@ -215,7 +215,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandlePeerAuthentication, next)
+		requireEqualFunc(t, sFnHandleDeployment, next)
 		require.False(t, createOrUpdateWasCalled)
 		require.Empty(t, m.State.Connection.Status.Conditions)
 		require.NotNil(t, m.State.Service)

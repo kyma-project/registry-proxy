@@ -24,6 +24,9 @@ type ConnectionSpec struct {
 	// Location ID of the connection
 	// used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
 	LocationID string `json:"locationID,omitempty"`
+
+	// AuthorizationHost is the name of the host that is used for registry authorization
+	AuthorizationHost string `json:"authorizationHost,omitempty"`
 }
 
 // ConnectionStatus defines the observed state of ConnectionStatus.

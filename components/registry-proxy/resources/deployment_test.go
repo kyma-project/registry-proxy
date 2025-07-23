@@ -3,6 +3,7 @@ package resources
 import (
 	"testing"
 
+	"github.tools.sap/kyma/registry-proxy/components/common/container"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 	"github.com/stretchr/testify/require"
@@ -16,16 +17,18 @@ func TestNewDeployment(t *testing.T) {
 	t.Run("create deployment", func(t *testing.T) {
 		rp := minimalConnection()
 
-		d := NewDeployment(rp, rp.Spec.ProxyURL)
+		d := NewDeployment(rp, rp.Spec.ProxyURL, 0)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
 		require.Equal(t, "test-c-name", d.GetName())
 		require.Equal(t, "test-c-namespace", d.GetNamespace())
-		require.Contains(t, d.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
-		require.Contains(t, d.Spec.Template.Spec.Containers[0].Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
 
-		require.Equal(t, defaultResources(), d.Spec.Template.Spec.Containers[0].Resources)
+		regContainer := container.Get(d.Spec.Template.Spec.Containers, RegistryContainerName)
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
+
+		require.Equal(t, defaultResources(), regContainer.Resources)
 	})
 
 	t.Run("create deployment with Resources", func(t *testing.T) {
@@ -34,19 +37,44 @@ func TestNewDeployment(t *testing.T) {
 		resources := minimalResources()
 		rp.Spec.Resources = &resources
 
-		d := NewDeployment(rp, rp.Spec.ProxyURL)
+		d := NewDeployment(rp, rp.Spec.ProxyURL, 0)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
 		require.Equal(t, "test-c-name", d.GetName())
 		require.Equal(t, "test-c-namespace", d.GetNamespace())
 
-		require.Equal(t, resources, d.Spec.Template.Spec.Containers[0].Resources)
+		regContainer := container.Get(d.Spec.Template.Spec.Containers, RegistryContainerName)
+		require.Equal(t, resources, regContainer.Resources)
 
-		require.Equal(t, "PROXY_URL", d.Spec.Template.Spec.Containers[0].Env[0].Name)
-		require.Equal(t, "http://test-proxy-url", d.Spec.Template.Spec.Containers[0].Env[0].Value)
-		require.Equal(t, "TARGET_HOST", d.Spec.Template.Spec.Containers[0].Env[1].Name)
-		require.Equal(t, "dummy", d.Spec.Template.Spec.Containers[0].Env[1].Value)
+		// TODO: contains in case of changed order
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
+	})
+
+	t.Run("create deployment with authorizationHost", func(t *testing.T) {
+		rp := minimalConnection()
+		rp.Spec.AuthorizationHost = "example.com"
+
+		d := NewDeployment(rp, rp.Spec.ProxyURL, 123)
+
+		require.NotNil(t, d)
+		require.IsType(t, &appsv1.Deployment{}, d)
+		require.Equal(t, "test-c-name", d.GetName())
+		require.Equal(t, "test-c-namespace", d.GetNamespace())
+
+		regContainer := container.Get(d.Spec.Template.Spec.Containers, RegistryContainerName)
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "AUTHORIZATION_NODE_PORT", Value: "123"})
+
+		authContainer := container.Get(d.Spec.Template.Spec.Containers, AuthorizationContainerName)
+		require.NotNil(t, authContainer)
+		require.Contains(t, authContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
+		require.Contains(t, authContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "example.com"})
+
+		require.Equal(t, defaultResources(), regContainer.Resources)
+		require.Equal(t, defaultResources(), authContainer.Resources)
 	})
 }
 

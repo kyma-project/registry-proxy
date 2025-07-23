@@ -23,13 +23,14 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	Connection         v1alpha1.Connection
-	statusSnapshot     v1alpha1.ConnectionStatus
-	ProxyURL           string
-	NodePort           int32
-	Deployment         *appsv1.Deployment
-	Service            *corev1.Service
-	PeerAuthentication *securityclientv1.PeerAuthentication
+	Connection            v1alpha1.Connection
+	statusSnapshot        v1alpha1.ConnectionStatus
+	ProxyURL              string
+	NodePort              int32
+	Deployment            *appsv1.Deployment
+	Service               *corev1.Service
+	PeerAuthentication    *securityclientv1.PeerAuthentication
+	AuthorizationNodePort int32
 }
 
 func (s *SystemState) saveStatusSnapshot() {

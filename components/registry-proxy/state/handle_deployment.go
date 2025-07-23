@@ -6,11 +6,13 @@ import (
 	"reflect"
 	"time"
 
+	"github.tools.sap/kyma/registry-proxy/components/common/container"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources"
 
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -64,7 +66,7 @@ func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment
 }
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL)
+	deployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL, m.State.AuthorizationNodePort)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the RP CR is deleted.
@@ -99,7 +101,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 }
 
 func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, error) {
-	wantedDeployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL)
+	wantedDeployment := resources.NewDeployment(&m.State.Connection, m.State.ProxyURL, m.State.AuthorizationNodePort)
 	if !deploymentChanged(m.State.Deployment, wantedDeployment) {
 		return false, nil
 	}
@@ -111,33 +113,58 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, e
 }
 
 func deploymentChanged(got, wanted *appsv1.Deployment) bool {
-	if len(got.Spec.Template.Spec.Containers) != 1 ||
-		len(wanted.Spec.Template.Spec.Containers) != 1 {
+	if len(got.Spec.Template.Spec.Containers) < 1 ||
+		len(wanted.Spec.Template.Spec.Containers) < 1 &&
+			len(got.Spec.Template.Spec.Containers) != len(wanted.Spec.Template.Spec.Containers) {
 		return true
 	}
-	gotC := got.Spec.Template.Spec.Containers[0]
-	wantedC := wanted.Spec.Template.Spec.Containers[0]
 
-	imageChanged := gotC.Image != wantedC.Image
+	gotRegistryC := container.Get(got.Spec.Template.Spec.Containers, resources.RegistryContainerName)
+	wantedRegistryC := container.Get(wanted.Spec.Template.Spec.Containers, resources.RegistryContainerName)
+	if gotRegistryC == nil || wantedRegistryC == nil {
+		return true
+	}
+	registryContainerChanged := containerChanged(*gotRegistryC, *wantedRegistryC)
+
+	authorizationContainerChanged := false
+	wantedAuthorizationC := container.Get(wanted.Spec.Template.Spec.Containers, resources.AuthorizationContainerName)
+	if wantedAuthorizationC != nil {
+		gotAuthorizationC := container.Get(got.Spec.Template.Spec.Containers, resources.AuthorizationContainerName)
+		if gotAuthorizationC == nil {
+			return true
+		}
+		authorizationContainerChanged = containerChanged(*gotAuthorizationC, *wantedAuthorizationC)
+	}
+
 	labelsChanged := !reflect.DeepEqual(got.Spec.Template.Labels, wanted.Spec.Template.Labels)
+
 	replicasChanged := (got.Spec.Replicas == nil && wanted.Spec.Replicas != nil) ||
 		(got.Spec.Replicas != nil && wanted.Spec.Replicas == nil) ||
 		(got.Spec.Replicas != nil && wanted.Spec.Replicas != nil && *got.Spec.Replicas != *wanted.Spec.Replicas)
+
+	return registryContainerChanged ||
+		authorizationContainerChanged ||
+		labelsChanged ||
+		replicasChanged
+}
+
+func containerChanged(gotC, wantedC corev1.Container) bool {
+	imageChanged := gotC.Image != wantedC.Image
 	commandChanged := !reflect.DeepEqual(gotC.Command, wantedC.Command)
 	resourcesChanged := !reflect.DeepEqual(gotC.Resources, wantedC.Resources)
+	argsChanged := !reflect.DeepEqual(gotC.Args, wantedC.Args)
 	envChanged := !reflect.DeepEqual(gotC.Env, wantedC.Env)
 	portsChanged := !reflect.DeepEqual(gotC.Ports, wantedC.Ports)
 	return imageChanged ||
-		labelsChanged ||
-		replicasChanged ||
 		commandChanged ||
 		resourcesChanged ||
+		argsChanged ||
 		envChanged ||
 		portsChanged
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine) (bool, error) {
-	m.Log.Info("Updating Deployment %s/%s", m.State.Deployment.GetNamespace(), m.State.Deployment.GetName())
+	m.Log.Infof("Updating Deployment %s/%s", m.State.Deployment.GetNamespace(), m.State.Deployment.GetName())
 	if err := m.Client.Update(ctx, m.State.Deployment); err != nil {
 		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", m.State.Deployment.GetNamespace(), "Deployment.Name", m.State.Deployment.GetName())
 		m.State.Connection.UpdateCondition(

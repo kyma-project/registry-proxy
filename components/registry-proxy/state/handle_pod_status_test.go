@@ -75,7 +75,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.NoError(t, err)
 		require.Nil(t, result)
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleService, next)
+		requireEqualFunc(t, sFnHandlePeerAuthentication, next)
 	})
 	t.Run("multiple pods exist", func(t *testing.T) {
 		// create two pods with different creation timestamps, the first has failing probes
@@ -106,7 +106,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.NoError(t, err)
 		require.Nil(t, result)
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleService, next)
+		requireEqualFunc(t, sFnHandlePeerAuthentication, next)
 		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionDeployed, metav1.ConditionTrue, v1alpha1.ConditionReasonResourcesDeployed, "Reverse-proxy ready")
 	})
 }

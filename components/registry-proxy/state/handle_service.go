@@ -37,13 +37,41 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		return requeueAfter(time.Minute)
 	}
 
-	if m.State.Service.Spec.Ports[0].NodePort == 0 {
+	registryNodePort := getRegistryPort(m.State.Service.Spec.Ports)
+	if registryNodePort == 0 {
 		// nodePort not ready yet
 		return requeueAfter(time.Minute)
 	}
 
-	m.State.NodePort = m.State.Service.Spec.Ports[0].NodePort
-	return nextState(sFnHandlePeerAuthentication)
+	m.State.NodePort = registryNodePort
+
+	if m.State.Connection.Spec.AuthorizationHost != "" {
+		// wait until corresponding nodePort is set
+		authorizationNodePort := getAuthorizationNodePort(m.State.Service)
+		if authorizationNodePort == 0 {
+			return requeueAfter(time.Second * 10)
+		}
+		m.State.AuthorizationNodePort = authorizationNodePort
+	}
+	return nextState(sFnHandleDeployment)
+}
+
+func getRegistryPort(ports []corev1.ServicePort) int32 {
+	for _, port := range ports {
+		if port.Name == resources.RegistryContainerName {
+			return port.NodePort
+		}
+	}
+	return 0
+}
+
+func getAuthorizationNodePort(service *corev1.Service) int32 {
+	for _, port := range service.Spec.Ports {
+		if port.Name == resources.AuthorizationContainerName {
+			return port.NodePort
+		}
+	}
+	return 0
 }
 
 func getService(ctx context.Context, m *fsm.StateMachine) (*corev1.Service, error) {

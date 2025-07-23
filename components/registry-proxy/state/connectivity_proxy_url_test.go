@@ -103,7 +103,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnHandleService, next)
 		require.False(t, getWasCalled)
 		require.Equal(t, connection.Spec.ProxyURL, m.State.ProxyURL)
 	})
@@ -136,7 +136,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.Nil(t, err)
 		require.Nil(t, result)
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnHandleService, next)
 		require.Equal(t, "http://connectivity-proxy.kyma-system.svc.cluster.local:8080", m.State.ProxyURL)
 	})
 

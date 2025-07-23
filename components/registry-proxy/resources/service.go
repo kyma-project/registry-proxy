@@ -23,6 +23,7 @@ func (s *service) construct() *corev1.Service {
 		Port:       80,
 		Protocol:   corev1.ProtocolTCP,
 		TargetPort: intstr.FromInt(registryProxyPort),
+		Name:       RegistryContainerName,
 	}
 	if s.connection.Spec.NodePort != 0 {
 		port.NodePort = s.connection.Spec.NodePort
@@ -42,6 +43,17 @@ func (s *service) construct() *corev1.Service {
 				v1alpha1.LabelApp: s.connection.Name,
 			},
 		},
+	}
+
+	if s.connection.Spec.AuthorizationHost != "" {
+		// TODO: tests
+		authorizationPort := corev1.ServicePort{
+			Port:       82,
+			Protocol:   corev1.ProtocolTCP,
+			TargetPort: intstr.FromInt(registryProxyAuthorizationPort),
+			Name:       AuthorizationContainerName,
+		}
+		service.Spec.Ports = append(service.Spec.Ports, authorizationPort)
 	}
 
 	return service

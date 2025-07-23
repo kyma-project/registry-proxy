@@ -1,9 +1,11 @@
 package reverseproxy
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 
 	"github.tools.sap/kyma/registry-proxy/components/connection/internal/server"
 
@@ -27,6 +29,26 @@ func (lrt *logRoundTripper) RoundTrip(req *http.Request) (*http.Response, error)
 	return res, err
 }
 
+// getModifyResponseFunc replaces host of the WWW-Authenticate header with localhost:authPort
+// example header: Www-Authenticate: Bearer realm="http://gitlab.kyma/jwt/auth",service="container_registry"\r\n
+func getModifyResponseFunc(authPort string) func(*http.Response) error {
+	return func(resp *http.Response) error {
+		authenticateHeader := resp.Header.Get("WWW-Authenticate")
+		if authenticateHeader != "" {
+			wwwAuthHeader := ParseAuthSettings(authenticateHeader)
+			originalDestination := wwwAuthHeader.Params["realm"]
+			originalDestinationURL, err := url.Parse(originalDestination)
+			if err != nil {
+				return err
+			}
+			newDestination := fmt.Sprintf("localhost:%s", authPort)
+			authenticateHeader = strings.Replace(authenticateHeader, originalDestinationURL.Host, newDestination, 1)
+			resp.Header.Set("WWW-Authenticate", authenticateHeader)
+		}
+		return nil
+	}
+}
+
 func handler(p *httputil.ReverseProxy, targetHost, locationID string, log *zap.SugaredLogger) func(http.ResponseWriter, *http.Request) {
 	log.Infof("Registering handler to %s\n", targetHost)
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +65,7 @@ func handler(p *httputil.ReverseProxy, targetHost, locationID string, log *zap.S
 }
 
 // New creates a new reverse proxy server
-func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID string, log *zap.SugaredLogger) (*server.Server, error) {
+func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID, authPort string, log *zap.SugaredLogger) (*server.Server, error) {
 	remote, err := url.Parse(connectivityProxyURL)
 	if err != nil {
 		return nil, err
@@ -52,6 +74,11 @@ func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID string, l
 	proxy := httputil.NewSingleHostReverseProxy(remote)
 	proxy.Transport = &logRoundTripper{log: log, transport: http.DefaultTransport}
 	proxy.ErrorLog = zap.NewStdLog(log.Desugar())
+
+	if authPort != "" {
+		log.Info("Setting up authorization host to localhost:%s", authPort)
+		proxy.ModifyResponse = getModifyResponseFunc(authPort)
+	}
 
 	httpServer := &http.Server{
 		Addr:    reverseProxyURL,

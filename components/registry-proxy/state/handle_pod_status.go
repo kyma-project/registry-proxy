@@ -50,7 +50,7 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 		return stopWithEventualError(err)
 	}
 
-	return nextState(sFnHandleService)
+	return nextState(sFnHandlePeerAuthentication)
 }
 
 func handleLivenessStatus(rp *v1alpha1.Connection, phase corev1.PodPhase) error {

@@ -1,7 +1,9 @@
 package resources
 
 import (
+	"fmt"
 	"os"
+	"strconv"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
 
@@ -14,23 +16,30 @@ import (
 )
 
 const (
-	defaultLimitCPU      = "100m"
-	defaultLimitMemory   = "64Mi"
-	defaultRequestCPU    = "5m"
-	defaultRequestMemory = "32Mi"
-	registryProxyPort    = 8080
-	probesPort           = 8081
+	defaultLimitCPU                = "100m"
+	defaultLimitMemory             = "64Mi"
+	defaultRequestCPU              = "5m"
+	defaultRequestMemory           = "32Mi"
+	registryProxyPort              = 8080
+	probesPort                     = 8081
+	registryProxyAuthorizationPort = 8082
+	authorizationProbesPort        = 8083
+	// TODO: move to some common resources package?
+	RegistryContainerName      = "registry"
+	AuthorizationContainerName = "authorization"
 )
 
 type deployment struct {
-	connection *v1alpha1.Connection
-	proxyURL   string
+	connection            *v1alpha1.Connection
+	proxyURL              string
+	authorizationNodePort int32
 }
 
-func NewDeployment(connection *v1alpha1.Connection, proxyURL string) *appsv1.Deployment {
+func NewDeployment(connection *v1alpha1.Connection, proxyURL string, authorizationNodePort int32) *appsv1.Deployment {
 	d := &deployment{
-		connection: connection,
-		proxyURL:   proxyURL,
+		connection:            connection,
+		proxyURL:              proxyURL,
+		authorizationNodePort: authorizationNodePort,
 	}
 	return d.construct()
 }
@@ -54,7 +63,9 @@ func (d *deployment) construct() *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: podLabels,
 				},
-				Spec: d.podSpec(),
+				Spec: corev1.PodSpec{
+					Containers: d.containers(),
+				},
 			},
 			Replicas: ptr.To[int32](1),
 		},
@@ -62,76 +73,94 @@ func (d *deployment) construct() *appsv1.Deployment {
 	return deployment
 }
 
-func (d *deployment) podSpec() corev1.PodSpec {
-	return corev1.PodSpec{
-		Containers: []corev1.Container{
+func (d *deployment) containers() []corev1.Container {
+	containers := make([]corev1.Container, 0)
+	envs := d.envs()
+	registryContainer := d.container(RegistryContainerName, registryProxyPort, probesPort, envs)
+
+	containers = append(containers, registryContainer)
+
+	if d.authorizationNodePort != 0 {
+		authorizationEnvs := d.authEnvs()
+		authorizationContainer := d.container(AuthorizationContainerName, registryProxyAuthorizationPort, authorizationProbesPort, authorizationEnvs)
+		containers = append(containers, authorizationContainer)
+	}
+
+	return containers
+}
+
+func (d *deployment) container(name string, port, probePort int32, envs []corev1.EnvVar) corev1.Container {
+	container := corev1.Container{
+		Name:  name,
+		Image: os.Getenv("PROXY_IMAGE"),
+		Command: []string{
+			os.Getenv("PROXY_COMMAND"),
+		},
+		Args: []string{
+			"--connection-bind-address", fmt.Sprintf(":%d", port),
+			"--health-probe-bind-address", fmt.Sprintf(":%d", probePort),
+		},
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		Resources:       d.resourceConfiguration(),
+		Env:             envs,
+		Ports: []corev1.ContainerPort{
 			{
-				Name:  d.connection.Name,
-				Image: os.Getenv("PROXY_IMAGE"),
-				Command: []string{
-					os.Getenv("PROXY_COMMAND"),
+				ContainerPort: port,
+				Protocol:      "TCP",
+			},
+		},
+		StartupProbe: &corev1.Probe{
+			ProbeHandler: corev1.ProbeHandler{
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: "/healthz",
+					Port: intstr.FromInt32(probePort),
 				},
-				ImagePullPolicy: corev1.PullIfNotPresent,
-				Resources:       d.resourceConfiguration(),
-				Env:             d.envs(),
-				Ports: []corev1.ContainerPort{
-					{
-						ContainerPort: registryProxyPort,
-						Protocol:      "TCP",
-					},
+			},
+			InitialDelaySeconds: 0,
+			PeriodSeconds:       5,
+			SuccessThreshold:    1,
+			FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
+		},
+		ReadinessProbe: &corev1.Probe{
+			ProbeHandler: corev1.ProbeHandler{
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: "/readyz",
+					Port: intstr.FromInt32(probePort),
 				},
-				StartupProbe: &corev1.Probe{
-					ProbeHandler: corev1.ProbeHandler{
-						HTTPGet: &corev1.HTTPGetAction{
-							Path: "/healthz",
-							Port: intstr.FromInt32(probesPort),
-						},
-					},
-					InitialDelaySeconds: 0,
-					PeriodSeconds:       5,
-					SuccessThreshold:    1,
-					FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
+			},
+			InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
+			FailureThreshold:    1,
+			PeriodSeconds:       10,
+			TimeoutSeconds:      2,
+		},
+		LivenessProbe: &corev1.Probe{
+			ProbeHandler: corev1.ProbeHandler{
+				HTTPGet: &corev1.HTTPGetAction{
+					Path: "/healthz",
+					Port: intstr.FromInt32(probePort),
 				},
-				ReadinessProbe: &corev1.Probe{
-					ProbeHandler: corev1.ProbeHandler{
-						HTTPGet: &corev1.HTTPGetAction{
-							Path: "/readyz",
-							Port: intstr.FromInt32(probesPort),
-						},
-					},
-					InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
-					FailureThreshold:    1,
-					PeriodSeconds:       10,
-					TimeoutSeconds:      2,
-				},
-				LivenessProbe: &corev1.Probe{
-					ProbeHandler: corev1.ProbeHandler{
-						HTTPGet: &corev1.HTTPGetAction{
-							Path: "/healthz",
-							Port: intstr.FromInt32(probesPort),
-						},
-					},
-					FailureThreshold: 3,
-					PeriodSeconds:    5,
-					TimeoutSeconds:   4,
-				},
-				SecurityContext: &corev1.SecurityContext{
-					RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
-					RunAsUser:  d.podRunAsUserUID(),
-					SeccompProfile: &corev1.SeccompProfile{
-						Type: corev1.SeccompProfileTypeRuntimeDefault,
-					},
-					AllowPrivilegeEscalation: ptr.To(false),
-					RunAsNonRoot:             ptr.To(true),
-					Capabilities: &corev1.Capabilities{
-						Drop: []corev1.Capability{
-							"All",
-						},
-					},
+			},
+			FailureThreshold: 3,
+			PeriodSeconds:    5,
+			TimeoutSeconds:   4,
+		},
+		SecurityContext: &corev1.SecurityContext{
+			RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
+			RunAsUser:  d.podRunAsUserUID(),
+			SeccompProfile: &corev1.SeccompProfile{
+				Type: corev1.SeccompProfileTypeRuntimeDefault,
+			},
+			AllowPrivilegeEscalation: ptr.To(false),
+			RunAsNonRoot:             ptr.To(true),
+			Capabilities: &corev1.Capabilities{
+				Drop: []corev1.Capability{
+					"All",
 				},
 			},
 		},
 	}
+
+	return container
 }
 
 func (d *deployment) resourceConfiguration() corev1.ResourceRequirements {
@@ -164,6 +193,40 @@ func (d *deployment) envs() []corev1.EnvVar {
 		{
 			Name:  "TARGET_HOST",
 			Value: d.connection.Spec.TargetHost,
+		},
+		// TOOD: maybe skip setting this if empty?
+		{
+			Name:  "LOCATION_ID",
+			Value: d.connection.Spec.LocationID,
+		},
+	}
+
+	if d.connection.Spec.LogLevel != "" {
+		envVariables = append(envVariables, corev1.EnvVar{
+			Name:  "LOG_LEVEL",
+			Value: d.connection.Spec.LogLevel,
+		})
+	}
+
+	if d.authorizationNodePort != 0 {
+		envVariables = append(envVariables, corev1.EnvVar{
+			Name:  "AUTHORIZATION_NODE_PORT",
+			Value: strconv.Itoa(int(d.authorizationNodePort)),
+		})
+	}
+
+	return envVariables
+}
+
+func (d *deployment) authEnvs() []corev1.EnvVar {
+	envVariables := []corev1.EnvVar{
+		{
+			Name:  "PROXY_URL",
+			Value: d.proxyURL,
+		},
+		{
+			Name:  "TARGET_HOST",
+			Value: d.connection.Spec.AuthorizationHost,
 		},
 		{
 			Name:  "LOCATION_ID",

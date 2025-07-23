@@ -52,8 +52,10 @@ func main() {
 
 	locationID := os.Getenv("LOCATION_ID")
 
+	authPort := os.Getenv("AUTHORIZATION_NODE_PORT")
+
 	logger.Infof("Registering reverse proxy on %s through %s", proxyAddr, connectivityProxyAddress)
-	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, logger)
+	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, authPort, logger)
 	if err != nil {
 		log.Panicf("unable to setup reverse proxy: %s", err)
 	}

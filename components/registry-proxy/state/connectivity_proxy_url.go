@@ -21,7 +21,7 @@ func sFnConnectivityProxyURL(ctx context.Context, m *fsm.StateMachine) (fsm.Stat
 		}
 		m.State.ProxyURL = proxyURL
 	}
-	return nextState(sFnHandleDeployment)
+	return nextState(sFnHandleService)
 }
 
 func getReverseProxyURL(ctx context.Context, m *fsm.StateMachine) (string, error) {

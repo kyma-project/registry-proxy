@@ -46,7 +46,12 @@ func getReadyz(registryProxyConnection string, log *zap.SugaredLogger) http.Hand
 			log.Debugf("registry proxy connection at %s returned body: %s", registryProxyConnection, string(respBody))
 		}
 
-		w.WriteHeader(resp.StatusCode)
+		// we only want to check if the target system is responsice, we don't care if the response is non 200, as long as server works
+		if resp.StatusCode < http.StatusInternalServerError {
+			w.WriteHeader(http.StatusOK)
+		} else {
+			w.WriteHeader(resp.StatusCode)
+		}
 	}
 }
 

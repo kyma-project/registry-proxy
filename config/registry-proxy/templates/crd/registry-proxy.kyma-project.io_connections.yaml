@@ -52,6 +52,10 @@ spec:
           spec:
             description: ConnectionSpec defines the desired state of Connection.
             properties:
+              authorizationHost:
+                description: AuthorizationHost is the name of the host that is used
+                  for registry authorization
+                type: string
               locationID:
                 description: |-
                   Location ID of the connection

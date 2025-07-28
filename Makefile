@@ -94,6 +94,7 @@ run-integration-test-operator: integration-dependencies ## run integration test
 .PHONY: run-integration-test-registry-proxy
 run-integration-test-registry-proxy: integration-dependencies 
 	make -C tests/registry-proxy test
+	make -C tests/registry-proxy-auth-token test
 
 # TODO: move somewhere else
 .PHONY: install-registry-proxy
@@ -102,11 +103,6 @@ install-registry-proxy:
 	--namespace=kyma-system \
 	# --set controllerManager.container.image="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:$(TAG)" \
 	# --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
-
-.PHONY: integration-tests
-integration-tests: ## Run integration tests
-	make -C tests/registry-proxy test
-	make -C tests/operator test
 
 .PHONY: unit-tests
 unit-tests: ## Run unit tests

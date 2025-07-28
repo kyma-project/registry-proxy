@@ -27,6 +27,9 @@ type ConnectionSpec struct {
 
 	// AuthorizationHost is the name of the host that is used for registry authorization
 	AuthorizationHost string `json:"authorizationHost,omitempty"`
+
+	// Name of the secret containing authorization header to be used for the connection
+	AuthorizationSecret string `json:"authorizationSecret,omitempty"`
 }
 
 // ConnectionStatus defines the observed state of ConnectionStatus.

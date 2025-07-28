@@ -54,8 +54,19 @@ func main() {
 
 	authPort := os.Getenv("AUTHORIZATION_NODE_PORT")
 
+	// read /secrets/authorization file is it exists and store it in authorizationHeader
+	authorizationHeaderData, err := os.ReadFile("/secrets/authorization/authorizationHeader")
+	if err != nil {
+		if os.IsNotExist(err) {
+			logger.Info("No authorization header file found, proceeding without it")
+		} else {
+			logger.Panicf("Error reading authorization header file: %s", err)
+		}
+	}
+	authorizationHeader := string(authorizationHeaderData)
+
 	logger.Infof("Registering reverse proxy on %s through %s", proxyAddr, connectivityProxyAddress)
-	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, authPort, logger)
+	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, authPort, authorizationHeader, logger)
 	if err != nil {
 		log.Panicf("unable to setup reverse proxy: %s", err)
 	}

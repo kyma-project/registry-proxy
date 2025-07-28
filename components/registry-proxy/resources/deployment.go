@@ -70,6 +70,18 @@ func (d *deployment) construct() *appsv1.Deployment {
 			Replicas: ptr.To[int32](1),
 		},
 	}
+	if d.connection.Spec.AuthorizationSecret != "" {
+		deployment.Spec.Template.Spec.Volumes = []corev1.Volume{
+			{
+				Name: "authorization",
+				VolumeSource: corev1.VolumeSource{
+					Secret: &corev1.SecretVolumeSource{
+						SecretName: d.connection.Spec.AuthorizationSecret,
+					},
+				},
+			},
+		}
+	}
 	return deployment
 }
 
@@ -77,7 +89,15 @@ func (d *deployment) containers() []corev1.Container {
 	containers := make([]corev1.Container, 0)
 	envs := d.envs()
 	registryContainer := d.container(RegistryContainerName, registryProxyPort, probesPort, envs)
-
+	if d.connection.Spec.AuthorizationSecret != "" {
+		registryContainer.VolumeMounts = []corev1.VolumeMount{
+			{
+				Name:      "authorization",
+				MountPath: "/secrets/authorization",
+				ReadOnly:  true,
+			},
+		}
+	}
 	containers = append(containers, registryContainer)
 
 	if d.authorizationNodePort != 0 {

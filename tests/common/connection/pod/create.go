@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
+	"github.tools.sap/kyma/registry-proxy/tests/common/connection/dockerregistry"
 	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
 
 	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
@@ -19,7 +20,7 @@ func Create(utils *utils.TestUtils) error {
 	}
 
 	// docker-registry module credentials point to the docker-registry service, we have to convert that to our connection nodePort
-	dockerCreds, err := getDockerCredentials(utils)
+	dockerCreds, err := dockerregistry.GetDockerCredentials(utils.Ctx, utils.Client, utils.Namespace)
 	if err != nil {
 		return err
 	}
@@ -58,17 +59,12 @@ func fixPod(utils *utils.TestUtils, connection *v1alpha1.Connection) (*v1.Pod, e
 	if err != nil {
 		return nil, err
 	}
-	return &v1.Pod{
+	pod := &v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      utils.TestPod,
 			Namespace: utils.Namespace,
 		},
 		Spec: v1.PodSpec{
-			ImagePullSecrets: []v1.LocalObjectReference{
-				{
-					Name: utils.TestPod,
-				},
-			},
 			Containers: []v1.Container{
 				{
 					Name:  "container",
@@ -76,7 +72,18 @@ func fixPod(utils *utils.TestUtils, connection *v1alpha1.Connection) (*v1.Pod, e
 				},
 			},
 		},
-	}, nil
+	}
+
+	// use standard secret if we're not explicitly pushing hardcoded auth header
+	if !utils.AuthToken {
+		pod.Spec.ImagePullSecrets = []v1.LocalObjectReference{
+			{
+				Name: utils.TestPod,
+			},
+		}
+	}
+
+	return pod, nil
 }
 
 func getPodImage(utils *utils.TestUtils, connection *v1alpha1.Connection) (string, error) {
@@ -86,20 +93,6 @@ func getPodImage(utils *utils.TestUtils, connection *v1alpha1.Connection) (strin
 
 	}
 	return fmt.Sprintf("localhost:%d/%s", nodeport, utils.TaggedImageName), nil
-}
-
-func getDockerCredentials(utils *utils.TestUtils) (*v1.Secret, error) {
-	var secret v1.Secret
-	objectKey := client.ObjectKey{
-		Name:      "dockerregistry-config",
-		Namespace: utils.Namespace,
-	}
-
-	if err := utils.Client.Get(utils.Ctx, objectKey, &secret); err != nil {
-		return nil, err
-	}
-
-	return &secret, nil
 }
 
 // we have to convert secret to kubernetes.io/dockerconfigjson

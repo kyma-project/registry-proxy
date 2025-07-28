@@ -88,6 +88,8 @@ form:
     name: form.nodePort
   - path: spec.locationID
     name: form.locationID
+  - path: spec.authorizationSecret
+    name: form.authorizationSecret
 
 translations:
   en:
@@ -97,6 +99,7 @@ translations:
       proxyURL: Proxy URL
       nodePort: Node Port
       locationID: Location ID
+      authorizationSecret: Authorization Secret
     status:
       conditions: Conditions
       nodePort: Node Port

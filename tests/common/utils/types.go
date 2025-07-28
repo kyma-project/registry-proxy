@@ -20,4 +20,5 @@ type TestUtils struct {
 	TestPod                 string
 	RegistryProxyName       string
 	SecondRegistryProxyName string
+	AuthToken               bool
 }

@@ -49,7 +49,7 @@ func getModifyResponseFunc(authPort string) func(*http.Response) error {
 	}
 }
 
-func handler(p *httputil.ReverseProxy, targetHost, locationID string, log *zap.SugaredLogger) func(http.ResponseWriter, *http.Request) {
+func handler(p *httputil.ReverseProxy, targetHost, locationID, authHeader string, log *zap.SugaredLogger) func(http.ResponseWriter, *http.Request) {
 	log.Infof("Registering handler to %s\n", targetHost)
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Debugf("Asking for %s %s %s\n", r.Proto, targetHost, r.URL)
@@ -60,12 +60,16 @@ func handler(p *httputil.ReverseProxy, targetHost, locationID string, log *zap.S
 			r.Header.Set("SAP-Connectivity-SCC-Location_ID", locationID)
 		}
 
+		if authHeader != "" {
+			r.Header.Set("Authorization", authHeader)
+		}
+
 		p.ServeHTTP(w, r)
 	}
 }
 
 // New creates a new reverse proxy server
-func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID, authPort string, log *zap.SugaredLogger) (*server.Server, error) {
+func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID, authPort, authorizationHeader string, log *zap.SugaredLogger) (*server.Server, error) {
 	remote, err := url.Parse(connectivityProxyURL)
 	if err != nil {
 		return nil, err
@@ -82,7 +86,7 @@ func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID, authPort
 
 	httpServer := &http.Server{
 		Addr:    reverseProxyURL,
-		Handler: http.HandlerFunc(handler(proxy, targetHost, locationID, log)),
+		Handler: http.HandlerFunc(handler(proxy, targetHost, locationID, authorizationHeader, log)),
 	}
 	return &server.Server{HTTPServer: httpServer, Log: log}, nil
 }

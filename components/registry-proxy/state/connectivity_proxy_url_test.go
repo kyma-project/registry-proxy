@@ -76,8 +76,12 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 
@@ -105,7 +109,7 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleService, next)
 		require.False(t, getWasCalled)
-		require.Equal(t, connection.Spec.ProxyURL, m.State.ProxyURL)
+		require.Equal(t, connection.Spec.Proxy.URL, m.State.ProxyURL)
 	})
 
 	t.Run("proxyURL from connectivity proxy", func(t *testing.T) {
@@ -115,7 +119,9 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				TargetHost: "dummy",
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		connectivityProxy := minimalConnectivityProxy(8080)
@@ -147,7 +153,9 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				TargetHost: "dummy",
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		connectivityProxy := minimalConnectivityProxy(0)

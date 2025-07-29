@@ -46,8 +46,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -105,8 +109,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -139,8 +147,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -167,11 +179,15 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
+		deployment := resources.NewDeployment(&connection, connection.Spec.Proxy.URL, 0)
 		scheme := minimalScheme(t)
 		createOrUpdateWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -188,7 +204,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Connection: connection,
-				ProxyURL:   connection.Spec.ProxyURL,
+				ProxyURL:   connection.Spec.Proxy.URL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -212,11 +228,15 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
+		deployment := resources.NewDeployment(&connection, connection.Spec.Proxy.URL, 0)
 		scheme := minimalScheme(t)
 		createWasCalled := false
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
@@ -226,12 +246,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			},
 		}).Build()
 
-		connection.Spec.TargetHost = "fresh"
+		connection.Spec.Target.Host = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Connection: connection,
-				ProxyURL:   connection.Spec.ProxyURL,
+				ProxyURL:   connection.Spec.Proxy.URL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,
@@ -267,11 +287,15 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
-		deployment := resources.NewDeployment(&connection, connection.Spec.ProxyURL, 0)
+		deployment := resources.NewDeployment(&connection, connection.Spec.Proxy.URL, 0)
 		scheme := minimalScheme(t)
 		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(deployment).WithInterceptorFuncs(interceptor.Funcs{
 			Update: func(ctx context.Context, client client.WithWatch, obj client.Object, opts ...client.UpdateOption) error {
@@ -279,12 +303,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			},
 		}).Build()
 
-		connection.Spec.TargetHost = "fresh"
+		connection.Spec.Target.Host = "fresh"
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Connection: connection,
-				ProxyURL:   connection.Spec.ProxyURL,
+				ProxyURL:   connection.Spec.Proxy.URL,
 			},
 			Log:    zap.NewNop().Sugar(),
 			Client: fakeClient,

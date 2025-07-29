@@ -44,8 +44,12 @@ func Test_sFnHandleService(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -86,8 +90,12 @@ func Test_sFnHandleService(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -119,8 +127,12 @@ func Test_sFnHandleService(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL:   "http://test-proxy-url",
-						TargetHost: "dummy",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
+						Target: v1alpha1.ConnectionSpecTarget{
+							Host: "dummy",
+						},
 					},
 				},
 			},
@@ -142,8 +154,12 @@ func Test_sFnHandleService(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		service := resources.NewService(&connection)
@@ -184,8 +200,12 @@ func Test_sFnHandleService(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		service := resources.NewService(&connection)
@@ -228,8 +248,12 @@ func Test_sFnHandleService(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		service := resources.NewService(&connection)
@@ -273,8 +297,12 @@ func Test_sFnHandleService(t *testing.T) {
 				Namespace: "maslo",
 			},
 			Spec: v1alpha1.ConnectionSpec{
-				ProxyURL:   "http://test-proxy-url",
-				TargetHost: "dummy",
+				Proxy: v1alpha1.ConnectionSpecProxy{
+					URL: "http://test-proxy-url",
+				},
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
 			},
 		}
 		service := resources.NewService(&connection)

@@ -5,6 +5,18 @@ metadata:
 spec:
   proxy:
     url: "http://connectivity-proxy.kyma-system.svc.cluster.local:20003"
+    locationID: "123456"
   target:
     host: "myregistry.kyma:25002"
+    authorization:
+      host: "myregistry.kyma:80"
+      # headerSecret: "authSecret"
+  nodePort: 32123
   logLevel: debug
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"

@@ -8,28 +8,48 @@ import (
 
 // ConnectionSpec defines the desired state of Connection.
 type ConnectionSpec struct {
-	// URL of the Connectivity Proxy, with protocol
-	ProxyURL string `json:"proxyURL,omitempty"`
+	// Details of the used proxy
+	Proxy ConnectionSpecProxy `json:"proxy,omitempty"`
 
 	// +kubebuilder:validation:Required
-	// +kubebuilder:validation:MinLength=1
-	TargetHost string                       `json:"targetHost"`
-	Resources  *corev1.ResourceRequirements `json:"resources,omitempty"`
+	Target    ConnectionSpecTarget         `json:"target"`
+	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
+
 	// Sets desired log level to be used. The default value is "info"
 	LogLevel string `json:"logLevel,omitempty"`
+
 	// NodePort is the port on which the service is exposed on each node.
 	// If not specified, a random port will be assigned.
 	NodePort int32 `json:"nodePort,omitempty,omitzero"`
+}
+
+type ConnectionSpecProxy struct {
+	// URL of the Connectivity Proxy, with protocol
+	URL string `json:"url,omitempty"`
 
 	// Location ID of the connection
 	// used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
 	LocationID string `json:"locationID,omitempty"`
+}
 
-	// AuthorizationHost is the name of the host that is used for registry authorization
-	AuthorizationHost string `json:"authorizationHost,omitempty"`
+type ConnectionSpecTarget struct {
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Host string `json:"host"`
+
+	// TODO: replace with AtMostOneOf in the future when it'll be available in kubebuilder: https://github.com/kubernetes-sigs/controller-tools/issues/461
+
+	// Authorization defines the authorization method for the connection
+	// +kubebuilder:validation:XValidation:message="Use host or headerSecret",rule="(!has(self.host) && !has(self.headerSecret)) || (has(self.host) && !has(self.headerSecret)) || (!has(self.host) && has(self.headerSecret))"
+	Authorization ConnectionSpecTargetAuthorization `json:"authorization,omitempty"`
+}
+
+type ConnectionSpecTargetAuthorization struct {
+	// Host is the name of the host that is used for registry authorization
+	Host string `json:"host,omitempty"`
 
 	// Name of the secret containing authorization header to be used for the connection
-	AuthorizationSecret string `json:"authorizationSecret,omitempty"`
+	HeaderSecret string `json:"headerSecret,omitempty"`
 }
 
 // ConnectionStatus defines the observed state of ConnectionStatus.

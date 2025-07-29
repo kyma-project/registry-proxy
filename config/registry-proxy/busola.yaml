@@ -35,11 +35,11 @@ details: #Inside "Resource Details" view
       defaultType: information
 
 list: #Inside "Connection" list view
-# to Add after TimeFromNow widget is updated track progress https://github.com/kyma-project/busola/issues/3938
-#  - name: "Age"
-#    widget: TimeFromNow
-  - name: list.targetHost
-    source: spec.targetHost
+  # to Add after TimeFromNow widget is updated track progress https://github.com/kyma-project/busola/issues/3938
+  #  - name: "Age"
+  #    widget: TimeFromNow
+  - name: list.target.host
+    source: spec.target.host
     widget: Text
   - name: list.running
     source: status.conditions[type="ConnectionDeployed"].status
@@ -71,35 +71,45 @@ list: #Inside "Connection" list view
     widget: Badge
 
 form:
-  - path: spec.targetHost
+  - path: spec.target.host
     required: true
-    name: form.targetHost
+    name: form.target.host
   - path: spec.logLevel
     name: form.logLevel
     enum:
-        - "debug"
-        - "info"
-        - "warn"
-        - "error"
-        - "fatal"
-  - path: spec.proxyURL
-    name: form.proxyURL
+      - "debug"
+      - "info"
+      - "warn"
+      - "error"
+      - "fatal"
+  - path: spec.proxy.url
+    name: form.proxy.url
   - path: spec.nodePort
     name: form.nodePort
-  - path: spec.locationID
-    name: form.locationID
-  - path: spec.authorizationSecret
-    name: form.authorizationSecret
+  - path: spec.proxy.locationID
+    name: form.proxy.locationID
+  # TODO: separate group for auth, verification only one is active
+  - path: spec.target.authorization.headerSecret
+    name: form.target.authorization.headerSecret
+  - path: spec.target.authorization.host
+    name: form.target.authorization.host
+  - path: spec.resources
+    name: form.resources
 
 translations:
   en:
     form:
-      targetHost: Target Host
+      resources: Resources
       logLevel: Log Level
-      proxyURL: Proxy URL
+      proxy:
+        url: Proxy URL
+        locationID: Location ID
       nodePort: Node Port
-      locationID: Location ID
-      authorizationSecret: Authorization Secret
+      target:
+        host: Target Host
+        authorization:
+          host: Authorization Host
+          headerSecret: Authorization Secret
     status:
       conditions: Conditions
       nodePort: Node Port
@@ -111,4 +121,5 @@ translations:
       conditions: Conditions
       running: Deployed
       ready: Ready
-      targetHost: "Target Host"
+      target:
+        host: "Target Host"

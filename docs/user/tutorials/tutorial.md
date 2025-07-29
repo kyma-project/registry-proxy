@@ -186,7 +186,8 @@ metadata:
   name: registry-proxy-myregistry
   namespace: ${NAMESPACE}
 spec:
-  targetHost: "myregistry.kyma:25002"
+  target:
+    host: "myregistry.kyma:25002"
 EOF
 ```
 

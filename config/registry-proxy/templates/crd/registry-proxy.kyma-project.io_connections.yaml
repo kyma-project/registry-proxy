@@ -52,19 +52,6 @@ spec:
           spec:
             description: ConnectionSpec defines the desired state of Connection.
             properties:
-              authorizationHost:
-                description: AuthorizationHost is the name of the host that is used
-                  for registry authorization
-                type: string
-              authorizationSecret:
-                description: Name of the secret containing authorization header to
-                  be used for the connection
-                type: string
-              locationID:
-                description: |-
-                  Location ID of the connection
-                  used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
-                type: string
               logLevel:
                 description: Sets desired log level to be used. The default value
                   is "info"
@@ -75,9 +62,18 @@ spec:
                   If not specified, a random port will be assigned.
                 format: int32
                 type: integer
-              proxyURL:
-                description: URL of the Connectivity Proxy, with protocol
-                type: string
+              proxy:
+                description: Details of the used proxy
+                properties:
+                  locationID:
+                    description: |-
+                      Location ID of the connection
+                      used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
+                    type: string
+                  url:
+                    description: URL of the Connectivity Proxy, with protocol
+                    type: string
+                type: object
               resources:
                 description: ResourceRequirements describes the compute resource requirements.
                 properties:
@@ -137,11 +133,33 @@ spec:
                       More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
                     type: object
                 type: object
-              targetHost:
-                minLength: 1
-                type: string
+              target:
+                properties:
+                  authorization:
+                    description: Authorization defines the authorization method for
+                      the connection
+                    properties:
+                      headerSecret:
+                        description: Name of the secret containing authorization header
+                          to be used for the connection
+                        type: string
+                      host:
+                        description: Host is the name of the host that is used for
+                          registry authorization
+                        type: string
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Use host or headerSecret
+                      rule: (!has(self.host) && !has(self.headerSecret)) || (has(self.host)
+                        && !has(self.headerSecret)) || (!has(self.host) && has(self.headerSecret))
+                  host:
+                    minLength: 1
+                    type: string
+                required:
+                - host
+                type: object
             required:
-            - targetHost
+            - target
             type: object
           status:
             description: ConnectionStatus defines the observed state of ConnectionStatus.

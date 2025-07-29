@@ -21,7 +21,9 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL: "http://test-proxy-url",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: "http://test-proxy-url",
+						},
 					},
 				},
 			},
@@ -49,7 +51,9 @@ func Test_sFnValidateReverseProxyURL(t *testing.T) {
 						Namespace: "maslo",
 					},
 					Spec: v1alpha1.ConnectionSpec{
-						ProxyURL: ":thisURLisbroken",
+						Proxy: v1alpha1.ConnectionSpecProxy{
+							URL: ":thisURLisbroken",
+						},
 					},
 				},
 			},

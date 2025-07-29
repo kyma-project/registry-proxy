@@ -45,7 +45,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 	m.State.NodePort = registryNodePort
 
-	if m.State.Connection.Spec.AuthorizationHost != "" {
+	if m.State.Connection.Spec.Target.Authorization.Host != "" {
 		// wait until corresponding nodePort is set
 		authorizationNodePort := getAuthorizationNodePort(m.State.Service)
 		if authorizationNodePort == 0 {

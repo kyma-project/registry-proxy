@@ -39,10 +39,6 @@ type SystemState struct {
 	statusSnapshot v1alpha1.RegistryProxyStatus
 	ChartConfig    *chart.Config
 	Cache          chart.ManifestCache
-	// ProxyURL       string
-	// NodePort       int32
-	// Deployment     *appsv1.Deployment
-	// Service        *corev1.Service
 }
 
 func (s *SystemState) saveStatusSnapshot() {

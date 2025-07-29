@@ -5,4 +5,5 @@ metadata:
   namespace: proxy
 spec:
   # proxyURL will be automatically retrieved from the Connectivity Proxy module
-  targetHost: "myregistry.kyma:25002"
+  target:
+    host: "myregistry.kyma:25002"

@@ -17,7 +17,7 @@ func TestNewDeployment(t *testing.T) {
 	t.Run("create deployment", func(t *testing.T) {
 		rp := minimalConnection()
 
-		d := NewDeployment(rp, rp.Spec.ProxyURL, 0)
+		d := NewDeployment(rp, rp.Spec.Proxy.URL, 0)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
@@ -37,7 +37,7 @@ func TestNewDeployment(t *testing.T) {
 		resources := minimalResources()
 		rp.Spec.Resources = &resources
 
-		d := NewDeployment(rp, rp.Spec.ProxyURL, 0)
+		d := NewDeployment(rp, rp.Spec.Proxy.URL, 0)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
@@ -54,9 +54,9 @@ func TestNewDeployment(t *testing.T) {
 
 	t.Run("create deployment with authorizationHost", func(t *testing.T) {
 		rp := minimalConnection()
-		rp.Spec.AuthorizationHost = "example.com"
+		rp.Spec.Target.Authorization.Host = "example.com"
 
-		d := NewDeployment(rp, rp.Spec.ProxyURL, 123)
+		d := NewDeployment(rp, rp.Spec.Proxy.URL, 123)
 
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
@@ -85,8 +85,12 @@ func minimalConnection() *v1alpha1.Connection {
 			Namespace: "test-c-namespace",
 		},
 		Spec: v1alpha1.ConnectionSpec{
-			ProxyURL:   "http://test-proxy-url",
-			TargetHost: "dummy",
+			Proxy: v1alpha1.ConnectionSpecProxy{
+				URL: "http://test-proxy-url",
+			},
+			Target: v1alpha1.ConnectionSpecTarget{
+				Host: "dummy",
+			},
 		},
 	}
 }
@@ -98,9 +102,13 @@ func minimalRegistryProxyWithPort(desiredNodePort int32) *v1alpha1.Connection {
 			Namespace: "test-rp-namespace",
 		},
 		Spec: v1alpha1.ConnectionSpec{
-			ProxyURL:   "http://test-proxy-url",
-			TargetHost: "dummy",
-			NodePort:   desiredNodePort,
+			Proxy: v1alpha1.ConnectionSpecProxy{
+				URL: "http://test-proxy-url",
+			},
+			Target: v1alpha1.ConnectionSpecTarget{
+				Host: "dummy",
+			},
+			NodePort: desiredNodePort,
 		},
 	}
 }

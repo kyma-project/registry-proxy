@@ -70,13 +70,13 @@ func (d *deployment) construct() *appsv1.Deployment {
 			Replicas: ptr.To[int32](1),
 		},
 	}
-	if d.connection.Spec.AuthorizationSecret != "" {
+	if d.connection.Spec.Target.Authorization.HeaderSecret != "" {
 		deployment.Spec.Template.Spec.Volumes = []corev1.Volume{
 			{
 				Name: "authorization",
 				VolumeSource: corev1.VolumeSource{
 					Secret: &corev1.SecretVolumeSource{
-						SecretName: d.connection.Spec.AuthorizationSecret,
+						SecretName: d.connection.Spec.Target.Authorization.HeaderSecret,
 					},
 				},
 			},
@@ -89,7 +89,7 @@ func (d *deployment) containers() []corev1.Container {
 	containers := make([]corev1.Container, 0)
 	envs := d.envs()
 	registryContainer := d.container(RegistryContainerName, registryProxyPort, probesPort, envs)
-	if d.connection.Spec.AuthorizationSecret != "" {
+	if d.connection.Spec.Target.Authorization.HeaderSecret != "" {
 		registryContainer.VolumeMounts = []corev1.VolumeMount{
 			{
 				Name:      "authorization",
@@ -212,12 +212,12 @@ func (d *deployment) envs() []corev1.EnvVar {
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: d.connection.Spec.TargetHost,
+			Value: d.connection.Spec.Target.Host,
 		},
 		// TOOD: maybe skip setting this if empty?
 		{
 			Name:  "LOCATION_ID",
-			Value: d.connection.Spec.LocationID,
+			Value: d.connection.Spec.Proxy.LocationID,
 		},
 	}
 
@@ -246,11 +246,11 @@ func (d *deployment) authEnvs() []corev1.EnvVar {
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: d.connection.Spec.AuthorizationHost,
+			Value: d.connection.Spec.Target.Authorization.Host,
 		},
 		{
 			Name:  "LOCATION_ID",
-			Value: d.connection.Spec.LocationID,
+			Value: d.connection.Spec.Proxy.LocationID,
 		},
 	}
 

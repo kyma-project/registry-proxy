@@ -34,7 +34,7 @@ func verifyDeployEnvs(deploy *appsv1.Deployment, connection *connection.Connecti
 		},
 		{
 			Name:  "TARGET_HOST",
-			Value: connection.Spec.TargetHost,
+			Value: connection.Spec.Target.Host,
 		},
 	}
 

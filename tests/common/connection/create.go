@@ -29,7 +29,7 @@ func Create(utils *utils.TestUtils) error {
 			return err
 		}
 
-		connectionObj.Spec.AuthorizationSecret = authTokenSecretName
+		connectionObj.Spec.Target.Authorization.HeaderSecret = authTokenSecretName
 	}
 
 	return utils.Client.Create(utils.Ctx, connectionObj)
@@ -42,9 +42,14 @@ func fixConnection(testUtils *utils.TestUtils) *v1alpha1.Connection {
 			Namespace: testUtils.Namespace,
 		},
 		Spec: v1alpha1.ConnectionSpec{
-			ProxyURL:   testUtils.ProxyURL,
-			TargetHost: testUtils.TargetHost,
-			LogLevel:   "debug",
+			Proxy: v1alpha1.ConnectionSpecProxy{
+				URL: testUtils.ProxyURL,
+			},
+			Target: v1alpha1.ConnectionSpecTarget{
+				Host: testUtils.TargetHost,
+			},
+
+			LogLevel: "debug",
 		},
 	}
 

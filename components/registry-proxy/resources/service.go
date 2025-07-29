@@ -45,7 +45,7 @@ func (s *service) construct() *corev1.Service {
 		},
 	}
 
-	if s.connection.Spec.AuthorizationHost != "" {
+	if s.connection.Spec.Target.Authorization.Host != "" {
 		// TODO: tests
 		authorizationPort := corev1.ServicePort{
 			Port:       82,

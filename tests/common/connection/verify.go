@@ -51,7 +51,7 @@ func verifyStatus(connection *v1alpha1.Connection) error {
 	status := connection.Status
 	spec := connection.Spec
 
-	if err := isSpecValueReflectedInStatus(spec.ProxyURL, status.ProxyURL); err != nil {
+	if err := isSpecValueReflectedInStatus(spec.Proxy.URL, status.ProxyURL); err != nil {
 		return err
 	}
 

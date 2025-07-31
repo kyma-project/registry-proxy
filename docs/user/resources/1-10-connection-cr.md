@@ -27,14 +27,20 @@ spec:
 
 **Spec:**
 
-| Parameter                 | Type                           | Description                                                                                 |
-|---------------------------| ------------------------------ |---------------------------------------------------------------------------------------------|
-| **proxyURL**              | string                         | URL of the Connectivity Proxy, with protocol.                                               |
-| **targetHost** (required) | string                         | Specifies the target host.                                                                  |
-| **resources**             | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
-| **logLevel**              | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
-| **nodePort**              | integer                        | Sets the desired service NodePort number.                                                   |
-| **locationID**            | string                         | Sets the `SAP-Connectivity-SCC-Location_ID` header with given ID on every forwarded request |
+| Parameter                               | Type                           | Description                                                                                 |
+| --------------------------------------- | ------------------------------ |---------------------------------------------------------------------------------------------|
+| **proxy**                               | object                         | Specifies the connection to the proxy.                                                      |
+| **proxy.url**                           | string                         | URL of the Connectivity Proxy, with protocol.                                               |
+| **proxy.locationID**                    | string                         | Sets the `SAP-Connectivity-SCC-Location_ID` header with given ID on every forwarded request |
+| **target** (required)                   | object                         | Specifies the connection to the target registry.                                            |
+| **target.host** (required)              | string                         | Specifies the target host.                                                                  |
+| **target.authorization**                | object                         | Specifies the authorization method for the connection                                       |
+| **target.authorization.host**           | string                         | Name of the host that is used for registry authorization                                    |
+| **target.authorization.headerSecret**   | string                         | Name of the secret containing authorization header to be used for the connection.           |
+| **resources**                           | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
+| **logLevel**                            | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
+| **nodePort**                            | integer                        | Sets the desired service NodePort number.                                                   |
+
 
 **Status:**
 

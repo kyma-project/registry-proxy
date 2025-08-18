@@ -17,18 +17,22 @@ keywords: kyma
 - How to set up Cloud Connector, on-premise Docker Registry.
 - How to install the Registry Proxy module and configure the connection.
 - How to create a target deployment using an image from the on-premise Docker Registry.
+- How to set up a Connection to a Docker Registry with the OAuth authentication.
 
 ## Prerequisites
 
 - SAP BTP, Kyma runtime enabled
 - [Connectivity Proxy and Registry Proxy modules](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) added
-- Docker installed and running
+- Docker installed and running (for the Basic authorization option)
+- Docker Registry instance that uses OAuth authorization (for the OAuth option)
 - kubectl installed
 - [SapMachine 21 JDK](https://sapmachine.io/) installed
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
 - Htpasswd and openssl installed
 
 ### Prepare enviroment
+
+[OPTION BEGIN [Basic authorization]]
 
 1. Export the following environment variables:
 
@@ -40,8 +44,32 @@ export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.d
 export REG_USER_NAME={REGISTRY_USERNAME}
 export REG_USER_PASSWD={REGISTRY_PASSWORD}
 export IMAGE_TAG="$(date +%F-%H-%M)"
-export IMAGE_NAME="myregistry.kyma:25002/on-prem-nginx:${IMAGE_TAG}"
+export IMAGE_NAME="on-prem-nginx"
+export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}$:${IMAGE_TAG}"
 ```
+
+[OPTION END]
+
+[OPTION BEGIN [OAuth authorization]]
+
+1. Export the following environment variables:
+
+```bash
+export KUBECONFIG={PATH_TO_YOUR_KYMA_KUBECONFIG}
+export EMAIL={YOUR_EMAIL}
+export NAMESPACE={NAMESPACE_WHERE_WORKLOAD_IS_DEPLOYED}
+export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
+export REG_USER_NAME={REGISTRY_USERNAME}
+export REG_USER_PASSWD={REGISTRY_PASSWORD}
+export DOCKER_REGISTRY_HOST={EXISTING_DOCKER_REGISTRY_HOST}
+export DOCKER_REGISTRY_PORT={EXISTING_DOCKER_REGISTRY_PORT}
+export DOCKER_REGISTRY="${DOCKER_REGISTRY_HOST}:${DOCKER_REGISTRY_PORT}"
+export AUTHORIZATION_HOST={OAUTH_HOST_WITH_PORT}
+export IMAGE_TAG={TAG_OF_EXISTING_DOCKER_IMAGE}
+export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
+```
+
+[OPTION END]
 
 ### Setup Cloud Connector
 
@@ -73,6 +101,8 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 7. Add the file from the previous step, and choose **Next**.
 
 ### Set up on-premise Docker Registry
+
+[OPTION BEGIN [Basic authorization]]
 
 1. Generate a self-signed certificate:
 
@@ -158,7 +188,18 @@ docker run -d \
 
 8. Select **+** in the **Backend Trust Store** section, and add the generated `domain.crt` file to the allowlist.
 
+[OPTION END]
+
+[OPTION BEGIN [OAuth authorization]]
+
+1. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
+2. Select **+** in the **Backend Trust Store** section, and add the Docker Registry and OAuth server certificates (where applicable) to the allowlist.
+
+[OPTION END]
+
 ### Configure Cloud Connector on-premise connection
+
+[OPTION BEGIN [Basic authorization]]
 
 1. Go to the **Cloud to On-Premises** section in the Cloud Connector UI and under the **Mapping Virtual to Internal System** click the **+** button.
    Provide the following information:
@@ -173,7 +214,52 @@ docker run -d \
 4. Select the `Check availability of internal host` button to make sure the Cloud Connector was configured properly, and the cluster can access the on-prem Docker registry.
    ![check-availability.png](check-availability.png)
 
+5. Authenticate to the local Docker registry to push the test image:
+
+```bash
+docker login myregistry.kyma:25002 -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
+```
+
+6. Create and push a test image to the on-premise Docker Registry:
+
+```bash
+echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_PATH} -
+```
+
+[OPTION END]
+
+[OPTION BEGIN [OAuth authorization]]
+
+1. Go to the **Cloud to On-Premises** section in the Cloud Connector UI and under the **Mapping Virtual to Internal System** click the **+** button.
+   Provide the following information:
+   - Back-end Type: Non-SAP System
+   - Protocol: HTTPS
+   - Internal and Virtual Host: {DOCKER_REGISTRY_HOST}
+   - Internal and Virtual Port: {DOCKER_REGISTRY_PORT}
+   - Uncheck **Allow Principal Propagation**
+   - Host in Request Header: Use Internal Host
+2. Choose **+** in the **Resources of {your registry name}**
+3. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
+4. If the OAuth uses different host or port than the Docker Registry create a second **Mapping Virtual to Internal System**.
+   Provide the following information:
+
+- Back-end Type: Non-SAP System
+- Protocol: HTTPS
+- Internal and Virtual Host: {OAUTH_DOMAIN}
+- Internal and Virtual Port: {OAUTH_PORT}
+- Uncheck **Allow Principal Propagation**
+- Host in Request Header: Use Internal Host
+
+5. Choose **+** in the **Resources of {your oauth name}**
+6. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
+7. Select the `Check availability of internal host` button to make sure the Cloud Connector was configured properly, and the cluster can access the on-prem Docker registry.
+   ![check-availability.png](check-availability.png)
+
+[OPTION END]
+
 ### Configure Registry Proxy
+
+[OPTION BEGIN [Basic authorization]]
 
 1. Apply a Connection CR:
 
@@ -191,6 +277,30 @@ spec:
 EOF
 ```
 
+[OPTION END]
+
+[OPTION BEGIN [OAuth authorization]]
+
+1. Apply a Connection CR:
+
+```bash
+kubectl create namespace ${NAMESPACE}
+cat << EOF | kubectl apply -f -
+apiVersion: registry-proxy.kyma-project.io/v1alpha1
+kind: Connection
+metadata:
+  name: registry-proxy-myregistry
+  namespace: ${NAMESPACE}
+spec:
+  target:
+    host: "${DOCKER_REGISTRY}"
+    authorization:
+      host: "${AUTHORIZATION_HOST}"
+EOF
+```
+
+[OPTION END]
+
 2. Get the Connection NodePort number:
 
 ```bash
@@ -199,19 +309,7 @@ export NODE_PORT=$(kubectl get connections.registry-proxy.kyma-project.io -n ${N
 
 ### Configure on-premise Docker Registry
 
-1. Authenticate to the local Docker registry to push the test image:
-
-```bash
-docker login myregistry.kyma:25002 -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
-```
-
-2. Create and push a test image to the on-premise Docker Registry:
-
-```bash
-echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_NAME} -
-```
-
-3. Create a Secret for authentication with the on-premise Docker registry:
+1. Create a Secret for authentication with the on-premise Docker registry:
 
 ```bash
 kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
@@ -221,10 +319,10 @@ kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
     --docker-server=localhost:${NODE_PORT}
 ```
 
-4. Adjust the image in the Deployment to use the image tag and the node port from the previous steps, and deploy it on the cluster:
+2. Adjust the image in the Deployment to use the image tag and the node port from the previous steps, and deploy it on the cluster:
 
 ```bash
-kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/on-prem-nginx:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
+kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}$:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
 kubectl create service clusterip test-workload-on-prem-reg -n ${NAMESPACE} --tcp=80:80
 cat << EOF | kubectl apply -f -
 apiVersion: gateway.kyma-project.io/v2
@@ -247,13 +345,13 @@ spec:
 EOF
 ```
 
-5. Check if the workload was deployed successfully:
+3. Check if the workload was deployed successfully:
 
 ```bash
 kubectl -n ${NAMESPACE} get pods -l app=test-workload-on-prem-reg
 ```
 
-6. Access the deployed Nginx image at the `https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}` address:
+4. Access the deployed Nginx image at the `https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}` address:
 
 ```bash
  curl https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}

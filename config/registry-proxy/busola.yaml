@@ -5,7 +5,7 @@ general:
     version: v1alpha1
   urlPath: connections
   category: Discovery and Network
-  name: Connection
+  name: Connections
   scope: namespace
   features:
     actions:

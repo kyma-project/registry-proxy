@@ -114,8 +114,8 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine) (bool, e
 
 func deploymentChanged(got, wanted *appsv1.Deployment) bool {
 	if len(got.Spec.Template.Spec.Containers) < 1 ||
-		len(wanted.Spec.Template.Spec.Containers) < 1 &&
-			len(got.Spec.Template.Spec.Containers) != len(wanted.Spec.Template.Spec.Containers) {
+		len(wanted.Spec.Template.Spec.Containers) < 1 ||
+		len(got.Spec.Template.Spec.Containers) != len(wanted.Spec.Template.Spec.Containers) {
 		return true
 	}
 

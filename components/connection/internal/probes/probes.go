@@ -17,7 +17,11 @@ func healthz(w http.ResponseWriter, r *http.Request) {
 // getReadyz checks if we can access the registry proxy connection URL and returns its status code (or 503 if it's unreachable)
 func getReadyz(registryProxyConnection string, log *zap.SugaredLogger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		resp, err := http.Get(registryProxyConnection)
+		// don't follow redirects
+		c := &http.Client{CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		}}
+		resp, err := c.Get(registryProxyConnection)
 
 		if err != nil {
 			log.Warnf("couldn't reach registry proxy connection at %s: %v", registryProxyConnection, err)

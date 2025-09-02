@@ -18,15 +18,35 @@ type logRoundTripper struct {
 }
 
 func (lrt *logRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
-	lrt.log.Debugf("Request: %s %s %s %v\n", req.Proto, req.Host, req.URL, req.Header)
+	filteredReqHeaders := getRedactedHeaders(req.Header)
+	lrt.log.Debugf("Request: %s %s %s %v\n", req.Proto, req.Host, req.URL, filteredReqHeaders)
 	res, err := lrt.transport.RoundTrip(req)
 	if err != nil {
 		lrt.log.Errorf("Error: %v\n", err)
 		return res, err
 	}
 	lrt.log.Debugf("Response status: %s\n", res.Status)
-	lrt.log.Debugf("Response headers: %v", res.Header)
+	filteredRespHeaders := getRedactedHeaders(res.Header)
+	lrt.log.Debugf("Response headers: %v", filteredRespHeaders)
 	return res, err
+}
+
+// getRedactedHeaders returns a copy of the provided headers with sensitive information redacted
+func getRedactedHeaders(headers http.Header) http.Header {
+	filteredHeaders := make(map[string][]string)
+	for key, values := range headers {
+		if filteredHeaders[key] == nil {
+			filteredHeaders[key] = make([]string, 0)
+		}
+		for _, v := range values {
+			filteredValue := v
+			if key == "Authorization" || key == "Proxy-Authorization" {
+				filteredValue = "***"
+			}
+			filteredHeaders[key] = append(filteredHeaders[key], filteredValue)
+		}
+	}
+	return filteredHeaders
 }
 
 // getModifyResponseFunc replaces host of the WWW-Authenticate header with localhost:authPort
@@ -80,7 +100,7 @@ func New(reverseProxyURL, connectivityProxyURL, targetHost, locationID, authPort
 	proxy.ErrorLog = zap.NewStdLog(log.Desugar())
 
 	if authPort != "" {
-		log.Info("Setting up authorization host to localhost:%s", authPort)
+		log.Infof("Setting up authorization host to localhost:%s", authPort)
 		proxy.ModifyResponse = getModifyResponseFunc(authPort)
 	}
 

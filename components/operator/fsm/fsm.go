@@ -39,6 +39,7 @@ type SystemState struct {
 	statusSnapshot v1alpha1.RegistryProxyStatus
 	ChartConfig    *chart.Config
 	Cache          chart.ManifestCache
+	FlagsBuilder   chart.FlagsBuilder
 }
 
 func (s *SystemState) saveStatusSnapshot() {
@@ -112,6 +113,7 @@ func New(client client.Client, config *rest.Config, instance *v1alpha1.RegistryP
 		State: SystemState{
 			RegistryProxy: *instance,
 			ChartConfig:   chartConfig(context.Background(), client, config, log, chartCache, instance.Namespace),
+			FlagsBuilder:  chart.NewFlagsBuilder(),
 		},
 		Log:                        log,
 		Client:                     client,

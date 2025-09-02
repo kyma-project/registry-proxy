@@ -3,7 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
-	"strconv"
+	"os"
 
 	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
 	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
@@ -28,23 +28,26 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	}
 
 	// update common labels for all rendered resources
-	flags := map[string]interface{}{
-		"global": map[string]interface{}{
-			"commonLabels": map[string]interface{}{
-				"app.kubernetes.io/managed-by": "registry-proxy-operator",
-			},
-		},
-		"controllerManager": map[string]interface{}{
-			"container": map[string]interface{}{
-				"env": map[string]interface{}{
-					"ISTIO_INSTALLED": fmt.Sprintf("\"%s\"", strconv.FormatBool(m.IstioReadiness.Get())),
-				},
-			},
-		},
+	m.State.FlagsBuilder.WithManagedByLabel("registry-proxy-operator")
+	m.State.FlagsBuilder.WithIstioInstalled(m.IstioReadiness.Get())
+	updateImages(m.State.FlagsBuilder)
+
+	flags, err := m.State.FlagsBuilder.Build()
+	if err != nil {
+		m.Log.Warnf("error while building chart flags for resource %s: %s",
+			client.ObjectKeyFromObject(&m.State.RegistryProxy), err.Error())
+		m.State.RegistryProxy.Status.State = v1alpha1.StateError
+		m.State.RegistryProxy.UpdateCondition(
+			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionFalse,
+			v1alpha1.ConditionReasonInstallationErr,
+			err.Error(),
+		)
+		return stopWithEventualError(err)
 	}
 
 	// install component
-	err := chart.Install(m.State.ChartConfig, flags)
+	err = chart.Install(m.State.ChartConfig, flags)
 	if err != nil {
 		fmt.Println(err)
 		m.Log.Warnf("error while installing resource %s: %s",
@@ -61,4 +64,16 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 
 	// switch state verify
 	return nextState(sFnVerifyResources)
+}
+
+func updateImages(fb chart.FlagsBuilder) {
+	updateImageIfOverride("IMAGE_REGISTRY_PROXY", fb.WithImageRegistryProxy)
+	updateImageIfOverride("IMAGE_CONNECTION", fb.WithImageConnection)
+}
+
+func updateImageIfOverride(envName string, updateFunction chart.ImageReplace) {
+	imageName := os.Getenv(envName)
+	if imageName != "" {
+		updateFunction(imageName)
+	}
 }

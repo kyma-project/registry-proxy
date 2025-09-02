@@ -1,15 +1,7 @@
 global:
-  containerRegistry:
-    path: europe-docker.pkg.dev/kyma-project
   images:
-    registry_proxy:
-      name: "registry-proxy-controller"
-      version: "main"
-      directory: "prod"
-    connection:
-      name: "registry-proxy-connection"
-      version: "main"
-      directory: "prod"
+    registry_proxy: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
+    connection: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
 
 controllerManager:
   container:

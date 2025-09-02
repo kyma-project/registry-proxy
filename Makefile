@@ -1,7 +1,7 @@
 # Image URL to use all building/pushing image targets
 OPERATOR_IMG ?= registry-proxy-operator:main
-RP_IMG ?= registry-proxy-controller:main
-CONNECTION_IMG ?= registry-proxy-connection:main
+RP_IMG ?= kyma-project/registry-proxy-controller:main
+CONNECTION_IMG ?= kyma-project/registry-proxy-connection:main
 
 IMG_VERSION ?= main
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
@@ -58,7 +58,7 @@ manifests: controller-gen kubebuilder ## Generate WebhookConfiguration, ClusterR
 
 .PHONY: run-local-operator
 run-local-operator: create-k3d ## Setup local k3d cluster and install operator
-	IMG_DIRECTORY="" IMG_VERSION="${IMG_VERSION}" OPERATOR_IMG=$(OPERATOR_IMG) make -C components/operator docker-build-local
+	IMG_DIRECTORY="kyma-project" IMG_VERSION="${IMG_VERSION}" OPERATOR_IMG=$(OPERATOR_IMG) make -C components/operator docker-build-local
 	k3d image import $(OPERATOR_IMG) -c kyma
 	RP_IMG=$(RP_IMG) make -C components/registry-proxy docker-build
 	k3d image import $(RP_IMG) -c kyma

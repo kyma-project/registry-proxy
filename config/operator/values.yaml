@@ -7,6 +7,9 @@ controllerManager:
       - "--leader-elect"
       - "--metrics-bind-address=:8080"
       - "--health-probe-bind-address=:8081"
+    env:
+      IMAGE_REGISTRY_PROXY: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
+      IMAGE_CONNECTION: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
     resources:
       limits:
         cpu: 500m

@@ -33,12 +33,11 @@ spec:
             - {{ . }}
             {{- end }}
           command:
-            - /manager
-          image: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.registry_proxy) }}"
+          image: "{{ .Values.global.images.registry_proxy }}"
           imagePullPolicy: IfNotPresent
           env:
             - name: PROXY_IMAGE
-              value: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.connection) }}"
+              value: "{{ .Values.global.images.connection }}"
             {{- range $key, $value := .Values.controllerManager.container.env }}
             - name: {{ $key }}
               value: {{ $value }}

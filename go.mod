@@ -13,7 +13,7 @@ require (
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
 	gopkg.in/yaml.v3 v3.0.1
-	helm.sh/helm/v3 v3.18.5
+	helm.sh/helm/v3 v3.18.6
 	istio.io/api v1.26.3
 	istio.io/client-go v1.26.3
 	k8s.io/api v0.33.4

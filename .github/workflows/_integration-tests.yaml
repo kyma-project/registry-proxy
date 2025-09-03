@@ -21,7 +21,7 @@ jobs:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: [self-hosted, solinas]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -59,7 +59,7 @@ jobs:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: [self-hosted, solinas]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}

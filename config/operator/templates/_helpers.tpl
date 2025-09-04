@@ -23,7 +23,9 @@ helm.sh/chart: {{ .Chart.Version | quote }}
 app.kubernetes.io/name: {{ include "chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/part-of: registry-proxy
 kyma-project.io/module: "registry-proxy"
+app.kubernetes.io/component: operator
 {{- end }}
 
 

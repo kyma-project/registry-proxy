@@ -2,7 +2,8 @@ global:
   images:
     registry_proxy: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
     connection: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
-
+  commonLabels:
+    managedBy: ""
 controllerManager:
   container:
     args:

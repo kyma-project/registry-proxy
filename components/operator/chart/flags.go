@@ -40,7 +40,7 @@ func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 }
 
 func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
-	fb.flags["global.commonLabels.app\\.kubernetes\\.io/managed-by"] = managedBy
+	fb.flags["global.commonLabels.managedBy"] = managedBy
 	return fb
 }
 

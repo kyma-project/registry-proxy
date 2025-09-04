@@ -24,7 +24,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 			"global": map[string]interface{}{
 				"commonLabels": map[string]interface{}{
-					"app.kubernetes.io/managed-by": "test-runner",
+					"managedBy": "test-runner",
 				},
 				"images": map[string]interface{}{
 					"connection":     "conn-im",

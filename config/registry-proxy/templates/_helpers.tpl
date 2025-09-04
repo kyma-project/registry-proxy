@@ -22,8 +22,10 @@ helm.sh/chart: {{ .Chart.Version | quote }}
 {{- end }}
 app.kubernetes.io/name: {{ include "chart.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
+app.kubernetes.io/managed-by: {{ if .Values.global.commonLabels.managedBy }}{{ .Values.global.commonLabels.managedBy }}{{- else }}{{ .Release.Service }}{{- end }}
+app.kubernetes.io/part-of: registry-proxy
 kyma-project.io/module: "registry-proxy"
+app.kubernetes.io/component: controller
 {{- end }}
 
 

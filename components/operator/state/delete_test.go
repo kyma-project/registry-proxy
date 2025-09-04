@@ -145,7 +145,7 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	}, chart.RegistryProxySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
 		"global": map[string]interface{}{
 			"commonLabels": map[string]interface{}{
-				"app.kubernetes.io/managed-by": "registry-proxy-operator",
+				"managedBy": "registry-proxy-operator",
 			},
 		},
 		"controllerManager": map[string]interface{}{

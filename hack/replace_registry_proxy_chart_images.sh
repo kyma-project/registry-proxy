@@ -34,10 +34,3 @@ yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${V
 echo "==== Local Changes ===="
 yq '.global.images' "${VALUES_FILE}"
 echo "==== End of Local Changes ===="
-
-
-
-# TODO: update versions in labels (after we've added these labels)
-
-# yq ".global.commonLabels.version |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml 
-# yq --inplace ".appVersion |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/buildless-serverless/Chart.yaml

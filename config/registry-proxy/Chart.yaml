@@ -1,7 +1,8 @@
 apiVersion: v2
 name: registry-proxy
-description: A Helm chart to distribute the project registry-proxy
+description: Kyma component 'registry-proxy'
 type: application
 version: 0.0.1
-appVersion: "0.0.1"
-icon: "https://example.com/icon.png"
+appVersion: "main"
+home: https://kyma-project.io
+icon: https://github.com/kyma-project/kyma/blob/main/logo.png?raw=true

@@ -71,7 +71,7 @@ func Test_Uninstall(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "installation error",
+			name: "uninstallation error",
 			args: args{
 				config: &Config{
 					Ctx:      context.Background(),

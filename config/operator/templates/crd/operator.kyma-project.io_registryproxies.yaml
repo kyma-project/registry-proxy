@@ -6,7 +6,7 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
   annotations:
     "helm.sh/resource-policy": keep
-    controller-gen.kubebuilder.io/version: v0.17.2
+    controller-gen.kubebuilder.io/version: v0.19.0
   name: registryproxies.operator.kyma-project.io
 spec:
   group: operator.kyma-project.io

@@ -171,6 +171,7 @@ func Test_install(t *testing.T) {
 						Client: fake.NewClientBuilder().WithScheme(apiextensionsscheme.Scheme).Build(),
 					},
 				},
+				customFlags: map[string]interface{}{},
 			},
 			wantErr: true,
 		},

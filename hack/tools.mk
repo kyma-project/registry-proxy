@@ -16,12 +16,12 @@ ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT = $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
-KYMA_VERSION ?= 3.0.0-rc1
-KUSTOMIZE_VERSION ?= v5.6.0
-KUBEBUILDER_VERSION ?= v4.5.0
-CONTROLLER_TOOLS_VERSION ?= v0.17.2
-ENVTEST_VERSION ?= release-0.20
-GOLANGCI_LINT_VERSION ?= v2.1.6
+KYMA_VERSION ?= 3.0.1
+KUSTOMIZE_VERSION ?= v5.7.1
+KUBEBUILDER_VERSION ?= v4.8.0
+CONTROLLER_TOOLS_VERSION ?= v0.19.0
+ENVTEST_VERSION ?= release-0.22
+GOLANGCI_LINT_VERSION ?= v2.4.0
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
@@ -48,8 +48,7 @@ $(KUSTOMIZE): $(LOCALBIN)
 .PHONY: kubebuilder
 kubebuilder: $(KUBEBUILDER) ## Download controller-gen locally if necessary.
 $(KUBEBUILDER): $(LOCALBIN)
-	GOBIN=$(LOCALBIN) go install sigs.k8s.io/kubebuilder/v4/cmd@$(KUBEBUILDER_VERSION)
-	mv $(LOCALBIN)/cmd $(KUBEBUILDER)
+	GOBIN=$(LOCALBIN) go install sigs.k8s.io/kubebuilder/v4@$(KUBEBUILDER_VERSION)
 	ln -sf $(KUBEBUILDER) $(KUBEBUILDER)-$(KUBEBUILDER_VERSION)
 
 .PHONY: controller-gen

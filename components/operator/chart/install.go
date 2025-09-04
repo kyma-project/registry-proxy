@@ -64,10 +64,10 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 
 		u = annotation.AddDoNotEditDisclaimer(u)
 
-		// TODO: what if Path returns error in the middle of manifest?
+		// TODO: what if Apply returns error in the middle of manifest?
 		// maybe we should in this case translate applied objs into manifest and set it into cache?
-		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
-			Force:        ptr.To[bool](true),
+		err := config.Cluster.Client.Apply(config.Ctx, client.ApplyConfigurationFromUnstructured(&u), &client.ApplyOptions{
+			Force:        ptr.To(true),
 			FieldManager: "registry-proxy-operator",
 		})
 		if err != nil {

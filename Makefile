@@ -85,7 +85,7 @@ integration-dependencies: kyma ## create k3d cluster and run integration test
 	sleep 5
 	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
 	sleep 5
-	$(KYMA) alpha registry image-import alpine:3.21.3
+	$(KYMA) registry image-import alpine:3.21.3
 
 .PHONY: run-integration-test-operator
 run-integration-test-operator: integration-dependencies ## run integration test

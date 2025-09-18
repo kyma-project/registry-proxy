@@ -1,7 +1,14 @@
 # Registry Proxy
 
+## Status
 
-The Registry Proxy module helps ensure security compliance for organizations with strict security policies, for which exposing an internal Docker registry to the public internet is not acceptable. 
+![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless%2Fcommits%2Fmain)
+
+[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/serverless)](https://api.reuse.software/info/github.com/kyma-project/serverless)
+
+## Overview
+
+The Registry Proxy module helps ensure security compliance for organizations with strict security policies, for which exposing an internal Docker registry to the public internet is not acceptable.
 
 With the Registry Proxy module, you can set up a managed connection between kubelet and the Connectivity Proxy service inside your Kyma cluster. Combined with a properly configured SAP Cloud Connector targeting your on-premises Docker registry, you can run workloads in your Kyma cluster using container images hosted on your own infrastructure without exposing your internal registry directly to the internet.
 
@@ -34,7 +41,6 @@ kubectl apply -f default-registry-proxy-cr.yaml
 - Docker version 17.03+.
 - kubectl version v1.11.3+.
 - Access to a Kubernetes v1.11.3+ cluster.
-
 
 ## Contributing
 

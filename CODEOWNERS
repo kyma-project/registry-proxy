@@ -1,5 +1,10 @@
 # These are the default owners for the whole content of the `registry-proxy` repository. The default owners are automatically added as reviewers when you open a pull request unless different owners are specified in the file.
-* @kyma/otters
 
-# All .md files
-*.md @kyma/technical-writers
+## Devs
+
+* @kyma-project/otters-dev
+
+## Docs
+
+*.md @kyma-project/technical-writers
+/docs/ @kyma-project/technical-writers

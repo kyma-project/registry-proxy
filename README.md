@@ -2,9 +2,9 @@
 
 ## Status
 
-![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless%2Fcommits%2Fmain)
+![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/registry-proxy/main?label=registry-proxy-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fregistry-proxy%2Fcommits%2Fmain)
 
-[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/serverless)](https://api.reuse.software/info/github.com/kyma-project/serverless)
+[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/registry-proxy)](https://api.reuse.software/info/github.com/kyma-project/registry-proxy)
 
 ## Overview
 

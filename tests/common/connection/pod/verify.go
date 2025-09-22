@@ -2,7 +2,8 @@ package pod
 
 import (
 	"errors"
-	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+
+	"github.com/kyma-project/registry-proxy/tests/common/utils"
 
 	v1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"

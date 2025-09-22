@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/fsm"
 
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

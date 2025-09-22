@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"strings"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/common/cache"
 
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/chart"
 
 	"go.uber.org/zap"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"

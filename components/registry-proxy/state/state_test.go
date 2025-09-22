@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/fsm"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/stretchr/testify/require"

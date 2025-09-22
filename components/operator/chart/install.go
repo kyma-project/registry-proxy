@@ -3,7 +3,7 @@ package chart
 import (
 	"fmt"
 
-	"github.tools.sap/kyma/registry-proxy/components/operator/chart/annotation"
+	"github.com/kyma-project/registry-proxy/components/operator/chart/annotation"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/ptr"

@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/common/cache"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 	"go.uber.org/zap"
 	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"

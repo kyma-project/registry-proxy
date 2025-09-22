@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

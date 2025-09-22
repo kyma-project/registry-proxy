@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/fsm"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrl "sigs.k8s.io/controller-runtime"

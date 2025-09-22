@@ -1,4 +1,4 @@
-module github.tools.sap/kyma/registry-proxy
+module github.com/kyma-project/registry-proxy
 
 go 1.24.0
 

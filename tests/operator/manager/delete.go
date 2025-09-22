@@ -1,7 +1,7 @@
 package manager
 
 import (
-	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+	"github.com/kyma-project/registry-proxy/tests/common/utils"
 )
 
 func Delete(utils *utils.TestUtils) error {

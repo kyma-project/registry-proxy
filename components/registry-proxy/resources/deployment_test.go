@@ -3,8 +3,8 @@ package resources
 import (
 	"testing"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/container"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/common/container"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"

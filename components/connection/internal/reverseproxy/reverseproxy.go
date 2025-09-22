@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.tools.sap/kyma/registry-proxy/components/connection/internal/server"
+	"github.com/kyma-project/registry-proxy/components/connection/internal/server"
 
 	"go.uber.org/zap"
 )

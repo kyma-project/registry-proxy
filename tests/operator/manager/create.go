@@ -1,8 +1,8 @@
 package manager
 
 import (
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/tests/common/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

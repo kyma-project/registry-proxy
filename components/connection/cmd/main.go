@@ -8,9 +8,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.tools.sap/kyma/registry-proxy/components/connection/internal/probes"
-	"github.tools.sap/kyma/registry-proxy/components/connection/internal/reverseproxy"
-	"github.tools.sap/kyma/registry-proxy/components/connection/internal/server"
+	"github.com/kyma-project/registry-proxy/components/connection/internal/probes"
+	"github.com/kyma-project/registry-proxy/components/connection/internal/reverseproxy"
+	"github.com/kyma-project/registry-proxy/components/connection/internal/server"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

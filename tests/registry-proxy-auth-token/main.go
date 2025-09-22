@@ -6,13 +6,13 @@ import (
 	"os"
 	"time"
 
-	"github.tools.sap/kyma/registry-proxy/tests/common/logger"
-	"github.tools.sap/kyma/registry-proxy/tests/common/namespace"
-	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+	"github.com/kyma-project/registry-proxy/tests/common/logger"
+	"github.com/kyma-project/registry-proxy/tests/common/namespace"
+	"github.com/kyma-project/registry-proxy/tests/common/utils"
 
 	"github.com/google/uuid"
-	"github.tools.sap/kyma/registry-proxy/tests/common/connection"
-	"github.tools.sap/kyma/registry-proxy/tests/common/connection/pod"
+	"github.com/kyma-project/registry-proxy/tests/common/connection"
+	"github.com/kyma-project/registry-proxy/tests/common/connection/pod"
 )
 
 var (

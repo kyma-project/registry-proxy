@@ -6,8 +6,8 @@ import (
 	"os/user"
 	"path/filepath"
 
-	operatorv1alpha1 "github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	rpv1alpha1 "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	operatorv1alpha1 "github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	rpv1alpha1 "github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"

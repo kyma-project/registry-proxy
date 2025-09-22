@@ -12,7 +12,7 @@ general:
       disableCreate: true
       disableDelete: true
   description: >-
-    {{[Registry Proxy custom resource](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Registry Proxy module.
+    {{[Registry Proxy custom resource](https://github.com/kyma-project/registry-proxy/tree/main/docs)}} defines the Registry Proxy module.
 details:
   header:
     - name: details.state

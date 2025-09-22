@@ -22,7 +22,7 @@ jobs:
   create-draft:
     name: Create draft release
     needs: builds
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -68,7 +68,7 @@ jobs:
   publish-release:
     name: Publish release
     needs: [run-integration-test, create-draft]
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code

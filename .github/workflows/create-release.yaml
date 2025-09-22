@@ -19,7 +19,7 @@ permissions: # used by build images steps
 jobs:
   upgrade-images:
     name: Upgrade main images
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -50,7 +50,7 @@ jobs:
   create-tag:
     name: Create tag
     needs: upgrade-images
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

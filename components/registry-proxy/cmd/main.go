@@ -5,10 +5,10 @@ import (
 	"flag"
 	"os"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
-	controller "github.tools.sap/kyma/registry-proxy/components/registry-proxy"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources/connectivityproxy"
+	"github.com/kyma-project/registry-proxy/components/common/cache"
+	controller "github.com/kyma-project/registry-proxy/components/registry-proxy"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/resources/connectivityproxy"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)

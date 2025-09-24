@@ -1,6 +1,6 @@
 package resources
 
-import "github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+import "github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 
 func labels(rp *v1alpha1.Connection, resource string) map[string]string {
 	return map[string]string{

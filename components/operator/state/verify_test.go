@@ -2,15 +2,16 @@ package state
 
 import (
 	"context"
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
 	"testing"
 	"time"
 
+	"github.com/kyma-project/registry-proxy/components/operator/fsm"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

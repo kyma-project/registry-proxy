@@ -1,7 +1,7 @@
 package namespace
 
 import (
-	"github.tools.sap/kyma/registry-proxy/tests/common/utils"
+	"github.com/kyma-project/registry-proxy/tests/common/utils"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

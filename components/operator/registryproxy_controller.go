@@ -15,11 +15,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
-	"github.tools.sap/kyma/registry-proxy/components/operator/state"
+	"github.com/kyma-project/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/chart"
+	"github.com/kyma-project/registry-proxy/components/operator/fsm"
+	"github.com/kyma-project/registry-proxy/components/operator/state"
 )
 
 // RegistryProxyReconciler reconciles a RegistryProxy object

@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
+	"github.com/kyma-project/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	"go.uber.org/zap"
 
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/operator/chart"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )

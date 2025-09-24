@@ -3,10 +3,10 @@ package state
 import (
 	"context"
 
+	"github.com/kyma-project/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/kyma/registry-proxy/components/common/cache"
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
 
 	"testing"
 	"time"

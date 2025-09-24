@@ -3,7 +3,7 @@ package utils
 import (
 	"context"
 
-	"github.tools.sap/kyma/registry-proxy/components/operator/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

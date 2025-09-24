@@ -1,7 +1,7 @@
 package resources
 
 import (
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
 	apisecurityv1 "istio.io/api/security/v1"
 	apitypev1beta1 "istio.io/api/type/v1beta1"
 	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"

@@ -3,7 +3,7 @@ package state
 import (
 	"time"
 
-	"github.tools.sap/kyma/registry-proxy/components/operator/fsm"
+	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 )

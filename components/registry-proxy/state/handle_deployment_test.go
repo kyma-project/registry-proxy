@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/api/v1alpha1"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/fsm"
-	"github.tools.sap/kyma/registry-proxy/components/registry-proxy/resources"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/api/v1alpha1"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/fsm"
+	"github.com/kyma-project/registry-proxy/components/registry-proxy/resources"
 
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

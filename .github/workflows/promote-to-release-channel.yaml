@@ -11,16 +11,16 @@ on:
 env:
   MODULE_VERSION: ${{ github.event.inputs.rp_tag }}
   # needed by gh cli for GitHub enterprise
-  GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
-  BOT_USERNAME: kyma-otter-serviceuser
-  BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
+  GH_ENTERPRISE_TOKEN: ${{ secrets.ENT_BOT_TOKEN }}
+  ENT_BOT_USERNAME: kyma-otter-serviceuser
+  ENT_BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
   GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
   RP_REPO_URL: ${{ secrets.RP_REPO_URL }}
 
 jobs:
   promote-rp:
     name: Get, render and push rp assets
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -32,8 +32,6 @@ jobs:
       - uses: ./.github/actions/setup-go
 
       - name: Download release assets
-        env:
-          GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           gh release download ${{ github.event.inputs.rp_tag}} -R "${RP_REPO_URL}" --pattern '*.yaml'
 
@@ -47,10 +45,10 @@ jobs:
 
       - name: Set up module-manifests repo
         run: |
-          git config --global user.email "${BOT_EMAIL}"
-          git config --global user.name "${BOT_USERNAME}"
-          git clone "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/${BOT_USERNAME}/module-manifests.git"
-          git -C module-manifests remote add upstream "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/kyma/module-manifests.git"
+          git config --global user.email "${ENT_BOT_EMAIL}"
+          git config --global user.name "${ENT_BOT_USERNAME}"
+          git clone "https://${ENT_BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/${ENT_BOT_USERNAME}/module-manifests.git"
+          git -C module-manifests remote add upstream "https://${ENT_BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/kyma/module-manifests.git"
 
       - name: Commit manifest
         working-directory: module-manifests
@@ -69,7 +67,7 @@ jobs:
       - name: Create PullRequest to module-manifests
         working-directory: module-manifests
         run: |
-          prs=$(gh pr list -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests" -A "${BOT_USERNAME}" --state open --json headRefName)
+          prs=$(gh pr list -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests" -A "${ENT_BOT_USERNAME}" --state open --json headRefName)
 
           if  echo $prs | jq -e ".[] | select(.headRefName==\"${MODULE_VERSION}\")"; then
               echo "opened PR already exists, no need to create new one, PR will be updated by push from previous step"
@@ -77,7 +75,7 @@ jobs:
           fi
 
           gh pr create -B main --fill \
-            -H "${BOT_USERNAME}:${MODULE_VERSION}" \
+            -H "${ENT_BOT_USERNAME}:${MODULE_VERSION}" \   
             -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests/" \
             --title "Promote registry-proxy ${MODULE_VERSION}" \
-            --body "https://github.tools.sap/kyma/registry-proxy/actions/${{github.run_id}}"
+            --body "https://github.com/kyma-project/registry-proxy/actions/${{github.run_id}}"

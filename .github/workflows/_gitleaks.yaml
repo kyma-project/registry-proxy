@@ -7,7 +7,7 @@ env:
 
 jobs:
   scan:
-    runs-on: [self-hosted, solinas]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:

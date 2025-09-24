@@ -41,7 +41,7 @@ echo "Generated registry-proxy-operator.yaml:"
 cat registry-proxy-operator.yaml
 
 echo "Updating github release with assets"
-UPLOAD_URL="https://github.tools.sap/api/uploads/repos/kyma/registry-proxy/releases/${RELEASE_ID}/assets"
+UPLOAD_URL="https://uploads.github.com/repos/kyma-project/registry-proxy/releases/${RELEASE_ID}/assets"
 
 uploadFile "registry-proxy-operator.yaml" "${UPLOAD_URL}?name=registry-proxy-operator.yaml"
 uploadFile "config/samples/default-registry-proxy-cr.yaml" "${UPLOAD_URL}?name=default-registry-proxy-cr.yaml"

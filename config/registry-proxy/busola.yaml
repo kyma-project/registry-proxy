@@ -12,7 +12,7 @@ general:
       disableCreate: false
       disableDelete: false
   description: >-
-    {{[Connection](https://github.tools.sap/kyma/registry-proxy/tree/main/docs)}} defines the Connection resource.
+    {{[Connection](https://github.com/kyma-project/registry-proxy/tree/main/docs)}} defines the Connection resource.
 
 details: #Inside "Resource Details" view
   status:

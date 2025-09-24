@@ -20,7 +20,7 @@ Ensure that the `kyma-system` namespace exists:
 kubectl create namespace kyma-system | true
 ```
 
-Download the `registry-proxy-operator.yaml` and `default-registry-proxy-cr.yaml` manifests from the [latest](https://github.tools.sap/kyma/registry-proxy/releases/latest) release.
+Download the `registry-proxy-operator.yaml` and `default-registry-proxy-cr.yaml` manifests from the [latest](https://github.com/kyma-project/registry-proxy/releases/latest) release.
 Apply `registry-proxy-operator.yaml` to install Registry Proxy Operator:
 
 ```sh

@@ -5,7 +5,7 @@
 - BTP Kyma Cluster with connectivity-proxy module enabled
 - Docker installed and running
 - kubectl
-- [Registry Proxy repository](https://github.tools.sap/kyma/registry-proxy)
+- [Registry Proxy repository](https://github.com/kyma-project/registry-proxy)
 - [Cloud Connector](https://tools.hana.ondemand.com/#cloud)
 - Htpasswd, openssl
 - [SapMachine 21 JDK](https://sapmachine.io/)

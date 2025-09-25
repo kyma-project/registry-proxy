@@ -2,7 +2,7 @@
 
 ## Status
 
-![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/registry-proxy/main?label=registry-proxy-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fregistry-proxy%2Fcommits%2Fmain)
+[![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/registry-proxy/main?label=registry-proxy-operator)](https://github.com/kyma-project/registry-proxy/commits/main/)
 
 [![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/registry-proxy)](https://api.reuse.software/info/github.com/kyma-project/registry-proxy)
 

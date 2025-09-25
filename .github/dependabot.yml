@@ -2,11 +2,15 @@
 
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "actions"
+      include: "scope"
   - package-ecosystem: "gomod"
     directory: "/"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
     schedule:
       interval: "weekly"
     commit-message:
@@ -27,9 +31,6 @@ updates:
 
   - package-ecosystem: "docker"
     directory: "/components/operator"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
     schedule:
       interval: "weekly"
     commit-message:
@@ -37,9 +38,6 @@ updates:
       include: "scope"
   - package-ecosystem: "docker"
     directory: "/components/connection"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
     schedule:
       interval: "weekly"
     commit-message:
@@ -47,9 +45,6 @@ updates:
       include: "scope"
   - package-ecosystem: "docker"
     directory: "/components/registry-proxy"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
     schedule:
       interval: "weekly"
     commit-message:

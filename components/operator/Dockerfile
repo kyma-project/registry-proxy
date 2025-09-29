@@ -20,7 +20,7 @@ COPY components/operator components/operator
 # was called. For example, if we call make docker-build in a local env which has the Apple Silicon M1 SO
 # the docker BUILDPLATFORM arg will be linux/arm64 when for Apple x86 it will be linux/amd64. Therefore,
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o operator ./components/operator/cmd/main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -o operator ./components/operator/cmd/main.go
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS certs
 
@@ -56,6 +56,8 @@ RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_registry_proxy_chart_ima
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 #TODO: check if we need gcr.io/distroless/static:nonroot here
 FROM scratch
+
+ENV GODEBUG=fips140=only,tlsmlkem=0
 
 WORKDIR /
 

@@ -14,7 +14,7 @@ keywords: kyma
 
 ## You will learn
 
-- How to set up Cloud Connector, on-premise Docker Registry.
+- How to set up Cloud Connector and on-premise Docker Registry.
 - How to install the Registry Proxy module and configure the connection.
 - How to create a target deployment using an image from the on-premise Docker Registry.
 - How to set up a Connection to a Docker Registry with the OAuth authentication.
@@ -30,7 +30,7 @@ keywords: kyma
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
 - Htpasswd and openssl installed
 
-### Prepare enviroment
+### Prepare environment
 
 [OPTION BEGIN [Basic authorization]]
 

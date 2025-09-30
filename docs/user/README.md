@@ -1,6 +1,12 @@
 # Registry Proxy Module
 
-Learn more about the Registry Proxy module. Use it to enable the creation of Kubernetes workloads from images pulled from your on-premise Docker registries. You can achieve that using the Connectivity Proxy service. As a result, the Connectivity Proxy module is a direct dependency of the Registry Proxy module.
+
+Learn more about the Registry Proxy module. Use it to enable the creation of Kubernetes workloads from images pulled from your on-premises Docker registries. 
+
+The Registry Proxy module uses the Connectivity Proxy service, which leverages [SAP Cloud Connector](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/cloud-connector) technology.
+
+> [!NOTE] 
+> For Connectivity Proxy to work, you must have the SAP Cloud Connector service enabled and configured in the same SAP BTP subaccount as your Kyma cluster, and you must have the SAP Cloud Connector software running on the on-premises part of your setup.
 
 ## What Is Registry Proxy?
 

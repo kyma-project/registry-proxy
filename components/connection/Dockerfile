@@ -12,6 +12,7 @@ COPY go.sum go.sum
 RUN go mod download
 
 # Copy the go source
+COPY components/common/fips components/common/fips
 COPY components/connection components/connection
 
 # Build

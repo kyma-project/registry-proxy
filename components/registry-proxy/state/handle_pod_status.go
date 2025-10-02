@@ -34,7 +34,7 @@ func sFnHandlePodStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 		m.State.Connection.UpdateCondition(
 			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonNotEstabilished,
+			v1alpha1.ConditionReasonNotEstablished,
 			"no pod exists",
 		)
 		return requeueAfter(time.Minute)
@@ -82,7 +82,7 @@ func handleReadinessStatus(rp *v1alpha1.Connection, conditions []corev1.PodCondi
 		rp.UpdateCondition(
 			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonNotEstabilished,
+			v1alpha1.ConditionReasonNotEstablished,
 			err.Error(),
 		)
 		return err
@@ -91,7 +91,7 @@ func handleReadinessStatus(rp *v1alpha1.Connection, conditions []corev1.PodCondi
 		rp.UpdateCondition(
 			v1alpha1.ConditionConnectionReady,
 			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonEstabilished,
+			v1alpha1.ConditionReasonEstablished,
 			"Target registry reachable",
 		)
 		return nil
@@ -101,7 +101,7 @@ func handleReadinessStatus(rp *v1alpha1.Connection, conditions []corev1.PodCondi
 	rp.UpdateCondition(
 		v1alpha1.ConditionConnectionReady,
 		metav1.ConditionFalse,
-		v1alpha1.ConditionReasonNotEstabilished,
+		v1alpha1.ConditionReasonNotEstablished,
 		err.Error(),
 	)
 	return err

@@ -82,8 +82,8 @@ const (
 	ConditionReasonInvalidProxyURL   ConditionReason = "InvalidProxyURL"
 	ConditionReasonResourcesDeployed ConditionReason = "ConnectionResourcesDeployed"
 	ConditionReasonResourcesNotReady ConditionReason = "ConnectionResourcesNotReady"
-	ConditionReasonEstabilished      ConditionReason = "ConnectionEstabilished"
-	ConditionReasonNotEstabilished   ConditionReason = "ConnectionNotEstabilished"
+	ConditionReasonEstablished       ConditionReason = "ConnectionEstablished"
+	ConditionReasonNotEstablished    ConditionReason = "ConnectionNotEstablished"
 	ConditionReasonError             ConditionReason = "ConnectionError"
 )
 

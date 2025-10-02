@@ -47,7 +47,7 @@ func Test_sFnHandlePodStatus(t *testing.T) {
 		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
 		require.Nil(t, next)
 		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionDeployed, metav1.ConditionFalse, v1alpha1.ConditionReasonResourcesNotReady, "no pod exists")
-		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonNotEstabilished, "no pod exists")
+		requireContainsCondition(t, m.State.Connection.Status, v1alpha1.ConditionConnectionReady, metav1.ConditionFalse, v1alpha1.ConditionReasonNotEstablished, "no pod exists")
 	})
 
 	t.Run("one pod exists", func(t *testing.T) {
@@ -176,7 +176,7 @@ func TestHandleReadinessStatus(t *testing.T) {
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionReady),
 				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonNotEstabilished),
+				Reason:  string(v1alpha1.ConditionReasonNotEstablished),
 				Message: "Target registry not reachable: ContainersNotReady",
 			},
 		},
@@ -187,7 +187,7 @@ func TestHandleReadinessStatus(t *testing.T) {
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionReady),
 				Status:  metav1.ConditionFalse,
-				Reason:  string(v1alpha1.ConditionReasonNotEstabilished),
+				Reason:  string(v1alpha1.ConditionReasonNotEstablished),
 				Message: "Target registry not reachable: no condition found",
 			},
 		},
@@ -205,7 +205,7 @@ func TestHandleReadinessStatus(t *testing.T) {
 			expectedCondition: metav1.Condition{
 				Type:    string(v1alpha1.ConditionConnectionReady),
 				Status:  metav1.ConditionTrue,
-				Reason:  string(v1alpha1.ConditionReasonEstabilished),
+				Reason:  string(v1alpha1.ConditionReasonEstablished),
 				Message: "Target registry reachable",
 			},
 		},

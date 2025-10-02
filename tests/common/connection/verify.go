@@ -78,7 +78,7 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 func verifyState(rp *v1alpha1.Connection) error {
 	for _, condition := range rp.Status.Conditions {
 		if condition.Type == string(v1alpha1.ConditionConnectionReady) {
-			if condition.Reason == string(v1alpha1.ConditionReasonEstabilished) &&
+			if condition.Reason == string(v1alpha1.ConditionReasonEstablished) &&
 				condition.Status == metav1.ConditionTrue &&
 				condition.Message == "Target registry reachable" {
 				return nil

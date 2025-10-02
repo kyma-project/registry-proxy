@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/kyma-project/registry-proxy/components/common/fips"
 	"github.com/kyma-project/registry-proxy/components/connection/internal/probes"
 	"github.com/kyma-project/registry-proxy/components/connection/internal/reverseproxy"
 	"github.com/kyma-project/registry-proxy/components/connection/internal/server"
@@ -17,6 +18,9 @@ import (
 )
 
 func main() {
+	if !fips.IsFIPS140Only() {
+		log.Panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
 	var proxyAddr string
 	var probeAddr string
 	var connectivityProxyAddress string

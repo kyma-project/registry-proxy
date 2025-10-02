@@ -1,6 +1,6 @@
 # Connection
 
-The `connections.registry-proxy.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the kind of data and the format used to manage **Connections** within Kyma. It facilitates establishing a connection to a target container registry through the Connectivity Proxy. 
+The `connections.registry-proxy.kyma-project.io` CustomResourceDefinition (CRD) describes the kind and the format of data used to manage **Connections** within Kyma. It facilitates establishing a connection to a target container registry through the Connectivity Proxy. 
 
 To get the up-to-date CRD in YAML format, run:
 

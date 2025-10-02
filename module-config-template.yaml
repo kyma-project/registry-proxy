@@ -3,7 +3,7 @@ version: main
 defaultCR: default-registry-proxy-cr.yaml
 manifest: registry-proxy-operator.yaml
 # TODO: upload documentation
-documentation: "https://help.sap.com/docs/btp/sap-business-technology-platform/registry-proxy-module"
+documentation: "https://github.com/kyma-project/registry-proxy/blob/main/docs/user/README.md"
 repository: https://github.com/kyma-project/registry-proxy.git
 security: sec-scanners-config.yaml
 manager:

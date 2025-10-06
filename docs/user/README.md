@@ -1,8 +1,14 @@
 # Registry Proxy Module
 
-Learn more about the Registry Proxy module. Use it to enable the creation of Kubernetes workloads from images pulled from your on-premise Docker registries. You can achieve that using the Connectivity Proxy service. As a result, the Connectivity Proxy module is a direct dependency of the Registry Proxy module.
 
-## What Is Registry Proxy ?
+Learn more about the Registry Proxy module. Use it to enable the creation of Kubernetes workloads from images pulled from your on-premises Docker registries. 
+
+The Registry Proxy module uses the Connectivity Proxy service, which leverages [SAP Cloud Connector](https://help.sap.com/docs/connectivity/sap-btp-connectivity-cf/cloud-connector) technology.
+
+> [!NOTE] 
+> For Connectivity Proxy to work, you must have the SAP Cloud Connector service enabled and configured in the same SAP BTP subaccount as your Kyma cluster, and you must have the SAP Cloud Connector software running on the on-premises part of your setup.
+
+## What Is Registry Proxy?
 
 The Registry Proxy module helps ensure security compliance for organizations with strict security policies, where exposing the Docker registry to the public internet is not acceptable. 
 
@@ -34,15 +40,16 @@ When you add the Registry Proxy module, the Registry Proxy Operator installs it 
 
 The API of the Registry Proxy module is based on Kubernetes CustomResourceDefinitions (CRDs), which extend the Kubernetes API. To inspect the specification of the module API, see:
 
-- [Connection CRD](./resources/1-10-connection-cr.md)
-- [RegistryProxy CRD](./resources/1-20-registry-proxy-cr.md)
+- [Connection CRD](./resources/01-10-connection-cr.md)
+- [RegistryProxy CRD](./resources/01-20-registry-proxy-cr.md)
 
 ## Security Considerations
 
-To learn how to avoid any potential threats while using Registry Proxy Connections, see [Recommendations](./recommendations.md).
+To learn how to avoid potential threats when using Registry Proxy Connections, see [Registry Proxy Recommendations](./recommendations.md).
 
 
 ## Related Information
 
-<!-- TODO: link the tutorial here
-- [Registry Proxy tutorials](tutorials/README.md) -->
+- [Registry Proxy tutorials](tutorials/README.md)
+- [Registry Proxy resources](resources/README.md)
+- [Registry Proxy technical reference](technical-reference/README.md)

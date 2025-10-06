@@ -1,4 +1,6 @@
-# Recommendations
+# Registry Proxy Recommendations
+
+To help secure your Kyma cluster and protect access to private container registries, follow these recommendations.
 
 ## Exclude NodePort Range From VPC Peering Routes
 

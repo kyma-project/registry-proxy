@@ -22,7 +22,7 @@ COPY components/registry-proxy components/registry-proxy
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -o manager ./components/registry-proxy/cmd/main.go
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS certs
 
 RUN apk add --no-cache ca-certificates
 

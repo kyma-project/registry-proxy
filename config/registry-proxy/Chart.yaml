@@ -2,7 +2,7 @@ apiVersion: v2
 name: registry-proxy
 description: Kyma component 'registry-proxy'
 type: application
-version: 0.0.1
-appVersion: "main"
+version: 0.13.0
+appVersion: "0.13.0"
 home: https://kyma-project.io
 icon: https://github.com/kyma-project/kyma/blob/main/logo.png?raw=true

@@ -10,7 +10,7 @@ kubectl get connections.registry-proxy.kyma-project.io -A -o yaml
 
 ## Sample Custom Resource
 
-The following `Connection` object creates a connection to a target registry through the Connectivity Proxy. `proxyURL` specifies the Connectivity Proxy's URL. `targetHost` defines the target registry's host.
+The following `Connection` object creates a connection to a target registry through the Connectivity Proxy. **proxyURL** specifies the Connectivity Proxy's URL. **targetHost** defines the target registry's host.
 
 ```yaml
 apiVersion: registry-proxy.kyma-project.io/v1alpha1

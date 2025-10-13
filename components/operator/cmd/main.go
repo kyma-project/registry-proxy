@@ -2,10 +2,12 @@ package main
 
 import (
 	"crypto/tls"
+	"errors"
 	"flag"
 	"os"
 
 	"github.com/kyma-project/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/common/fips"
 	controller "github.com/kyma-project/registry-proxy/components/operator"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
 	"github.com/kyma-project/registry-proxy/components/operator/chart"
@@ -45,6 +47,11 @@ func init() {
 
 // nolint:gocyclo
 func main() {
+	if !fips.IsFIPS140Only() {
+		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
+
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string

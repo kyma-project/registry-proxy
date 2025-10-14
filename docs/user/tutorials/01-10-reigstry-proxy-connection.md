@@ -45,7 +45,7 @@ export REG_USER_NAME={REGISTRY_USERNAME}
 export REG_USER_PASSWD={REGISTRY_PASSWORD}
 export IMAGE_TAG="$(date +%F-%H-%M)"
 export IMAGE_NAME="on-prem-nginx"
-export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}
+export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
 ```
 
 [OPTION END]

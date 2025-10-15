@@ -1,6 +1,6 @@
 # Registry Proxy
 
-The `registryproxies.operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the kind of data and the format used to manage **Registry Proxies** within Kyma. It facilitates the configuration and management of the Registry Proxy service, which acts as a proxy between the Kyma cluster and external container registries. To get the up-to-date CRD and show the output in the YAML format, run this command:
+The `registryproxies.operator.kyma-project.io` CustomResourceDefinition (CRD) describes the kind and the format of data that is used to manage **Registry Proxies** within Kyma. It facilitates the configuration and management of the Registry Proxy service, which acts as a proxy between the Kyma cluster and external container registries. To get the up-to-date CRD and show the output in the YAML format, run this command:
 
 ```bash
 kubectl get registryproxies.operator.kyma-project.io -A -o yaml
@@ -26,7 +26,7 @@ spec: {}
 | Parameter | Type | Description |
 | ---- | ----------- | ---- |
 | **state**                | string   | Represents the current state of the Registry Proxy. Possible values: `Ready`, `Processing`, `Error`, `Deleting`, `Warning`. |
-| **served**               | string   | Indicates whether the Registry Proxy is actively managed. Possible values: `True`, `False`.     |
+| **served**               | string   | Indicates whether the Registry Proxy is actively managed. Possible values: `True` and `False`.     |
 | **conditions**           | \[\]object | Specifies an array of conditions describing the status of the Registry Proxy.                  |
 
 <!-- TABLE-END -->

@@ -1,6 +1,8 @@
 # Connection
 
-The `connections.registry-proxy.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the kind of data and the format used to manage **Connections** within Kyma. It facilitates establishing a connection to a target container registry through the Connectivity Proxy. To get the up-to-date CRD and show the output in the YAML format, run this command:
+The `connections.registry-proxy.kyma-project.io` CustomResourceDefinition (CRD) describes the kind and the format of data used to manage **Connections** within Kyma. It facilitates establishing a connection to a target container registry through the Connectivity Proxy. 
+
+To get the up-to-date CRD in YAML format, run:
 
 ```bash
 kubectl get connections.registry-proxy.kyma-project.io -A -o yaml
@@ -8,7 +10,7 @@ kubectl get connections.registry-proxy.kyma-project.io -A -o yaml
 
 ## Sample Custom Resource
 
-The following `Connection` object creates a connection to a target registry through the Connectivity Proxy. The `proxyURL` specifies the Connectivity Proxy's URL, and the `targetHost` defines the target registry's host.
+The following `Connection` object creates a connection to a target registry through the Connectivity Proxy. **proxyURL** specifies the Connectivity Proxy's URL. **targetHost** defines the target registry's host.
 
 ```yaml
 apiVersion: registry-proxy.kyma-project.io/v1alpha1
@@ -36,7 +38,7 @@ spec:
 | **target.host** (required)              | string                         | Specifies the target host.                                                                  |
 | **target.authorization**                | object                         | Specifies the authorization method for the connection                                       |
 | **target.authorization.host**           | string                         | Name of the host that is used for registry authorization                                    |
-| **target.authorization.headerSecret**   | string                         | Name of the secret containing authorization header to be used for the connection.           |
+| **target.authorization.headerSecret**   | string                         | Name of the secret containing the authorization header to be used for the connection.           |
 | **resources**                           | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
 | **logLevel**                            | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
 | **nodePort**                            | integer                        | Sets the desired service NodePort number.                                                   |
@@ -64,8 +66,8 @@ Processing of a `Connection` CR can succeed, continue, or fail for one of these 
 | `InvalidProxyURL`                | `ConnectionDeployed` | The provided Proxy URL is invalid.                                                             |
 | `ConnectionResourcesDeployed`    | `ConnectionReady`    | Resources required for the Connection were successfully deployed.                              |
 | `ConnectionResourcesNotReady`    | `ConnectionReady`    | Resources required for the Connection are not ready.                                           |
-| `ConnectionEstabilished`         | `ConnectionReady`    | The Connection was successfully established.                                                   |
-| `ConnectionNotEstabilished`      | `ConnectionReady`    | The Connection could not be established.                                                       |
+| `ConnectionEstablished`         | `ConnectionReady`    | The Connection was successfully established.                                                   |
+| `ConnectionNotEstablished`      | `ConnectionReady`    | The Connection could not be established.                                                       |
 | `ConnectionError`                | `ConnectionReady`    | An error occurred while processing the Connection.                                             |
 
 ## Related Resources and Components

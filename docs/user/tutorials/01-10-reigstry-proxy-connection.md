@@ -14,7 +14,7 @@ keywords: kyma
 
 ## You will learn
 
-- How to set up Cloud Connector, on-premise Docker Registry.
+- How to set up Cloud Connector and on-premise Docker Registry.
 - How to install the Registry Proxy module and configure the connection.
 - How to create a target deployment using an image from the on-premise Docker Registry.
 - How to set up a Connection to a Docker Registry with the OAuth authentication.
@@ -30,7 +30,7 @@ keywords: kyma
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
 - Htpasswd and openssl installed
 
-### Prepare enviroment
+### Prepare environment
 
 [OPTION BEGIN [Basic authorization]]
 
@@ -45,7 +45,7 @@ export REG_USER_NAME={REGISTRY_USERNAME}
 export REG_USER_PASSWD={REGISTRY_PASSWORD}
 export IMAGE_TAG="$(date +%F-%H-%M)"
 export IMAGE_NAME="on-prem-nginx"
-export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}$:${IMAGE_TAG}"
+export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
 ```
 
 [OPTION END]
@@ -322,7 +322,7 @@ kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
 2. Adjust the image in the Deployment to use the image tag and the node port from the previous steps, and deploy it on the cluster:
 
 ```bash
-kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}$:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
+kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
 kubectl create service clusterip test-workload-on-prem-reg -n ${NAMESPACE} --tcp=80:80
 cat << EOF | kubectl apply -f -
 apiVersion: gateway.kyma-project.io/v2

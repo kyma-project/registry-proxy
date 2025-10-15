@@ -61,7 +61,7 @@ export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
 
 <!-- tabs:end -->
 
-### Set up Cloud Connector
+### Set Up Cloud Connector
 
 1. Run the `go.sh` script from the Cloud Connector download.
 
@@ -90,7 +90,7 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 6. Choose **Next** and select **Configure using authentication data**.
 7. Add the file from the previous step, and choose **Next**.
 
-### Set up the On-Premise Docker Registry
+### Set Up the On-Premise Docker Registry
 
 <!-- tabs:start -->
 
@@ -193,7 +193,7 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 
 #### **Basic Authorization**
 
-1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** click the **+** button and provide the following information:
+1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** choose **+**, and provide the following information:
 
    - Back-end Type: Non-SAP System
    - Protocol: HTTPS
@@ -222,7 +222,7 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 
 #### **OAuth Authorization**
 
-1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** click the **+** button, and provide the following information.
+1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** choose **+**, and provide the following information:
 
    - Back-end Type: Non-SAP System
    - Protocol: HTTPS
@@ -233,7 +233,7 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 
 2. Choose **+** in the **Resources of {your registry name}**
 3. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
-4. If the OAuth uses different host or port than the Docker Registry create a second **Mapping Virtual to Internal System**, and provide the following information:
+4. If the OAuth uses a different host or port than the Docker Registry, create another **Mapping Virtual to Internal System**, and provide the following information:
 
 - Back-end Type: Non-SAP System
 - Protocol: HTTPS

@@ -1,23 +1,13 @@
----
-parser: v2
-auto_validation: true
-time: 30
-primary_tag: software-product>sap-btp\, kyma-runtime
-tags: [tutorial>advanced, software-product>sap-business-technology-platform]
-author_name: Piotr Halama, Andrzej Pankowski, Filip Rudy
-keywords: kyma
----
-
 # Create Kyma Registry Proxy Connection and a Target Deployment
 
-<!-- description --> In this tutorial, you will set up the on-premise Docker Registry and securely download images on your Kyma cluster.
+In this tutorial, you will set up the on-premise Docker Registry and securely download images to your Kyma cluster.
 
 ## You will learn
 
 - How to set up Cloud Connector and on-premise Docker Registry.
 - How to install the Registry Proxy module and configure the connection.
 - How to create a target deployment using an image from the on-premise Docker Registry.
-- How to set up a Connection to a Docker Registry with the OAuth authentication.
+- How to set up a Connection to a Docker Registry with the OAuth authorization.
 
 ## Prerequisites
 
@@ -30,9 +20,11 @@ keywords: kyma
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
 - Htpasswd and openssl installed
 
-### Prepare environment
+### Prepare Environment
 
-[OPTION BEGIN [Basic authorization]]
+<!-- tabs:start -->
+
+#### **Basic Authorization**
 
 1. Export the following environment variables:
 
@@ -48,9 +40,7 @@ export IMAGE_NAME="on-prem-nginx"
 export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
 ```
 
-[OPTION END]
-
-[OPTION BEGIN [OAuth authorization]]
+#### **OAuth Authorization**
 
 1. Export the following environment variables:
 
@@ -69,28 +59,28 @@ export IMAGE_TAG={TAG_OF_EXISTING_DOCKER_IMAGE}
 export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
 ```
 
-[OPTION END]
+<!-- tabs:end -->
 
-### Setup Cloud Connector
+### Set up Cloud Connector
 
 1. Run the `go.sh` script from the Cloud Connector download.
 
-```bash
-NO_CHECK=1 ./go.sh
-```
+   ```bash
+   NO_CHECK=1 ./go.sh
+   ```
 
-> [!NOTE]
-> On your first try, you may need to add an exception in your system settings under **Privacy & Security**.
+   > [!NOTE]
+   > On your first try, you may need to add an exception in your system settings under **Privacy & Security**.
 
 2. Go to the link specified in the output.
 
-```bash
-Cloud Connector <version> started on <link to follow>
-```
+   ```bash
+   Cloud Connector <version> started on <link to follow>
+   ```
 
 If the link doesn't work, replace the domain with `127.0.0.1`, for example:
-  - Cloud Connector outputs `Cloud Connector 2.18.0 started on https://custom.domain:8443 (master)`.
-  - Open `https://127.0.0.1:8443` in the browser.
+   - Cloud Connector outputs `Cloud Connector 2.18.0 started on https://custom.domain:8443 (master)`.
+   - Open `https://127.0.0.1:8443` in the browser.
 3. Log in with the default credentials.
    - Username: `Administrator`
    - Password: `manage`
@@ -100,148 +90,150 @@ If the link doesn't work, replace the domain with `127.0.0.1`, for example:
 6. Choose **Next** and select **Configure using authentication data**.
 7. Add the file from the previous step, and choose **Next**.
 
-### Set up on-premise Docker Registry
+### Set up the On-Premise Docker Registry
 
-[OPTION BEGIN [Basic authorization]]
+<!-- tabs:start -->
+
+#### **Basic Authorization**
 
 1. Generate a self-signed certificate:
 
-```bash
-mkdir -p certs
-openssl req \
-   -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
-   -addext "subjectAltName = DNS:myregistry.kyma" \
-   -x509 -days 365 -out certs/domain.crt
-```
+   ```bash
+   mkdir -p certs
+   openssl req \
+      -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
+      -addext "subjectAltName = DNS:myregistry.kyma" \
+      -x509 -days 365 -out certs/domain.crt
+   ```
 
 <!-- TODO: mac specific -->
 
 2. Add the certificate to the system keychain:
 
-```bash
-security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain certs/domain.crt
-```
+   ```bash
+   security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain certs/domain.crt
+   ```
 
 3. Generate an authentication file for the local Docker registry:
 
-```bash
-mkdir -p secret
-htpasswd -Bbn ${REG_USER_NAME} ${REG_USER_PASSWD} > ./secret/htpasswd
-```
+   ```bash
+   mkdir -p secret
+   htpasswd -Bbn ${REG_USER_NAME} ${REG_USER_PASSWD} > ./secret/htpasswd
+   ```
 
 4. Add the required configuration file:
 
-```bash
-mkdir -p config
-cat << EOF > config/config.yml
-version: 0.1
-log:
-  fields:
-    service: registry
-storage:
-  cache:
-    blobdescriptor: inmemory
-  filesystem:
-    rootdirectory: /var/lib/registry
-auth:
-  htpasswd:
-    realm: basic-realm
-    path: /secret/htpasswd
-http:
-  addr: 0.0.0.0:443
-  tls:
-    certificate: /certs/domain.crt
-    key: /certs/domain.key
-    minimumtls: tls1.2
-    ciphersuites:
-      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-      - TLS_AES_128_GCM_SHA256
-      - TLS_CHACHA20_POLY1305_SHA256
-      - TLS_AES_256_GCM_SHA384
-      - TLS_AES_128_GCM_SHA256
-  headers:
-    X-Content-Type-Options: [nosniff]
-EOF
-```
+   ```bash
+   mkdir -p config
+   cat << EOF > config/config.yml
+   version: 0.1
+   log:
+     fields:
+       service: registry
+   storage:
+     cache:
+       blobdescriptor: inmemory
+     filesystem:
+       rootdirectory: /var/lib/registry
+   auth:
+     htpasswd:
+       realm: basic-realm
+       path: /secret/htpasswd
+   http:
+     addr: 0.0.0.0:443
+     tls:
+       certificate: /certs/domain.crt
+       key: /certs/domain.key
+       minimumtls: tls1.2
+       ciphersuites:
+         - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+         - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+         - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+         - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+         - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+         - TLS_AES_128_GCM_SHA256
+         - TLS_CHACHA20_POLY1305_SHA256
+         - TLS_AES_256_GCM_SHA384
+         - TLS_AES_128_GCM_SHA256
+     headers:
+       X-Content-Type-Options: [nosniff]
+   EOF
+   ```
 
 5. Run the local Docker registry:
 
-```bash
-docker run -d \
-		-v docker-reg-vol:/var/lib/registry \
-		-v $(pwd)/certs:/certs \
-		-v $(pwd)/config/config.yml:/etc/distribution/config.yml \
-		-v $(pwd)/secret/htpasswd:/secret/htpasswd \
-		-p 25002:443 \
-		--restart=always \
-		--name on-prem-docker-registry \
-		registry:3.0.0
-```
+   ```bash
+   docker run -d \
+		   -v docker-reg-vol:/var/lib/registry \
+		   -v $(pwd)/certs:/certs \
+		   -v $(pwd)/config/config.yml:/etc/distribution/config.yml \
+		   -v $(pwd)/secret/htpasswd:/secret/htpasswd \
+		   -p 25002:443 \
+		   --restart=always \
+		   --name on-prem-docker-registry \
+		   registry:3.0.0
+   ```
 
 6. Edit the `/etc/hosts` file and add the following line: `127.0.0.1 myregistry.kyma`
 7. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
 
 8. Select **+** in the **Backend Trust Store** section, and add the generated `domain.crt` file to the allowlist.
 
-[OPTION END]
-
-[OPTION BEGIN [OAuth authorization]]
+#### **OAuth Authorization**
 
 1. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
 2. Select **+** in the **Backend Trust Store** section, and add the Docker Registry and OAuth server certificates (where applicable) to the allowlist.
 
-[OPTION END]
+<!-- tabs:end -->
 
-### Configure Cloud Connector on-premise connection
+### Configure the Cloud Connector On-Premise Connection
 
-[OPTION BEGIN [Basic authorization]]
+<!-- tabs:start -->
 
-1. Go to the **Cloud to On-Premises** section in the Cloud Connector UI and under the **Mapping Virtual to Internal System** click the **+** button.
-   Provide the following information:
+#### **Basic Authorization**
+
+1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** click the **+** button and provide the following information:
+
    - Back-end Type: Non-SAP System
    - Protocol: HTTPS
    - Internal and Virtual Host: myregistry.kyma
    - Internal and Virtual Port: 25002
    - Uncheck **Allow Principal Propagation**
    - Host in Request Header: Use Internal Host
+
 2. Choose **+** in the **Resources of {your registry name}**
 3. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
 4. Select the `Check availability of internal host` button to make sure the Cloud Connector was configured properly, and the cluster can access the on-prem Docker registry.
+
    ![check-availability.png](check-availability.png)
 
 5. Authenticate to the local Docker registry to push the test image:
 
-```bash
-docker login myregistry.kyma:25002 -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
-```
+   ```bash
+   docker login myregistry.kyma:25002 -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
+   ```
 
 6. Create and push a test image to the on-premise Docker Registry:
 
-```bash
-echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_PATH} -
-```
+   ```bash
+   echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_PATH} -
+   ```
 
-[OPTION END]
+#### **OAuth Authorization**
 
-[OPTION BEGIN [OAuth authorization]]
+1. In the **Cloud to On-Premises** section in the Cloud Connector UI, under the **Mapping Virtual to Internal System** click the **+** button, and provide the following information.
 
-1. Go to the **Cloud to On-Premises** section in the Cloud Connector UI and under the **Mapping Virtual to Internal System** click the **+** button.
-   Provide the following information:
    - Back-end Type: Non-SAP System
    - Protocol: HTTPS
    - Internal and Virtual Host: {DOCKER_REGISTRY_HOST}
    - Internal and Virtual Port: {DOCKER_REGISTRY_PORT}
    - Uncheck **Allow Principal Propagation**
    - Host in Request Header: Use Internal Host
+
 2. Choose **+** in the **Resources of {your registry name}**
 3. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
-4. If the OAuth uses different host or port than the Docker Registry create a second **Mapping Virtual to Internal System**.
-   Provide the following information:
+4. If the OAuth uses different host or port than the Docker Registry create a second **Mapping Virtual to Internal System**, and provide the following information:
 
 - Back-end Type: Non-SAP System
 - Protocol: HTTPS
@@ -253,106 +245,107 @@ echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)<
 5. Choose **+** in the **Resources of {your oauth name}**
 6. Add `/` as the URL path, mark the **Active** checkbox, and select `Path and All Sub-Paths`. Choose **Save**.
 7. Select the `Check availability of internal host` button to make sure the Cloud Connector was configured properly, and the cluster can access the on-prem Docker registry.
+
    ![check-availability.png](check-availability.png)
 
-[OPTION END]
+<!-- tabs:end -->
 
 ### Configure Registry Proxy
 
-[OPTION BEGIN [Basic authorization]]
+<!-- tabs:start -->
+
+#### **Basic Authorization**
 
 1. Apply a Connection CR:
 
-```bash
-kubectl create namespace ${NAMESPACE}
-cat << EOF | kubectl apply -f -
-apiVersion: registry-proxy.kyma-project.io/v1alpha1
-kind: Connection
-metadata:
-  name: registry-proxy-myregistry
-  namespace: ${NAMESPACE}
-spec:
-  target:
-    host: "myregistry.kyma:25002"
-EOF
-```
+   ```bash
+   kubectl create namespace ${NAMESPACE}
+   cat << EOF | kubectl apply -f -
+   apiVersion: registry-proxy.kyma-project.io/v1alpha1
+   kind: Connection
+   metadata:
+     name: registry-proxy-myregistry
+     namespace: ${NAMESPACE}
+   spec:
+     target:
+       host: "myregistry.kyma:25002"
+   EOF
+   ```
 
-[OPTION END]
-
-[OPTION BEGIN [OAuth authorization]]
+#### **OAuth Authorization**
 
 1. Apply a Connection CR:
 
-```bash
-kubectl create namespace ${NAMESPACE}
-cat << EOF | kubectl apply -f -
-apiVersion: registry-proxy.kyma-project.io/v1alpha1
-kind: Connection
-metadata:
-  name: registry-proxy-myregistry
-  namespace: ${NAMESPACE}
-spec:
-  target:
-    host: "${DOCKER_REGISTRY}"
-    authorization:
-      host: "${AUTHORIZATION_HOST}"
-EOF
-```
+   ```bash
+   kubectl create namespace ${NAMESPACE}
+   cat << EOF | kubectl apply -f -
+   apiVersion: registry-proxy.kyma-project.io/v1alpha1
+   kind: Connection
+   metadata:
+     name: registry-proxy-myregistry
+     namespace: ${NAMESPACE}
+   spec:
+     target:
+       host: "${DOCKER_REGISTRY}"
+       authorization:
+         host: "${AUTHORIZATION_HOST}"
+   EOF
+   ```
 
-[OPTION END]
+<!-- tabs:end -->
 
 2. Get the Connection NodePort number:
 
-```bash
-export NODE_PORT=$(kubectl get connections.registry-proxy.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})
-```
+   ```bash
+   export NODE_PORT=$(kubectl get connections.registry-proxy.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})
+   ```
 
-### Configure on-premise Docker Registry
+### Configure the On-Premise Docker Registry
 
 1. Create a Secret for authentication with the on-premise Docker registry:
 
-```bash
-kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
-    --docker-username=${REG_USER_NAME} \
-    --docker-password=${REG_USER_PASSWD} \
-    --docker-email=${EMAIL} \
-    --docker-server=localhost:${NODE_PORT}
-```
+   ```bash
+   kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
+       --docker-username=${REG_USER_NAME} \
+       --docker-password=${REG_USER_PASSWD} \
+       --docker-email=${EMAIL} \
+       --docker-server=localhost:${NODE_PORT}
+   ```
 
 2. Adjust the image in the Deployment to use the image tag and the node port from the previous steps, and deploy it on the cluster:
 
-```bash
-kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
-kubectl create service clusterip test-workload-on-prem-reg -n ${NAMESPACE} --tcp=80:80
-cat << EOF | kubectl apply -f -
-apiVersion: gateway.kyma-project.io/v2
-kind: APIRule
-metadata:
-  name: test-workload-on-prem-reg
-  namespace: ${NAMESPACE}
-spec:
-  gateway: kyma-system/kyma-gateway
-  hosts:
-    - test-workload-on-prem-reg
-  rules:
-    - noAuth: true
-      methods: ["GET"]
-      path: /{**}
-  service:
-    name: test-workload-on-prem-reg
-    namespace: ${NAMESPACE}
-    port: 80
-EOF
-```
+   ```bash
+   kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
+   kubectl create service clusterip test-workload-on-prem-reg -n ${NAMESPACE} --tcp=80:80
+   cat << EOF | kubectl apply -f -
+   apiVersion: gateway.kyma-project.io/v2
+   kind: APIRule
+   metadata:
+     name: test-workload-on-prem-reg
+     namespace: ${NAMESPACE}
+   spec:
+     gateway: kyma-system/kyma-gateway
+     hosts:
+       - test-workload-on-prem-reg
+     rules:
+       - noAuth: true
+         methods: ["GET"]
+         path: /{**}
+     service:
+       name: test-workload-on-prem-reg
+       namespace: ${NAMESPACE}
+       port: 80
+   EOF
+   ```
 
 3. Check if the workload was deployed successfully:
 
-```bash
-kubectl -n ${NAMESPACE} get pods -l app=test-workload-on-prem-reg
-```
+   ```bash
+   kubectl -n ${NAMESPACE} get pods -l app=test-workload-on-prem-reg
+   ```
 
 4. Access the deployed Nginx image at the `https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}` address:
 
-```bash
- curl https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}
-```
+   ```bash
+    curl https://test-workload-on-prem-reg.${CLUSTER_DOMAIN}
+   ```

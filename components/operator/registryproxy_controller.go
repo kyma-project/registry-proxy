@@ -7,6 +7,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -52,6 +53,25 @@ func (r *RegistryProxyReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	return sm.Reconcile(ctx)
 }
 
+func (r *RegistryProxyReconciler) retriggerAllRegistryProxyCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+	log := r.Log.With("deletion_watcher")
+
+	list := &v1alpha1.RegistryProxyList{}
+	err := r.List(ctx, list, &client.ListOptions{})
+	if err != nil {
+		log.Errorf("error listing registryproxy objects: %s", err.Error())
+		return
+	}
+
+	for _, s := range list.Items {
+		log.Debugf("retriggering reconciliation for RegistryProxy %s/%s", s.GetNamespace(), s.GetName())
+		q.Add(ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: s.GetNamespace(),
+			Name:      s.GetName(),
+		}})
+	}
+}
+
 // SetupWithManager sets up the controller with the Manager.
 func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	connectivityProxyWatcher := &ConnectivityProxyReadinessWatcher{
@@ -66,6 +86,11 @@ func (r *RegistryProxyReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	}
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.RegistryProxy{}).
+		Watches(&v1alpha1.RegistryProxy{}, &handler.Funcs{
+			// retrigger all RegistryProxy CRs reconciliations when one is deleted
+			// this should ensure at least one RegistryProxy CR is served
+			DeleteFunc: r.retriggerAllRegistryProxyCRs,
+		}).
 		Watches(
 			&appsv1.StatefulSet{},
 			handler.EnqueueRequestsFromMapFunc(connectivityProxyWatcher.triggerRegistryProxyRequeueOnChange),

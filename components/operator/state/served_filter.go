@@ -13,17 +13,13 @@ import (
 
 // sFnServedFilter checks if only one instance of RegistryProxy is running and disallows additional instances
 func sFnServedFilter(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	if m.State.RegistryProxy.IsServedEmpty() {
+	if m.State.RegistryProxy.IsServedEmpty() || m.State.RegistryProxy.Status.Served == v1alpha1.ServedFalse {
 		err := setServedStatus(ctx, m)
 		if err != nil {
 			return stopWithEventualError(err)
 		}
 	}
 
-	// instance is marked, we can now decide what to do with it
-	if m.State.RegistryProxy.Status.Served == v1alpha1.ServedFalse {
-		return stop()
-	}
 	return nextState(sFnAddFinalizer)
 }
 

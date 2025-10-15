@@ -14,7 +14,10 @@ import (
 )
 
 func Test_sFnServedFilter(t *testing.T) {
-	t.Run("skip processing when served is false", func(t *testing.T) {
+	t.Run("re-processing when served is false", func(t *testing.T) {
+		scheme := minimalScheme(t)
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).Build()
+
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				RegistryProxy: v1alpha1.RegistryProxy{
@@ -23,12 +26,15 @@ func Test_sFnServedFilter(t *testing.T) {
 					},
 				},
 			},
+			Client: fakeClient,
 		}
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), &m)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		require.Nil(t, nextFn)
+		requireEqualFunc(t, sFnAddFinalizer, nextFn)
+
+		require.Equal(t, v1alpha1.ServedTrue, m.State.RegistryProxy.Status.Served)
 	})
 
 	t.Run("do next step when served is true", func(t *testing.T) {

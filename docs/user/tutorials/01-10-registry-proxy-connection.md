@@ -26,38 +26,38 @@ In this tutorial, you will set up the on-premise Docker Registry and securely do
 
 #### **Basic Authorization**
 
-1. Export the following environment variables:
+Export the following environment variables:
 
-```bash
-export KUBECONFIG={PATH_TO_YOUR_KYMA_KUBECONFIG}
-export EMAIL={YOUR_EMAIL}
-export NAMESPACE={NAMESPACE_WHERE_WORKLOAD_IS_DEPLOYED}
-export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
-export REG_USER_NAME={REGISTRY_USERNAME}
-export REG_USER_PASSWD={REGISTRY_PASSWORD}
-export IMAGE_TAG="$(date +%F-%H-%M)"
-export IMAGE_NAME="on-prem-nginx"
-export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
-```
+   ```bash
+   export KUBECONFIG={PATH_TO_YOUR_KYMA_KUBECONFIG}
+   export EMAIL={YOUR_EMAIL}
+   export NAMESPACE={NAMESPACE_WHERE_WORKLOAD_IS_DEPLOYED}
+   export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
+   export REG_USER_NAME={REGISTRY_USERNAME}
+   export REG_USER_PASSWD={REGISTRY_PASSWORD}
+   export IMAGE_TAG="$(date +%F-%H-%M)"
+   export IMAGE_NAME="on-prem-nginx"
+   export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
+   ```
 
 #### **OAuth Authorization**
 
-1. Export the following environment variables:
+Export the following environment variables:
 
-```bash
-export KUBECONFIG={PATH_TO_YOUR_KYMA_KUBECONFIG}
-export EMAIL={YOUR_EMAIL}
-export NAMESPACE={NAMESPACE_WHERE_WORKLOAD_IS_DEPLOYED}
-export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
-export REG_USER_NAME={REGISTRY_USERNAME}
-export REG_USER_PASSWD={REGISTRY_PASSWORD}
-export DOCKER_REGISTRY_HOST={EXISTING_DOCKER_REGISTRY_HOST}
-export DOCKER_REGISTRY_PORT={EXISTING_DOCKER_REGISTRY_PORT}
-export DOCKER_REGISTRY="${DOCKER_REGISTRY_HOST}:${DOCKER_REGISTRY_PORT}"
-export AUTHORIZATION_HOST={OAUTH_HOST_WITH_PORT}
-export IMAGE_TAG={TAG_OF_EXISTING_DOCKER_IMAGE}
-export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
-```
+   ```bash
+   export KUBECONFIG={PATH_TO_YOUR_KYMA_KUBECONFIG}
+   export EMAIL={YOUR_EMAIL}
+   export NAMESPACE={NAMESPACE_WHERE_WORKLOAD_IS_DEPLOYED}
+   export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
+   export REG_USER_NAME={REGISTRY_USERNAME}
+   export REG_USER_PASSWD={REGISTRY_PASSWORD}
+   export DOCKER_REGISTRY_HOST={EXISTING_DOCKER_REGISTRY_HOST}
+   export DOCKER_REGISTRY_PORT={EXISTING_DOCKER_REGISTRY_PORT}
+   export DOCKER_REGISTRY="${DOCKER_REGISTRY_HOST}:${DOCKER_REGISTRY_PORT}"
+   export AUTHORIZATION_HOST={OAUTH_HOST_WITH_PORT}
+   export IMAGE_TAG={TAG_OF_EXISTING_DOCKER_IMAGE}
+   export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
+   ```
 
 <!-- tabs:end -->
 
@@ -78,9 +78,9 @@ export IMAGE_NAME={NAME_OF_EXISTING_DOCKER_IMAGE}
    Cloud Connector <version> started on <link to follow>
    ```
 
-If the link doesn't work, replace the domain with `127.0.0.1`, for example:
-   - Cloud Connector outputs `Cloud Connector 2.18.0 started on https://custom.domain:8443 (master)`.
-   - Open `https://127.0.0.1:8443` in the browser.
+   If the link doesn't work, replace the domain with `127.0.0.1`, for example:
+      - Cloud Connector outputs `Cloud Connector 2.18.0 started on https://custom.domain:8443 (master)`.
+      - Open `https://127.0.0.1:8443` in the browser.
 3. Log in with the default credentials.
    - Username: `Administrator`
    - Password: `manage`

@@ -45,7 +45,7 @@ The API of the Registry Proxy module is based on Kubernetes CustomResourceDefini
 
 ## Security Considerations
 
-To learn how to avoid potential threats when using Registry Proxy Connections, see [Registry Proxy Recommendations](./recommendations.md).
+To learn how to avoid potential threats when using Registry Proxy Connections, see [Registry Proxy Recommendations](00-10-recommendations.md).
 
 
 ## Related Information

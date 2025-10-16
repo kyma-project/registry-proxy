@@ -33,7 +33,6 @@ uploadFile() {
 }
 
 helm template registry-proxy-operator ${PROJECT_ROOT}/config/operator \
-  --namespace=kyma-system \
   --set controllerManager.container.image="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:${TAG}" \
   > registry-proxy-operator.yaml
 

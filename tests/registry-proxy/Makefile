@@ -12,7 +12,7 @@ test: ## Run integration test.
 .PHONY: cluster-info
 cluster-info: ## Print useful info about the cluster regarding integration run
 	@echo "####################### Operator Logs #######################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/name=registry-proxy-operator --tail=-1 || true
+	@kubectl logs -n registry-proxy -l app.kubernetes.io/name=registry-proxy-operator --tail=-1 || true
 	@echo ""
 
 	@echo "####################### Registry Proxy Logs #######################"

@@ -23,7 +23,7 @@ export IMAGE_NAME="myregistry.kyma:25002/on-prem-nginx:$(date +%F-%H-%M)"
 
 ## Steps
 
-To learn how to configure Connectivity Proxy and On-Prem Docker registry, see [this tutorial](../user/tutorials/tutorial.md).
+To learn how to configure Connectivity Proxy and On-Prem Docker registry, see the [Create Kyma Registry Proxy Connection and a Target Deployment](../user/tutorials/01-10-registry-proxy-connection.md) tutorial.
 
 ### Install Registry Proxy
 

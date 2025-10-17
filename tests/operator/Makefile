@@ -13,7 +13,7 @@ cluster-info: ## Print useful info about the cluster regarding integration run
 	@echo ""
 
 	@echo "####################### Registry Proxy Logs #######################"
-	@kubectl logs -n kyma-system -l app.kubernetes.io/name=registry-proxy --tail=-1 || true
+	@kubectl logs -n registry-proxy -l app.kubernetes.io/name=registry-proxy --tail=-1 || true
 	@echo ""
 
 	@echo "####################### Registry Proxies CR #######################"

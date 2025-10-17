@@ -2,5 +2,5 @@ apiVersion: operator.kyma-project.io/v1alpha1
 kind: RegistryProxy
 metadata:
   name: default
-  namespace: kyma-system
+  namespace: registry-proxy
 spec: {}

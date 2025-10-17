@@ -89,7 +89,7 @@ func Test_sFnServedFilter(t *testing.T) {
 				RegistryProxy: v1alpha1.RegistryProxy{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "new-registry-proxy",
-						Namespace: "kyma-system",
+						Namespace: "registry-proxy",
 					},
 					Status: v1alpha1.RegistryProxyStatus{},
 				},
@@ -101,7 +101,7 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		next, result, err := sFnServedFilter(context.TODO(), &m)
 
-		expectedErrorMessage := "Only one instance of RegistryProxy is allowed (current served instance: kyma-system/existing-registry-proxy). This RegistryProxy CR is redundant. Remove it to fix the problem."
+		expectedErrorMessage := "Only one instance of RegistryProxy is allowed (current served instance: registry-proxy/existing-registry-proxy). This RegistryProxy CR is redundant. Remove it to fix the problem."
 		require.EqualError(t, err, expectedErrorMessage)
 		require.Nil(t, result)
 		require.Nil(t, next)
@@ -125,7 +125,7 @@ func minimalRegistryProxy() *unstructured.Unstructured {
 			"kind":       "RegistryProxy",
 			"metadata": map[string]interface{}{
 				"name":      "existing-registry-proxy",
-				"namespace": "kyma-system",
+				"namespace": "registry-proxy",
 			},
 			"spec": map[string]interface{}{},
 			"status": map[string]interface{}{

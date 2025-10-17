@@ -14,11 +14,6 @@ With the Registry Proxy module, you can set up a managed connection between kube
 
 ## Install
 
-Ensure that the `kyma-system` namespace exists:
-
-```sh
-kubectl create namespace kyma-system | true
-```
 
 Download the `registry-proxy-operator.yaml` and `default-registry-proxy-cr.yaml` manifests from the [latest](https://github.com/kyma-project/registry-proxy/releases/latest) release.
 Apply `registry-proxy-operator.yaml` to install Registry Proxy Operator:

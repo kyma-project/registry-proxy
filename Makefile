@@ -65,7 +65,7 @@ run-local-operator: create-k3d ## Setup local k3d cluster and install operator
 	CONNECTION_IMG=$(CONNECTION_IMG) make -C components/connection docker-build
 	k3d image import $(CONNECTION_IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator --namespace=kyma-system --set controllerManager.container.image="$(OPERATOR_IMG)"
+	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator  --set controllerManager.container.image="$(OPERATOR_IMG)"
 	# TODO: wait for ready status
 
 .PHONY: run-local
@@ -81,9 +81,9 @@ integration-dependencies: kyma ## create k3d cluster and run integration test
 	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml
 	# upload test image to the docker registry
 	docker pull alpine:3.21.3
-	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=90s
+	kubectl wait --for condition=Available -n registry-proxy deployment dockerregistry-operator --timeout=90s
 	sleep 5
-	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
+	kubectl wait --for condition=Available -n registry-proxy deployment dockerregistry --timeout=60s
 	sleep 5
 	$(KYMA) registry image-import alpine:3.21.3
 
@@ -100,7 +100,7 @@ run-integration-test-registry-proxy: integration-dependencies
 .PHONY: install-registry-proxy
 install-registry-proxy:
 	helm install registry-proxy-controller $(PROJECT_ROOT)/config/registry-proxy \
-	--namespace=kyma-system \
+	--namespace=registry-proxy \
 	# --set controllerManager.container.image="europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:$(TAG)" \
 	# --set controllerManager.container.env.PROXY_IMAGE=$(IMG)
 

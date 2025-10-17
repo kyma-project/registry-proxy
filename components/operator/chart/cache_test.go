@@ -16,7 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-const testSecretNamespace = "kyma-system"
+const testSecretNamespace = "registry-proxy"
 
 func TestManifestCache_Delete(t *testing.T) {
 	t.Run("delete secret", func(t *testing.T) {

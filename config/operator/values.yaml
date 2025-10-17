@@ -59,3 +59,7 @@ networkPolicy:
 # [Busola]: To enable Busola UI extension set true
 busola:
   enable: true
+
+namespace: 
+  name: registry-proxy
+  create: true

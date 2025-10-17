@@ -28,7 +28,7 @@ const (
 var (
 	secretCacheKey = types.NamespacedName{
 		Name:      "registry-proxy-manifest-cache",
-		Namespace: "kyma-system",
+		Namespace: "registry-proxy",
 	}
 )
 

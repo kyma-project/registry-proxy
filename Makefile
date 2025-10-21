@@ -81,9 +81,9 @@ integration-dependencies: kyma ## create k3d cluster and run integration test
 	kubectl apply -f https://github.com/kyma-project/docker-registry/releases/latest/download/default-dockerregistry-cr.yaml
 	# upload test image to the docker registry
 	docker pull alpine:3.21.3
-	kubectl wait --for condition=Available -n registry-proxy deployment dockerregistry-operator --timeout=90s
+	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=90s
 	sleep 5
-	kubectl wait --for condition=Available -n registry-proxy deployment dockerregistry --timeout=60s
+	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry --timeout=60s
 	sleep 5
 	$(KYMA) registry image-import alpine:3.21.3
 

@@ -9,7 +9,8 @@ In this tutorial, you will set up a Connection to the on-premise Docker Registry
 - How to create a target deployment using an image from the on-premise Docker Registry.
 - How to set up a Connection to a Docker Registry with the OAuth authorization.
 
-> Note: The tutorial assumes (Basic Authorisation parts) that you have a running local Docker registry that is reachable from a local network on your machine at `myregistry.acme:25002` and that you can push/pull images locally. To setup such Docker Registry, follow the [instructions](../../contributor/running-local-docker-registry.md), however, keep in mind that such Docker Registry instance is only good for testing purposes. For the production setup, you want to choose a Docker Registry instance that is available within the target on-premise network. 
+> [!IMPORTANT] 
+> For the basic authorization part, this tutorial assumes that you have a running local Docker registry reachable from a local network on your machine at `myregistry.acme:25002` and that you can push and pull images locally. To set up Docker registry, follow [Set up Local Docker Registry for Testing](../../contributor/running-local-docker-registry.md). Remember that this Docker Registry instance is only good for testing purposes. For the production setup, you want to choose a Docker Registry instance that is available within the target on-premise network. 
 
 
 ## Prerequisites

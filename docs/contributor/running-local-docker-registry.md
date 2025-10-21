@@ -1,6 +1,6 @@
-# Setup Local Docker Registry for Testing
+# Set up Local Docker Registry for Testing
 
-The instructions aim to setup a  Docker Registry running in the local docker context for testing purpose.
+Set up a  Docker Registry running in the local Docker context for testing purposes.
 
 ## Prerequisites
 - Docker installed and running (for the Basic authorization option)

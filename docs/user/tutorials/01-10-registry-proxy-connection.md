@@ -1,6 +1,6 @@
 # Create Kyma Registry Proxy Connection and a Target Deployment
 
-In this tutorial, you will set up a Connection to on-premise Docker Registry in order to securely download images to your Kyma cluster.
+In this tutorial, you will set up a Connection to the on-premise Docker Registry to securely download images to your Kyma cluster.
 
 ## You will learn
 
@@ -16,11 +16,11 @@ In this tutorial, you will set up a Connection to on-premise Docker Registry in 
 
 
 - SAP BTP, Kyma runtime enabled
-- [Connectivity Proxy](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) and [Registry Proxy]() modules added
+- [Connectivity Proxy](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) and [Registry Proxy](https://kyma-project.io/#/community-modules/user/README?id=quick-install) modules added
 - Docker Registry instance available within the on-premise network
 - kubectl installed
 - [Kyma CLI installed](https://github.com/kyma-project/cli/releases/latest)
-- [SapMachine 21 JDK](https://sapmachine.io/) installed
+- [SapMachine 21 JDK](https://sapmachine.io/) or higher installed
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
 
 
@@ -101,7 +101,8 @@ Export the following environment variables:
 1. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
 2. Select **+** in the **Backend Trust Store** section, and add the Docker Registry and OAuth server certificates (where applicable) to the allowlist. 
 
-> Note: if you are using the local Docker Registry, as explained [here](../../contributor/running-local-docker-registry.md), use the generated self-signed certificate file (`domain.crt`) to the allowlist. 
+> [!IMPORTANT]
+> If you are using the local Docker Registry, as explained in [Set up Local Docker Registry for Testing](../../contributor/running-local-docker-registry.md), add the generated self-signed certificate file (`domain.crt`) to the allowlist. 
 
 
 ### Configure the Cloud Connector On-Premise Connection
@@ -206,9 +207,9 @@ Export the following environment variables:
    export NODE_PORT=$(kubectl get connections.registry-proxy.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})
    ```
 
-### Deploy Container from Image hosted on the On-Premise Docker Registry 
+### Deploy Container from Image Hosted on the On-Premise Docker Registry 
 
-1. Ensure an image exists in the target Docker Registry  
+1. Ensure that the image exists in the target Docker Registry  
 
    Export environment variables referencing the image, for example:
    ```bash
@@ -217,7 +218,7 @@ Export the following environment variables:
    export IMAGE_PATH="${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
    ```
    
-   Authenticate to the target Docker Registry to push the test image:
+   Authenticate to the target Docker registry to push the test image:
 
    ```bash
    docker login ${DOCKER_REGISTRY} -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
@@ -253,7 +254,7 @@ Export the following environment variables:
    The test-on-prem-nginx3 app is available under the
    {test-workload-on-prem-reg....}
    ```
-#### **Kubectl**
+#### **kubectl**
 
    ```bash
    kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'

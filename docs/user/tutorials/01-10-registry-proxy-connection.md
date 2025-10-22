@@ -1,24 +1,29 @@
 # Create Kyma Registry Proxy Connection and a Target Deployment
 
-In this tutorial, you will set up the on-premise Docker Registry and securely download images to your Kyma cluster.
+In this tutorial, you will set up a Connection to the on-premise Docker Registry to securely download images to your Kyma cluster.
 
 ## You will learn
 
-- How to set up Cloud Connector and on-premise Docker Registry.
+- How to set up Cloud Connector.
 - How to install the Registry Proxy module and configure the connection.
 - How to create a target deployment using an image from the on-premise Docker Registry.
 - How to set up a Connection to a Docker Registry with the OAuth authorization.
 
+> [!IMPORTANT] 
+> For the basic authorization part, this tutorial assumes that you have a running local Docker registry reachable from a local network on your machine at `myregistry.acme:25002` and that you can push and pull images locally. To set up Docker registry, follow [Set up Local Docker Registry for Testing](../../contributor/running-local-docker-registry.md). Remember that this Docker Registry instance is only good for testing purposes. For the production setup, you want to choose a Docker Registry instance that is available within the target on-premise network. 
+
+
 ## Prerequisites
 
+
 - SAP BTP, Kyma runtime enabled
-- [Connectivity Proxy and Registry Proxy modules](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) added
-- Docker installed and running (for the Basic authorization option)
-- Docker Registry instance that uses OAuth authorization (for the OAuth option)
+- [Connectivity Proxy](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) and [Registry Proxy](https://kyma-project.io/#/community-modules/user/README?id=quick-install) modules added
+- Docker Registry instance available within the on-premise network
 - kubectl installed
-- [SapMachine 21 JDK](https://sapmachine.io/) installed
+- [Kyma CLI installed](https://github.com/kyma-project/cli/releases/latest)
+- [SapMachine 21 JDK](https://sapmachine.io/) or higher installed
 - [Cloud Connector installed](https://tools.hana.ondemand.com/#cloud)
-- Htpasswd and openssl installed
+
 
 ### Prepare Environment
 
@@ -35,9 +40,10 @@ Export the following environment variables:
    export CLUSTER_DOMAIN=$(kubectl get cm -n kube-system shoot-info -ojsonpath='{.data.domain}')
    export REG_USER_NAME={REGISTRY_USERNAME}
    export REG_USER_PASSWD={REGISTRY_PASSWORD}
-   export IMAGE_TAG="$(date +%F-%H-%M)"
-   export IMAGE_NAME="on-prem-nginx"
-   export IMAGE_PATH="myregistry.kyma:25002/${IMAGE_NAME}:${IMAGE_TAG}"
+   export DOCKER_REGISTRY_HOST="myregistry.acme"
+   export DOCKER_REGISTRY_PORT="25002"
+   export DOCKER_REGISTRY="${DOCKER_REGISTRY_HOST}:${DOCKER_REGISTRY_PORT}"
+
    ```
 
 #### **OAuth Authorization**
@@ -90,102 +96,15 @@ Export the following environment variables:
 6. Choose **Next** and select **Configure using authentication data**.
 7. Add the file from the previous step, and choose **Next**.
 
-### Set Up the On-Premise Docker Registry
+### Set Up Trust for the On-Premise Docker Registry
 
-<!-- tabs:start -->
-
-#### **Basic Authorization**
-
-1. Generate a self-signed certificate:
-
-   ```bash
-   mkdir -p certs
-   openssl req \
-      -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key \
-      -addext "subjectAltName = DNS:myregistry.kyma" \
-      -x509 -days 365 -out certs/domain.crt
-   ```
-
-<!-- TODO: mac specific -->
-
-2. Add the certificate to the system keychain:
-
-   ```bash
-   security add-trusted-cert -d -r trustRoot -k ~/Library/Keychains/login.keychain certs/domain.crt
-   ```
-
-3. Generate an authentication file for the local Docker registry:
-
-   ```bash
-   mkdir -p secret
-   htpasswd -Bbn ${REG_USER_NAME} ${REG_USER_PASSWD} > ./secret/htpasswd
-   ```
-
-4. Add the required configuration file:
-
-   ```bash
-   mkdir -p config
-   cat << EOF > config/config.yml
-   version: 0.1
-   log:
-     fields:
-       service: registry
-   storage:
-     cache:
-       blobdescriptor: inmemory
-     filesystem:
-       rootdirectory: /var/lib/registry
-   auth:
-     htpasswd:
-       realm: basic-realm
-       path: /secret/htpasswd
-   http:
-     addr: 0.0.0.0:443
-     tls:
-       certificate: /certs/domain.crt
-       key: /certs/domain.key
-       minimumtls: tls1.2
-       ciphersuites:
-         - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-         - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-         - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
-         - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
-         - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-         - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-         - TLS_AES_128_GCM_SHA256
-         - TLS_CHACHA20_POLY1305_SHA256
-         - TLS_AES_256_GCM_SHA384
-         - TLS_AES_128_GCM_SHA256
-     headers:
-       X-Content-Type-Options: [nosniff]
-   EOF
-   ```
-
-5. Run the local Docker registry:
-
-   ```bash
-   docker run -d \
-		   -v docker-reg-vol:/var/lib/registry \
-		   -v $(pwd)/certs:/certs \
-		   -v $(pwd)/config/config.yml:/etc/distribution/config.yml \
-		   -v $(pwd)/secret/htpasswd:/secret/htpasswd \
-		   -p 25002:443 \
-		   --restart=always \
-		   --name on-prem-docker-registry \
-		   registry:3.0.0
-   ```
-
-6. Edit the `/etc/hosts` file and add the following line: `127.0.0.1 myregistry.kyma`
-7. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
-
-8. Select **+** in the **Backend Trust Store** section, and add the generated `domain.crt` file to the allowlist.
-
-#### **OAuth Authorization**
 
 1. In Cloud Connector, go to **Configuration** and select the **On-Premises** tab.
-2. Select **+** in the **Backend Trust Store** section, and add the Docker Registry and OAuth server certificates (where applicable) to the allowlist.
+2. Select **+** in the **Backend Trust Store** section, and add the Docker Registry and OAuth server certificates (where applicable) to the allowlist. 
 
-<!-- tabs:end -->
+> [!IMPORTANT]
+> If you are using the local Docker Registry, as explained in [Set up Local Docker Registry for Testing](../../contributor/running-local-docker-registry.md), add the generated self-signed certificate file (`domain.crt`) to the allowlist. 
+
 
 ### Configure the Cloud Connector On-Premise Connection
 
@@ -197,7 +116,7 @@ Export the following environment variables:
 
    - Back-end Type: Non-SAP System
    - Protocol: HTTPS
-   - Internal and Virtual Host: myregistry.kyma
+   - Internal and Virtual Host: myregistry.acme
    - Internal and Virtual Port: 25002
    - Uncheck **Allow Principal Propagation**
    - Host in Request Header: Use Internal Host
@@ -208,17 +127,6 @@ Export the following environment variables:
 
    ![check-availability.png](check-availability.png)
 
-5. Authenticate to the local Docker registry to push the test image:
-
-   ```bash
-   docker login myregistry.kyma:25002 -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
-   ```
-
-6. Create and push a test image to the on-premise Docker Registry:
-
-   ```bash
-   echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_PATH} -
-   ```
 
 #### **OAuth Authorization**
 
@@ -268,7 +176,7 @@ Export the following environment variables:
      namespace: ${NAMESPACE}
    spec:
      target:
-       host: "myregistry.kyma:25002"
+       host: "${DOCKER_REGISTRY}"
    EOF
    ```
 
@@ -300,9 +208,26 @@ Export the following environment variables:
    export NODE_PORT=$(kubectl get connections.registry-proxy.kyma-project.io -n ${NAMESPACE} registry-proxy-myregistry -o jsonpath={.status.nodePort})
    ```
 
-### Configure the On-Premise Docker Registry
+### Deploy Container from Image Hosted on the On-Premise Docker Registry 
 
-1. Create a Secret for authentication with the on-premise Docker registry:
+1. Ensure that the image exists in the target Docker Registry  
+
+   Export environment variables referencing the image, for example:
+   ```bash
+   export IMAGE_TAG="0.0.1"
+   export IMAGE_NAME="on-prem-nginx"
+   export IMAGE_PATH="${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+   ```
+   
+   Authenticate to the target Docker registry to push the test image:
+
+   ```bash
+   docker login ${DOCKER_REGISTRY} -u ${REG_USER_NAME} -p ${REG_USER_PASSWD}
+   
+   echo -e "FROM nginx:alpine\nRUN echo \"<h1>Test image created on $(date +%F+%T)</h1>\" > /usr/share/nginx/html/index.html" | docker buildx build --push --platform linux/amd64 -t ${IMAGE_PATH} -
+   ```
+
+2. Create a Secret for authentication with the on-premise Docker registry:
 
    ```bash
    kubectl -n ${NAMESPACE} create secret docker-registry on-premise-reg \
@@ -312,7 +237,25 @@ Export the following environment variables:
        --docker-server=localhost:${NODE_PORT}
    ```
 
-2. Adjust the image in the Deployment to use the image tag and the node port from the previous steps, and deploy it on the cluster:
+3.  Deploy a container on the cluster:
+
+<!-- tabs:start -->
+
+#### **Kyma CLI**
+
+   ```bash
+   kyma app push --name test-workload-on-prem-reg --image "localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --container-port 80 --image-pull-secret on-premise-reg --expose --istio-inject
+
+   Creating deployment default/test-on-prem-nginx3
+
+   Creating service default/test-on-prem-nginx3
+
+   Creating API Rule default/test-on-prem-nginx3
+
+   The test-on-prem-nginx3 app is available under the
+   {test-workload-on-prem-reg....}
+   ```
+#### **kubectl**
 
    ```bash
    kubectl run test-workload-on-prem-reg -n ${NAMESPACE} --image="localhost:${NODE_PORT}/${IMAGE_NAME}:${IMAGE_TAG}" --port 80 --overrides='{"metadata":{"labels":{"app":"test-workload-on-prem-reg","sidecar.istio.io/inject": "true"}},"spec":{"imagePullSecrets":[{"name": "on-premise-reg"}]}}'
@@ -337,6 +280,7 @@ Export the following environment variables:
        port: 80
    EOF
    ```
+<!-- tabs:end -->
 
 3. Check if the workload was deployed successfully:
 

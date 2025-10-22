@@ -14,6 +14,9 @@ With the Registry Proxy module, you can set up a managed connection between kube
 
 ## Install
 
+> [!TIP]
+> The Registry Proxy module is a Kyma community module and, as such, can be installed by following the steps described in the [Community Modules](https://kyma-project.io/#/community-modules/user/README) documentation.
+
 
 Download the `registry-proxy-operator.yaml` and `default-registry-proxy-cr.yaml` manifests from the [latest](https://github.com/kyma-project/registry-proxy/releases/latest) release.
 Apply `registry-proxy-operator.yaml` to install Registry Proxy Operator:
@@ -27,6 +30,7 @@ To get Registry Proxy installed, apply the sample Registry Proxy CR:
 ```bash
 kubectl apply -f default-registry-proxy-cr.yaml
 ```
+
 
 ## Getting Started
 

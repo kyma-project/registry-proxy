@@ -1,7 +1,7 @@
 # Registry Proxy Module
 
 > [!IMPORTANT] 
-> The Registry Proxy module is a community module and is not automatically updated or maintained. For more information on community modules and how to install them, see [Community Modules](https://kyma-project.io/#/community-modules/user/README).
+> The Registry Proxy module is a community module and is not automatically updated or maintained. For more information on community modules and how to install them, see [Community Modules](https://kyma-project.io/#/community-modules/user/README.md).
 
 
 Learn more about the Registry Proxy module. Use it to enable the creation of Kubernetes workloads from images pulled from your on-premises Docker registries. 

@@ -17,7 +17,7 @@ In this tutorial, you will set up a Connection to the on-premise Docker Registry
 
 
 - SAP BTP, Kyma runtime enabled
-- [Connectivity Proxy](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) and [Registry Proxy](https://kyma-project.io/#/community-modules/user/README?id=quick-install) modules added
+- [Connectivity Proxy](https://help.sap.com/docs/btp/sap-business-technology-platform/enable-and-disable-kyma-module?locale=en-US) and [Registry Proxy](https://kyma-project.io/#/community-modules/user/README.md?id=quick-install) modules added
 - Docker Registry instance available within the on-premise network
 - kubectl installed
 - [Kyma CLI installed](https://github.com/kyma-project/cli/releases/latest)

@@ -83,9 +83,9 @@ type RegistryProxyStatus struct {
 // RegistryProxy is the Schema for the RegistryProxies API.
 type RegistryProxy struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   RegistryProxySpec   `json:"spec,omitempty"`
+	Spec   RegistryProxySpec   `json:"spec"`
 	Status RegistryProxyStatus `json:"status,omitempty"`
 }
 
@@ -94,7 +94,7 @@ type RegistryProxy struct {
 // RegistryProxyList contains a list of RegistryProxy.
 type RegistryProxyList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []RegistryProxy `json:"items"`
 }
 

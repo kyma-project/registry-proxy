@@ -10,8 +10,9 @@ import (
 
 	"github.com/kyma-project/registry-proxy/components/common/cache"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
+	"github.com/kyma-project/registry-proxy/components/operator/flags"
 
 	"go.uber.org/zap"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
@@ -39,7 +40,7 @@ type SystemState struct {
 	statusSnapshot v1alpha1.RegistryProxyStatus
 	ChartConfig    *chart.Config
 	Cache          chart.ManifestCache
-	FlagsBuilder   chart.FlagsBuilder
+	FlagsBuilder   *flags.Builder
 }
 
 func (s *SystemState) saveStatusSnapshot() {
@@ -113,7 +114,7 @@ func New(client client.Client, config *rest.Config, instance *v1alpha1.RegistryP
 		State: SystemState{
 			RegistryProxy: *instance,
 			ChartConfig:   chartConfig(context.Background(), client, config, log, chartCache, instance.Namespace),
-			FlagsBuilder:  chart.NewFlagsBuilder(),
+			FlagsBuilder:  flags.NewBuilder(),
 		},
 		Log:                        log,
 		Client:                     client,

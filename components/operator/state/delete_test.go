@@ -6,8 +6,8 @@ import (
 
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -142,7 +142,7 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      registryProxyName,
 		Namespace: registryProxyNamespace,
-	}, chart.RegistryProxySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
+	}, chart.ContextManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
 		"global": map[string]interface{}{
 			"commonLabels": map[string]interface{}{
 				"managedBy": "registry-proxy-operator",

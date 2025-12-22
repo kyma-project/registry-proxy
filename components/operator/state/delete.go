@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
+	"github.com/kyma-project/manager-toolkit/installation/chart/base/resource"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

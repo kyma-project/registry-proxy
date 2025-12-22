@@ -140,11 +140,12 @@ func updateProxyStatus(ctx context.Context, m *StateMachine) error {
 
 func chartConfig(ctx context.Context, client client.Client, config *rest.Config, log *zap.SugaredLogger, cache chart.ManifestCache, namespace string) *chart.Config {
 	return &chart.Config{
-		Ctx:        ctx,
-		Log:        log,
-		Cache:      cache,
-		CacheKey:   secretCacheKey,
-		ManagerUID: os.Getenv("REGISTRYPROXY_MANAGER_UID"),
+		Ctx:         ctx,
+		Log:         log,
+		Cache:       cache,
+		CacheKey:    secretCacheKey,
+		ManagerUID:  os.Getenv("REGISTRYPROXY_MANAGER_UID"),
+		ManagerName: "registry-proxy-operator",
 		Cluster: chart.Cluster{
 			Client: client,
 			Config: config,

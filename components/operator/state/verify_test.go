@@ -9,8 +9,8 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -173,7 +173,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 						_ = cache.Set(context.Background(), types.NamespacedName{
 							Name:      testInstalledRegistryProxy.GetName(),
 							Namespace: testInstalledRegistryProxy.GetNamespace(),
-						}, chart.RegistryProxySpecManifest{Manifest: testDeployManifest})
+						}, chart.ContextManifest{Manifest: testDeployManifest})
 						return cache
 					}(), CacheKey: types.NamespacedName{
 						Name:      testInstalledRegistryProxy.GetName(),

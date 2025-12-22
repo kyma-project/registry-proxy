@@ -1,4 +1,4 @@
-package chart
+package flags
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 
 func Test_flagsBuilder_Build(t *testing.T) {
 	t.Run("build empty flags", func(t *testing.T) {
-		flags, err := NewFlagsBuilder().Build()
+		flags, err := NewBuilder().Build()
 		require.NoError(t, err)
 		require.Equal(t, map[string]interface{}{}, flags)
 	})
@@ -33,7 +33,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags, err := NewFlagsBuilder().
+		flags, err := NewBuilder().
 			WithManagedByLabel("test-runner").
 			WithImageConnection("conn-im").
 			WithIstioInstalled(true).

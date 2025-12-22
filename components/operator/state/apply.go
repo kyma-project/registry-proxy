@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
+	"github.com/kyma-project/registry-proxy/components/operator/flags"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -47,7 +48,9 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	}
 
 	// install component
-	err = chart.Install(m.State.ChartConfig, flags)
+	err = chart.Install(m.State.ChartConfig, &chart.InstallOpts{
+		CustomFlags: flags,
+	})
 	if err != nil {
 		fmt.Println(err)
 		m.Log.Warnf("error while installing resource %s: %s",
@@ -66,12 +69,12 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	return nextState(sFnVerifyResources)
 }
 
-func updateImages(fb chart.FlagsBuilder) {
+func updateImages(fb *flags.Builder) {
 	updateImageIfOverride("IMAGE_REGISTRY_PROXY", fb.WithImageRegistryProxy)
 	updateImageIfOverride("IMAGE_CONNECTION", fb.WithImageConnection)
 }
 
-func updateImageIfOverride(envName string, updateFunction chart.ImageReplace) {
+func updateImageIfOverride(envName string, updateFunction flags.ImageReplace) {
 	imageName := os.Getenv(envName)
 	if imageName != "" {
 		updateFunction(imageName)

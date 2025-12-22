@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -14,7 +14,7 @@ import (
 
 // verify if all workloads are in ready state
 func sFnVerifyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	ready, err := chart.Verify(m.State.ChartConfig)
+	result, err := chart.Verify(m.State.ChartConfig)
 	if err != nil {
 		m.Log.Warnf("error while verifying resource %s: %s",
 			client.ObjectKeyFromObject(&m.State.RegistryProxy), err.Error())
@@ -29,7 +29,7 @@ func sFnVerifyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		return stopWithEventualError(err)
 	}
 
-	if !ready {
+	if !result.Ready {
 		return requeueAfter(time.Second * 3)
 	}
 

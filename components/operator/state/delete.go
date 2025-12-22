@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
-	"github.com/kyma-project/manager-toolkit/installation/resource"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -46,9 +46,7 @@ func sFnSafeDeletionState(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, 
 func deleteResources(m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	done, err := chart.Uninstall(m.State.ChartConfig, &chart.UninstallOpts{
 		// first uninstall secrets to avoid issues with finalizers
-		UninstallFirst: []resource.Predicate{
-			resource.HasKind("Secret"),
-		},
+		UninstallFirst: resource.HasKind("Secret"),
 	})
 	if err != nil {
 		return uninstallResourcesError(m, err)

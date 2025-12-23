@@ -33,6 +33,9 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured ConditionType = "Configured"
 
+	// controller deployment failure details
+	ConditionTypeDeploymentFailure = ConditionType("DeploymentFailure")
+
 	// deletion
 	ConditionTypeDeleted ConditionType = "Deleted"
 
@@ -45,6 +48,7 @@ const (
 	ConditionReasonInstallation                 ConditionReason = "Installation"
 	ConditionReasonInstallationErr              ConditionReason = "InstallationErr"
 	ConditionReasonInstalled                    ConditionReason = "Installed"
+	ConditionReasonDeploymentReplicaFailure     ConditionReason = "DeploymentReplicaFailure"
 	ConditionReasonRegistryProxyDuplicated      ConditionReason = "RegistryProxyDuplicated"
 	ConditionReasonDeletion                     ConditionReason = "Deletion"
 	ConditionReasonDeletionErr                  ConditionReason = "DeletionErr"
@@ -112,6 +116,10 @@ func (rp *RegistryProxy) UpdateCondition(c ConditionType, s metav1.ConditionStat
 		Message:            msg,
 	}
 	meta.SetStatusCondition(&rp.Status.Conditions, condition)
+}
+
+func (rp *RegistryProxy) RemoveCondition(c ConditionType) {
+	_ = meta.RemoveStatusCondition(&rp.Status.Conditions, string(c))
 }
 
 func (s *RegistryProxy) IsServedEmpty() bool {

@@ -6,11 +6,11 @@ import (
 	"flag"
 	"os"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/common/cache"
 	"github.com/kyma-project/registry-proxy/components/common/fips"
 	controller "github.com/kyma-project/registry-proxy/components/operator"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)

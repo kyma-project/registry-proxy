@@ -5,11 +5,12 @@ import (
 	"testing"
 
 	"github.com/kyma-project/registry-proxy/components/common/cache"
+	"github.com/kyma-project/registry-proxy/components/operator/flags"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
 	"go.uber.org/zap"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
-	"github.com/kyma-project/registry-proxy/components/operator/chart"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -31,7 +32,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 						Namespace: testInstalledRegistryProxy.GetNamespace(),
 					},
 				},
-				FlagsBuilder: chart.NewFlagsBuilder(),
+				FlagsBuilder: flags.NewBuilder(),
 			},
 			Log:            zap.NewNop().Sugar(),
 			IstioReadiness: cache.NewInMemoryBoolCache(),
@@ -67,7 +68,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 						Namespace: testInstalledRegistryProxy.GetNamespace(),
 					},
 				},
-				FlagsBuilder: chart.NewFlagsBuilder(),
+				FlagsBuilder: flags.NewBuilder(),
 			},
 			Log:            zap.NewNop().Sugar(),
 			IstioReadiness: cache.NewInMemoryBoolCache(),
@@ -91,7 +92,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 						Namespace: testInstalledRegistryProxy.GetNamespace(),
 					},
 				},
-				FlagsBuilder: chart.NewFlagsBuilder(),
+				FlagsBuilder: flags.NewBuilder(),
 			},
 			Log:            zap.NewNop().Sugar(),
 			IstioReadiness: cache.NewInMemoryBoolCache(),

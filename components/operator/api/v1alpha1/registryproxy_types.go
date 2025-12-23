@@ -33,7 +33,7 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured ConditionType = "Configured"
 
-	// serverless controller deployment failure details
+	// controller deployment failure details
 	ConditionTypeDeploymentFailure = ConditionType("DeploymentFailure")
 
 	// deletion

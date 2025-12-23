@@ -1,5 +1,5 @@
 # Build the operator binary
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.5-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.5-alpine3.23 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -22,13 +22,13 @@ COPY components/operator components/operator
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 go build -a -o operator ./components/operator/cmd/main.go
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.5.0-alpine3.23 AS certs
 
 RUN apk add --no-cache ca-certificates
 
 # Replace main images in values.yaml
 # Bumping registry-proxy images in the config/registry-proxy/values.yaml - used for building "local" and "dev" images
-FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS replacer
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.5.0-alpine3.23 AS replacer
 
 WORKDIR /workdir
 

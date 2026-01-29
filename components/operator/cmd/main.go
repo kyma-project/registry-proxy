@@ -2,10 +2,11 @@ package main
 
 import (
 	"crypto/tls"
-	"errors"
 	"flag"
+	"fmt"
 	"os"
 
+	"github.com/go-logr/logr"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/registry-proxy/components/common/cache"
 	"github.com/kyma-project/registry-proxy/components/common/fips"
@@ -33,7 +34,7 @@ import (
 
 var (
 	scheme   = runtime.NewScheme()
-	setupLog = ctrl.Log.WithName("setup")
+	setupLog logr.Logger
 )
 
 func init() {
@@ -48,7 +49,7 @@ func init() {
 // nolint:gocyclo
 func main() {
 	if !fips.IsFIPS140Only() {
-		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		fmt.Println("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
 
@@ -75,10 +76,11 @@ func main() {
 	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	controllerLogger, err := logConfig.Build()
 	if err != nil {
-		setupLog.Error(err, "unable to setup logger")
+		fmt.Printf("unable to setup logger: %v\n", err)
 		os.Exit(1)
 	}
 	ctrl.SetLogger(zapr.NewLogger(controllerLogger))
+	setupLog = ctrl.Log.WithName("setup")
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will

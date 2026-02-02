@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/kyma-project/registry-proxy/components/registry-proxy/fsm"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,11 +16,17 @@ func sFnConnectivityProxyURL(ctx context.Context, m *fsm.StateMachine) (fsm.Stat
 	if m.State.Connection.Spec.Proxy.URL != "" {
 		m.State.ProxyURL = m.State.Connection.Spec.Proxy.URL
 	} else {
-		proxyURL, err := getReverseProxyURL(ctx, m)
-		if err != nil {
-			return stopWithEventualError(err)
+		if os.Getenv("PROXY_URL") != "" {
+			// proxy URL provided from RP CR
+			m.State.ProxyURL = os.Getenv("PROXY_URL")
+		} else {
+			// get Connectivity Proxy URL from Connectivity Proxy CR, which is mandatory here (no proxy URL in the RP CR)
+			proxyURL, err := getReverseProxyURL(ctx, m)
+			if err != nil {
+				return stopWithEventualError(err)
+			}
+			m.State.ProxyURL = proxyURL
 		}
-		m.State.ProxyURL = proxyURL
 	}
 	return nextState(sFnHandleService)
 }

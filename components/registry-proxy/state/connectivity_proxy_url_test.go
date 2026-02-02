@@ -146,6 +146,41 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 		require.Equal(t, "http://connectivity-proxy.kyma-system.svc.cluster.local:8080", m.State.ProxyURL)
 	})
 
+	t.Run("proxyURL from module CR", func(t *testing.T) {
+		t.Setenv("PROXY_URL", "http://example.kyma")
+		connection := v1alpha1.Connection{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "connection",
+				Namespace: "maslo",
+			},
+			Spec: v1alpha1.ConnectionSpec{
+				Target: v1alpha1.ConnectionSpecTarget{
+					Host: "dummy",
+				},
+			},
+		}
+		connectivityProxy := minimalConnectivityProxy(8080)
+
+		scheme := minimalScheme(t)
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(connectivityProxy).Build()
+
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				Connection: connection,
+			},
+			Log:    zap.NewNop().Sugar(),
+			Client: fakeClient,
+			Scheme: scheme,
+		}
+		next, result, err := sFnConnectivityProxyURL(context.Background(), &m)
+
+		require.Nil(t, err)
+		require.Nil(t, result)
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnHandleService, next)
+		require.Equal(t, "http://example.kyma", m.State.ProxyURL)
+	})
+
 	t.Run("proxyURL missing", func(t *testing.T) {
 		connection := v1alpha1.Connection{
 			ObjectMeta: metav1.ObjectMeta{

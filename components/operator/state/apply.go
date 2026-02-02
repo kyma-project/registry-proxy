@@ -72,11 +72,12 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 }
 
 func updateProxy(fb *flags.Builder, proxy v1alpha1.RegistryProxySpecProxy) {
+	fmt.Printf("trouble: %s\n", proxy.URL)
 	if proxy.URL != "" {
 		fb.WithProxyURL(proxy.URL)
-		if proxy.LocationID != "" {
-			fb.WithProxyLocationID(proxy.LocationID)
-		}
+	}
+	if proxy.LocationID != "" {
+		fb.WithProxyLocationID(proxy.LocationID)
 	}
 }
 

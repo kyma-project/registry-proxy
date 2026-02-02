@@ -159,10 +159,9 @@ func Test_sFnConnectivityProxyURL(t *testing.T) {
 				},
 			},
 		}
-		connectivityProxy := minimalConnectivityProxy(8080)
 
 		scheme := minimalScheme(t)
-		fakeClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(connectivityProxy).Build()
+		fakeClient := fake.NewClientBuilder().WithScheme(scheme).Build()
 
 		m := fsm.StateMachine{
 			State: fsm.SystemState{

@@ -52,9 +52,34 @@ func TestNewDeployment(t *testing.T) {
 		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
 	})
 
-	t.Run("create deployment with authorizationHost", func(t *testing.T) {
+	t.Run("create deployment with locationID from module CR", func(t *testing.T) {
+		t.Setenv("PROXY_LOCATION_ID", "module-target-location")
+		rp := minimalConnection()
+
+		resources := minimalResources()
+		rp.Spec.Resources = &resources
+
+		d := NewDeployment(rp, rp.Spec.Proxy.URL, 0)
+
+		require.NotNil(t, d)
+		require.IsType(t, &appsv1.Deployment{}, d)
+		require.Equal(t, "test-c-name", d.GetName())
+		require.Equal(t, "test-c-namespace", d.GetNamespace())
+
+		regContainer := container.Get(d.Spec.Template.Spec.Containers, RegistryContainerName)
+		require.Equal(t, resources, regContainer.Resources)
+
+		// TODO: contains in case of changed order
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "LOCATION_ID", Value: "module-target-location"})
+	})
+
+	t.Run("create deployment with authorizationHost and locationID", func(t *testing.T) {
+		t.Setenv("PROXY_LOCATION_ID", "module-target-location")
 		rp := minimalConnection()
 		rp.Spec.Target.Authorization.Host = "example.com"
+		rp.Spec.Proxy.LocationID = "target-location"
 
 		d := NewDeployment(rp, rp.Spec.Proxy.URL, 123)
 
@@ -67,11 +92,13 @@ func TestNewDeployment(t *testing.T) {
 		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
 		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "dummy"})
 		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "AUTHORIZATION_NODE_PORT", Value: "123"})
+		require.Contains(t, regContainer.Env, corev1.EnvVar{Name: "LOCATION_ID", Value: "target-location"})
 
 		authContainer := container.Get(d.Spec.Template.Spec.Containers, AuthorizationContainerName)
 		require.NotNil(t, authContainer)
 		require.Contains(t, authContainer.Env, corev1.EnvVar{Name: "PROXY_URL", Value: "http://test-proxy-url"})
 		require.Contains(t, authContainer.Env, corev1.EnvVar{Name: "TARGET_HOST", Value: "example.com"})
+		require.Contains(t, authContainer.Env, corev1.EnvVar{Name: "LOCATION_ID", Value: "target-location"})
 
 		require.Equal(t, defaultResources(), regContainer.Resources)
 		require.Equal(t, defaultResources(), authContainer.Resources)

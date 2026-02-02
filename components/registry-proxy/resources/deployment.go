@@ -214,11 +214,13 @@ func (d *deployment) envs() []corev1.EnvVar {
 			Name:  "TARGET_HOST",
 			Value: d.connection.Spec.Target.Host,
 		},
-		// TOOD: maybe skip setting this if empty?
-		{
+	}
+
+	if locationID := getLocationID(&d.connection.Spec.Proxy); locationID != "" {
+		envVariables = append(envVariables, corev1.EnvVar{
 			Name:  "LOCATION_ID",
-			Value: d.connection.Spec.Proxy.LocationID,
-		},
+			Value: locationID,
+		})
 	}
 
 	if d.connection.Spec.LogLevel != "" {
@@ -248,10 +250,13 @@ func (d *deployment) authEnvs() []corev1.EnvVar {
 			Name:  "TARGET_HOST",
 			Value: d.connection.Spec.Target.Authorization.Host,
 		},
-		{
+	}
+
+	if locationID := getLocationID(&d.connection.Spec.Proxy); locationID != "" {
+		envVariables = append(envVariables, corev1.EnvVar{
 			Name:  "LOCATION_ID",
-			Value: d.connection.Spec.Proxy.LocationID,
-		},
+			Value: locationID,
+		})
 	}
 
 	if d.connection.Spec.LogLevel != "" {
@@ -262,6 +267,15 @@ func (d *deployment) authEnvs() []corev1.EnvVar {
 	}
 
 	return envVariables
+}
+
+func getLocationID(proxy *v1alpha1.ConnectionSpecProxy) string {
+	if proxy.LocationID != "" {
+		return proxy.LocationID
+	} else if os.Getenv("PROXY_LOCATION_ID") != "" {
+		return os.Getenv("PROXY_LOCATION_ID")
+	}
+	return ""
 }
 
 func (d *deployment) podRunAsUserUID() *int64 {

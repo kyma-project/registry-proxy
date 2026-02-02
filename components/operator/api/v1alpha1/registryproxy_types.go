@@ -7,7 +7,17 @@ import (
 
 // RegistryProxySpec defines the desired state of RegistryProxy.
 type RegistryProxySpec struct {
-	// TODO: think if we want any global fields here, like log level?
+	// Details of the default used proxy
+	Proxy RegistryProxySpecProxy `json:"proxy,omitempty"`
+}
+
+type RegistryProxySpecProxy struct {
+	// URL of the Connectivity Proxy, with protocol
+	URL string `json:"url,omitempty"`
+
+	// Location ID of the connection
+	// used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
+	LocationID string `json:"locationID,omitempty"`
 }
 
 type State string
@@ -55,6 +65,8 @@ const (
 	ConditionReasonDeleted                      ConditionReason = "Deleted"
 	ConditionReasonConnectivityProxyAvailable   ConditionReason = "ConnectivityProxyAvailable"
 	ConditionReasonConnectivityProxyUnavailable ConditionReason = "ConnectivityProxyUnavailable"
+	ConditionReasonConnectivityProxySkipped     ConditionReason = "ConnectivityProxySkipped"
+	ConditionReasonProxyURLInavlid              ConditionReason = "ProxyURLInvalid"
 
 	Finalizer = "registry-proxy-operator.kyma-project.io/deletion-hook"
 )

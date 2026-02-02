@@ -30,6 +30,10 @@ func Test_flagsBuilder_Build(t *testing.T) {
 					"connection":     "conn-im",
 					"registry_proxy": "rp-im",
 				},
+				"proxy": map[string]interface{}{
+					"locationID": "loc-id",
+					"url":        "http://proxy.proxy",
+				},
 			},
 		}
 
@@ -37,7 +41,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			WithManagedByLabel("test-runner").
 			WithImageConnection("conn-im").
 			WithIstioInstalled(true).
-			WithImageRegistryProxy("rp-im").Build()
+			WithImageRegistryProxy("rp-im").
+			WithProxyURL("http://proxy.proxy").
+			WithProxyLocationID("loc-id").Build()
 
 		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)

@@ -54,6 +54,19 @@ spec:
             type: object
           spec:
             description: RegistryProxySpec defines the desired state of RegistryProxy.
+            properties:
+              proxy:
+                description: Details of the default used proxy
+                properties:
+                  locationID:
+                    description: |-
+                      Location ID of the connection
+                      used to set the SAP-Connectivity-SCC-Location_ID header on every forwarded request
+                    type: string
+                  url:
+                    description: URL of the Connectivity Proxy, with protocol
+                    type: string
+                type: object
             type: object
           status:
             description: RegistryProxyStatus defines the observed state of RegistryProxy.

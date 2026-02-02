@@ -38,6 +38,28 @@ func Test_sFnValidateConnectivityProxyCRD(t *testing.T) {
 			"State should be set to Warning when prerequisites are not satisfied.")
 	})
 
+	t.Run("when Connectivity Proxy CRD is not installed but spec proxy is set should update condition and proceed to next state", func(t *testing.T) {
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				RegistryProxy: *testInstalledRegistryProxy.DeepCopy(),
+			},
+			ConnectivityProxyReadiness: cache.NewInMemoryBoolCache(),
+		}
+		m.State.RegistryProxy.Spec.Proxy.URL = "http://my-proxy.com"
+
+		next, result, err := sFnValidateConnectivityProxyCRD(context.Background(), &m)
+
+		require.NotNil(t, next)
+		requireEqualFunc(t, sFnApplyResources, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+		requireContainsCondition(t, m.State.RegistryProxy.Status,
+			v1alpha1.ConditionPrerequisitesSatisfied,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConnectivityProxySkipped,
+			"Connectivity Proxy check skipped, .spec.proxy.url is set.")
+	})
+
 	t.Run("when Connectivity Proxy CRD is installed should update condition and proceed to next state", func(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{

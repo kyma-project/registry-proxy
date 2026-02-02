@@ -107,8 +107,11 @@ lint-config: golangci-lint ## Verify golangci-lint linter configuration
 
 .PHONY:  install-registry-proxy-operator
 install-registry-proxy-operator:
+#TODO
 	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator \
-	--set controllerManager.container.image=$(OPERATOR_IMG)
+	--set controllerManager.container.image=$(OPERATOR_IMG) \
+	--set controllerManager.container.env.IMAGE_REGISTRY_PROXY="" \
+	--set controllerManager.container.env.IMAGE_CONNECTION=""
 
 ##@ Build
 

@@ -65,7 +65,9 @@ run-local-operator: create-k3d ## Setup local k3d cluster and install operator
 	CONNECTION_IMG=$(CONNECTION_IMG) make -C components/connection docker-build
 	k3d image import $(CONNECTION_IMG) -c kyma
 	## make sure helm is installed or binary is present
-	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator  --set controllerManager.container.image="$(OPERATOR_IMG)"
+	helm install registry-proxy-operator $(PROJECT_ROOT)/config/operator  --set controllerManager.container.image="$(OPERATOR_IMG)" \
+	--set controllerManager.container.env.IMAGE_REGISTRY_PROXY="" \
+	--set controllerManager.container.env.IMAGE_CONNECTION=""
 	# TODO: wait for ready status
 
 .PHONY: run-local

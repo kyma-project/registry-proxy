@@ -34,22 +34,3 @@ yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${V
 echo "==== Local Changes ===="
 yq '.global.images' "${VALUES_FILE}"
 echo "==== End of Local Changes ===="
-
-# replace envs in operator
-VALUES_FILE="${PROJECT_ROOT}/config/operator/values.yaml"
-
-if [[ -n "${CONTAINER_REGISTRY}" ]]; then
-  yq --inplace ".controllerManager.container.env[] | select(.name == \"IMAGE_*\") |= sub(\"europe-docker.pkg.dev/kyma-project/\", \"${CONTAINER_REGISTRY}\")" "${VALUES_FILE}"
-elif [[ ${PURPOSE} == "local" ]]; then
-  echo "Changing container registry (operator)"
-  yq --inplace '(.controllerManager.container.env[] | select(.name == "IMAGE_*") | .value) |= sub("europe-docker.pkg.dev/kyma-project/", "k3d-kyma-registry.localhost:5000/")' "${VALUES_FILE}"
-fi
-
-IMAGES_SELECTOR=".controllerManager.container.env[] | select(.name == \"IMAGE_*\") | .value ${MAIN_ONLY_SELECTOR}"
-# replace /dev/|/prod/ with /IMG_DIRECTORY/
-yq --inplace "(${IMAGES_SELECTOR}) |= sub (\"/dev/|/prod/\", \"/${IMG_DIRECTORY}/\") " "${VALUES_FILE}"
-# replace the last :.* with :IMG_VERSION, since the URL can contain a port number
-yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${VALUES_FILE}"
-echo "==== Local Changes (operator) ===="
-yq '.controllerManager.container.env[] | select(.name == "IMAGE_*")' "${VALUES_FILE}"
-echo "==== End of Local Changes (operator) ===="

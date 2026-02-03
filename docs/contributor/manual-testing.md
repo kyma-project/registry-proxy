@@ -51,7 +51,9 @@ docker buildx build --push --platform linux/amd64 -t ${CONTAINER_REGISTRY}/regis
 
 ```bash
 helm install registry-proxy-operator config/operator -n ${NAMESPACE} \
-  --set controllerManager.container.image="${CONTAINER_REGISTRY}/registry-proxy-operator:${TAG}"
+  --set controllerManager.container.image="${CONTAINER_REGISTRY}/registry-proxy-operator:${TAG}"\ 
+  --set controllerManager.container.env.IMAGE_REGISTRY_PROXY="" \
+	--set controllerManager.container.env.IMAGE_CONNECTION=""
 ```
 
 4. Apply the default Registry Proxy CR in the default namespace.

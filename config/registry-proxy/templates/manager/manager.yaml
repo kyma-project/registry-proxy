@@ -42,6 +42,14 @@ spec:
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
+            {{- if .Values.global.proxy.url }}
+            - name: PROXY_URL
+              value: "{{ .Values.global.proxy.url }}"
+            {{- end }}
+            {{- if .Values.global.proxy.locationID }}
+            - name: PROXY_LOCATION_ID
+              value: "{{ .Values.global.proxy.locationID }}"
+            {{- end }}
           livenessProbe:
             initialDelaySeconds: 15
             periodSeconds: 20

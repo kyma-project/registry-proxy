@@ -31,6 +31,8 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 	// update common labels for all rendered resources
 	m.State.FlagsBuilder.WithManagedByLabel("registry-proxy-operator")
 	m.State.FlagsBuilder.WithIstioInstalled(m.IstioReadiness.Get())
+
+	updateProxy(m.State.FlagsBuilder, m.State.RegistryProxy.Spec.Proxy)
 	updateImages(m.State.FlagsBuilder)
 
 	flags, err := m.State.FlagsBuilder.Build()
@@ -67,6 +69,16 @@ func sFnApplyResources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ct
 
 	// switch state verify
 	return nextState(sFnVerifyResources)
+}
+
+func updateProxy(fb *flags.Builder, proxy v1alpha1.RegistryProxySpecProxy) {
+	fmt.Printf("trouble: %s\n", proxy.URL)
+	if proxy.URL != "" {
+		fb.WithProxyURL(proxy.URL)
+	}
+	if proxy.LocationID != "" {
+		fb.WithProxyLocationID(proxy.LocationID)
+	}
 }
 
 func updateImages(fb *flags.Builder) {

@@ -4,6 +4,9 @@ global:
     connection: europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
   commonLabels:
     managedBy: ""
+  proxy:
+    url: ""
+    locationID: ""
 controllerManager:
   container:
     args:

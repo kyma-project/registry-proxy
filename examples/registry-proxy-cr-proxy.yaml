@@ -1,0 +1,9 @@
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: RegistryProxy
+metadata:
+  name: default
+  namespace: registry-proxy
+spec:
+  proxy:
+    url: "http://connectivity-proxy.kyma-system.svc.cluster.local:20003"
+    locationID: "123456"

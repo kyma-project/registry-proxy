@@ -28,6 +28,16 @@ func (fb *Builder) WithIstioInstalled(istioInstalled bool) *Builder {
 	return fb
 }
 
+func (fb *Builder) WithProxyURL(proxyURL string) *Builder {
+	fb.With("global.proxy.url", proxyURL)
+	return fb
+}
+
+func (fb *Builder) WithProxyLocationID(locationID string) *Builder {
+	fb.With("global.proxy.locationID", locationID)
+	return fb
+}
+
 func (fb *Builder) WithImageRegistryProxy(image string) *Builder {
 	fb.With("global.images.registry_proxy", image)
 	return fb

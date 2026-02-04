@@ -25,11 +25,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - name: compute github commit sha
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
           CLI_TMPDIR=cli-$(date "+%Y-%m-%d_%H:%M:%S")
@@ -63,11 +63,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - name: compute github commit sha
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
           CLI_TMPDIR=cli-$(date "+%Y-%m-%d_%H:%M:%S")

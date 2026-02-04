@@ -30,7 +30,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.ref_name }} # checkout to latest branch changes ( by default this action checkouts to the SHA that triggers action )
 
-      - uses: ./.github/actions/setup-go
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
 
       - name: Create changelog
         env:

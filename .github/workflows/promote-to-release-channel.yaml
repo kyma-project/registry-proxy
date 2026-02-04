@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.rp_tag }}
 
-      - uses: ./.github/actions/setup-go
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
 
       - name: Download release assets
         run: |

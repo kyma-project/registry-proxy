@@ -46,11 +46,11 @@ jobs:
           PATH=$(pwd)/bin:$PATH
           echo "path: ${PATH}"
           export PATH
+          kubectl create namespace kyma-system --dry-run=client -o yaml | kubectl apply -f -
           make -C components/operator install-registry-proxy-operator
           make run-integration-test-operator
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          # TODO: do we need all of these or just the operator?
           OPERATOR_IMG: ${{ inputs.operator_image }}
           CONNECTION_IMG: ${{ inputs.connection_image }}
           RP_IMG: ${{ inputs.rp_image }}
@@ -86,11 +86,11 @@ jobs:
           echo "path: ${PATH}"
           export PATH
           make -C components/operator install-registry-proxy-operator
+          kubectl create namespace kyma-system --dry-run=client -o yaml | kubectl apply -f -
           kubectl apply -f config/samples/default-registry-proxy-cr.yaml
           make run-integration-test-registry-proxy
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          # TODO: do we need all of these or just the operator?
           OPERATOR_IMG: ${{ inputs.operator_image }}
           CONNECTION_IMG: ${{ inputs.connection_image }}
           RP_IMG: ${{ inputs.rp_image }}

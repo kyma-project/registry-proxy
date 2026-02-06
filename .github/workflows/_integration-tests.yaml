@@ -46,7 +46,7 @@ jobs:
           PATH=$(pwd)/bin:$PATH
           echo "path: ${PATH}"
           export PATH
-          kubectl create namespace kyma-system --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace kyma-system || true
           make -C components/operator install-registry-proxy-operator
           make run-integration-test-operator
         env:
@@ -86,7 +86,7 @@ jobs:
           echo "path: ${PATH}"
           export PATH
           make -C components/operator install-registry-proxy-operator
-          kubectl create namespace kyma-system --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace kyma-system || true
           kubectl apply -f config/samples/default-registry-proxy-cr.yaml
           make run-integration-test-registry-proxy
         env:

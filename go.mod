@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/kyma-project/manager-toolkit/installation/base v0.260113.143439-fb9dc47
 	github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47
-	github.com/onsi/ginkgo/v2 v2.28.0
+	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.1
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.27.1

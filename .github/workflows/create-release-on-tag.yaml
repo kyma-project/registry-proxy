@@ -12,6 +12,7 @@ on:
 permissions: # used by build images steps
   id-token: write # This is required for requesting the JWT token
   contents: write # This is required for actions/checkout and builds
+  actions: read # This is required for uploading release reports
 
 jobs:
   builds:
@@ -86,3 +87,12 @@ jobs:
             latest_release="true"
           fi
           ./.github/scripts/publish-release.sh ${{ needs.create-draft.outputs.release_id }} ${latest_release}
+
+  upload-release-report:
+    needs: [run-integration-test]
+    if: ${{ needs.run-integration-test.result == 'success' }}
+    uses: kyma-project/compliancy/.github/workflows/upload-release-report.yml@main
+    with:
+      release_version: ${{ github.ref_name }}
+    secrets:
+     RELEASE_LOG_UPLOADER_SA: ${{ secrets.RELEASE_LOG_UPLOADER_SA }}

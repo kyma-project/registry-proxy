@@ -18,8 +18,10 @@ kind: Connection
 metadata:
   name: registry-proxy-example
 spec:
-  proxyURL: "http://connectivity-proxy.kyma-system.svc.cluster.local:20003"
-  targetHost: "myregistry.kyma:25002"
+  proxy:
+    url: "http://connectivity-proxy.kyma-system.svc.cluster.local:20003"
+  target:
+    host: "myregistry.kyma:25002"
   logLevel: debug
 ```
 
@@ -31,14 +33,14 @@ spec:
 
 | Parameter                               | Type                           | Description                                                                                 |
 | --------------------------------------- | ------------------------------ |---------------------------------------------------------------------------------------------|
-| **proxy**                               | object                         | Specifies the connection to the proxy.                                                      |
+| **proxy**                               | object                         | Specifies the connection to the proxy. If not set, defaults to the value from the  Registry Proxy CR `.spec.proxy` field.                                                     |
 | **proxy.url**                           | string                         | URL of the Connectivity Proxy, with protocol.                                               |
 | **proxy.locationID**                    | string                         | Sets the `SAP-Connectivity-SCC-Location_ID` header with given ID on every forwarded request |
 | **target** (required)                   | object                         | Specifies the connection to the target registry.                                            |
 | **target.host** (required)              | string                         | Specifies the target host.                                                                  |
 | **target.authorization**                | object                         | Specifies the authorization method for the connection                                       |
 | **target.authorization.host**           | string                         | Name of the host that is used for registry authorization                                    |
-| **target.authorization.headerSecret**   | string                         | Name of the secret containing the authorization header to be used for the connection.           |
+| **target.authorization.headerSecret**   | string                         | Name of the secret containing the authorization header to be used for the connection.       |
 | **resources**                           | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
 | **logLevel**                            | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
 | **nodePort**                            | integer                        | Sets the desired service NodePort number.                                                   |

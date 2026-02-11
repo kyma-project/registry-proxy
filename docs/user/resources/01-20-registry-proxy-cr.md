@@ -19,8 +19,18 @@ spec: {}
 ```
 
 ## Custom Resource Parameters
-
+<!-- TABLE-START -->
 ### registryproxies.operator.kyma-project.io/v1alpha1
+
+
+**Spec:**
+
+| Parameter                               | Type                           | Description                                                                                 |
+| --------------------------------------- | ------------------------------ |---------------------------------------------------------------------------------------------|
+| **proxy**                               | object                         | Specifies the connection to the proxy.                                                      |
+| **proxy.url**                           | string                         | URL of the Connectivity Proxy, with protocol.                                               |
+| **proxy.locationID**                    | string                         | Sets the `SAP-Connectivity-SCC-Location_ID` header with given ID on every forwarded request |
+
 
 **Status:**
 
@@ -29,6 +39,8 @@ spec: {}
 | **state**      | string     | Represents the current state of the Registry Proxy. Possible values: `Ready`, `Processing`, `Error`, `Deleting`, `Warning`. |
 | **served**     | string     | Indicates whether the Registry Proxy is actively managed. Possible values: `True` and `False`.                              |
 | **conditions** | []object   | Specifies an array of conditions describing the status of the Registry Proxy.                                               |
+
+<!-- TABLE-END -->
 
 ### Status Reasons
 

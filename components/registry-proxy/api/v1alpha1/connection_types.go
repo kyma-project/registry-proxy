@@ -15,7 +15,11 @@ type ConnectionSpec struct {
 	Target    ConnectionSpecTarget         `json:"target"`
 	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
 
-	// Sets desired log level to be used. The default value is "info"
+	// LogLevel sets the desired log level to be used.
+	// Valid values are: "debug", "info", "warn", "error", "fatal".
+	// The default value is "info".
+	// +kubebuilder:validation:Enum=debug;info;warn;error;fatal
+	// +kubebuilder:default=info
 	LogLevel string `json:"logLevel,omitempty"`
 
 	// NodePort is the port on which the service is exposed on each node.

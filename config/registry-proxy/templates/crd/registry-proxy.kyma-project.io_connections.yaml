@@ -53,8 +53,17 @@ spec:
             description: ConnectionSpec defines the desired state of Connection.
             properties:
               logLevel:
-                description: Sets desired log level to be used. The default value
-                  is "info"
+                default: info
+                description: |-
+                  LogLevel sets the desired log level to be used.
+                  Valid values are: "debug", "info", "warn", "error", "fatal".
+                  The default value is "info".
+                enum:
+                - debug
+                - info
+                - warn
+                - error
+                - fatal
                 type: string
               nodePort:
                 description: |-

@@ -42,7 +42,7 @@ spec:
 | **target.authorization.host**           | string                         | Name of the host that is used for registry authorization                                    |
 | **target.authorization.headerSecret**   | string                         | Name of the secret containing the authorization header to be used for the connection.       |
 | **resources**                           | object                         | Defines compute resource requirements for the Connection, such as CPU or memory.            |
-| **logLevel**                            | string                         | Sets the desired log level to be used. The default value is `"info"`.                       |
+| **logLevel**                            | string                         | Sets the desired log level. Valid values: `debug`, `info`, `warn`, `error`, `fatal`. Default: `info`. |
 | **nodePort**                            | integer                        | Sets the desired service NodePort number.                                                   |
 
 
@@ -55,6 +55,35 @@ spec:
 | **conditions**     | \[\]object                     | Specifies an array of conditions describing the status of the Connection.         |
 
 <!-- TABLE-END -->
+
+## Log Level Configuration
+
+You can configure the log level for the components using the `spec.logLevel` field. This controls the verbosity of logs emitted by the given component.
+
+### Supported Log Levels
+
+| Level   | Description                                                                 |
+| ------- | --------------------------------------------------------------------------- |
+| `debug` | Most verbose. Includes detailed debugging information.                      |
+| `info`  | Default level. Includes informational messages about normal operation.      |
+| `warn`  | Includes warnings about potential issues that don't prevent operation.      |
+| `error` | Includes error messages when operations fail.                               |
+| `fatal` | Least verbose. Only includes fatal errors that cause the application to exit. |
+
+### Example
+
+To enable debug logging for troubleshooting:
+
+```yaml
+apiVersion: registry-proxy.kyma-project.io/v1alpha1
+kind: Connection
+metadata:
+  name: my-connection
+spec:
+  target:
+    host: "myregistry.example.com:5000"
+  logLevel: debug
+```
 
 ### Status Reasons
 

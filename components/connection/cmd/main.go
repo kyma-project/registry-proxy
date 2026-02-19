@@ -13,8 +13,8 @@ import (
 	"github.com/kyma-project/registry-proxy/components/connection/internal/reverseproxy"
 	"github.com/kyma-project/registry-proxy/components/connection/internal/server"
 
+	"github.com/kyma-project/manager-toolkit/logging/logger"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func main() {
@@ -36,21 +36,21 @@ func main() {
 		logLevel = os.Getenv("LOG_LEVEL")
 	}
 
-	logger, err := newLogger(logLevel)
+	zapLogger, err := newLogger(logLevel)
 	if err != nil {
 		fmt.Printf("unable to setup logger: %s", err)
 		os.Exit(1)
 	}
 
-	logger.Info("Beginning setup")
+	zapLogger.Info("Beginning setup")
 
 	if os.Getenv("PROXY_URL") == "" {
-		logger.Panic("PROXY_URL env was not set")
+		zapLogger.Panic("PROXY_URL env was not set")
 	}
 	connectivityProxyAddress = os.Getenv("PROXY_URL")
 
 	if os.Getenv("TARGET_HOST") == "" {
-		logger.Panic("TARGET_HOST env was not set")
+		zapLogger.Panic("TARGET_HOST env was not set")
 	}
 	targetHost = os.Getenv("TARGET_HOST")
 
@@ -62,55 +62,55 @@ func main() {
 	authorizationHeaderData, err := os.ReadFile("/secrets/authorization/authorizationHeader")
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Info("No authorization header file found, proceeding without it")
+			zapLogger.Info("No authorization header file found, proceeding without it")
 		} else {
-			logger.Panicf("Error reading authorization header file: %s", err)
+			zapLogger.Panicf("Error reading authorization header file: %s", err)
 		}
 	}
 	authorizationHeader := string(authorizationHeaderData)
 
-	logger.Infof("Registering reverse proxy on %s through %s", proxyAddr, connectivityProxyAddress)
-	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, authPort, authorizationHeader, logger)
+	zapLogger.Infof("Registering reverse proxy on %s through %s", proxyAddr, connectivityProxyAddress)
+	reverseProxyServer, err := reverseproxy.New(proxyAddr, connectivityProxyAddress, targetHost, locationID, authPort, authorizationHeader, zapLogger)
 	if err != nil {
 		log.Panicf("unable to setup reverse proxy: %s", err)
 	}
 
-	probesServer := probes.New(probeAddr, reverseProxyServer.HTTPServer.Addr, logger)
+	probesServer := probes.New(probeAddr, reverseProxyServer.HTTPServer.Addr, zapLogger)
 
 	stop := make(chan bool)
 
-	logger.Info("Starting reverse proxy server")
+	zapLogger.Info("Starting reverse proxy server")
 	go reverseProxyServer.Serve(stop)
 
-	logger.Info("Starting probes server")
+	zapLogger.Info("Starting probes server")
 	go probesServer.Serve(stop)
 
 	// wait for channel to return anything
 	shouldStop := <-stop
 	if shouldStop {
-		logger.Info("one or more servers have closed, stopping all servers")
+		zapLogger.Info("one or more servers have closed, stopping all servers")
 		err = shutdownServer(reverseProxyServer)
 		if err != nil {
-			logger.Errorf("error while shutting down reverse proxy server: %v", err)
+			zapLogger.Errorf("error while shutting down reverse proxy server: %v", err)
 		}
 
 		err = shutdownServer(probesServer)
 		if err != nil {
-			logger.Errorf("error while shutting down probes server: %v", err)
+			zapLogger.Errorf("error while shutting down probes server: %v", err)
 		}
 	}
-	logger.Info("all servers stopped")
+	zapLogger.Info("all servers stopped")
 
 	// sanity check
 	select {
 	case s, ok := <-stop:
 		if ok {
-			logger.Errorf("channel stop still contains %s", strconv.FormatBool(s))
+			zapLogger.Errorf("channel stop still contains %s", strconv.FormatBool(s))
 		} else {
-			logger.Info("channel stop is closed")
+			zapLogger.Info("channel stop is closed")
 		}
 	default:
-		logger.Info("channel stop is empty")
+		zapLogger.Info("channel stop is empty")
 	}
 }
 
@@ -119,19 +119,14 @@ func shutdownServer(s *server.Server) error {
 }
 
 func newLogger(level string) (*zap.SugaredLogger, error) {
-	logLevel, err := zap.ParseAtomicLevel(level)
+	logLevel, err := logger.MapLevel(level)
 	if err != nil {
 		return nil, err
 	}
 
-	logConfig := zap.NewProductionConfig()
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	logConfig.Level = logLevel
-
-	logger, err := logConfig.Build()
+	zapLog, err := logger.New(logger.JSON, logLevel)
 	if err != nil {
-		fmt.Printf("unable to setup logger: %s", err)
-		os.Exit(1)
+		return nil, err
 	}
-	return logger.Sugar(), nil
+	return zapLog.WithContext(), nil
 }

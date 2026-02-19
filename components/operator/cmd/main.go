@@ -19,8 +19,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	"github.com/go-logr/zapr"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
+	"github.com/kyma-project/manager-toolkit/logging/logger"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -71,15 +70,12 @@ func main() {
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
 	flag.Parse()
 
-	logConfig := zap.NewProductionConfig()
-	logConfig.EncoderConfig.TimeKey = "timestamp"
-	logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	controllerLogger, err := logConfig.Build()
+	controllerLogger, err := logger.New(logger.JSON, logger.INFO)
 	if err != nil {
 		fmt.Printf("unable to setup logger: %v\n", err)
 		os.Exit(1)
 	}
-	ctrl.SetLogger(zapr.NewLogger(controllerLogger))
+	ctrl.SetLogger(zapr.NewLogger(controllerLogger.WithContext().Desugar()))
 	setupLog = ctrl.Log.WithName("setup")
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
@@ -143,7 +139,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	reconcilerLogger, err := logConfig.Build()
+	reconcilerLogger, err := logger.New(logger.JSON, logger.INFO)
 	if err != nil {
 		setupLog.Error(err, "unable to setup logger")
 		os.Exit(1)
@@ -159,7 +155,7 @@ func main() {
 		Client:                     mgr.GetClient(),
 		Config:                     mgr.GetConfig(),
 		Scheme:                     mgr.GetScheme(),
-		Log:                        reconcilerLogger.Sugar(),
+		Log:                        reconcilerLogger.WithContext(),
 		ConnectivityProxyReadiness: connectivityProxyReadiness,
 		IstioReadiness:             istioReadiness,
 		ChartCache:                 chartCache,

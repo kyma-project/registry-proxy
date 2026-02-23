@@ -22,6 +22,7 @@ import (
 	"github.com/kyma-project/manager-toolkit/logging/logger"
 	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/klog/v2"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -90,6 +91,7 @@ func main() {
 		os.Exit(1)
 	}
 	ctrl.SetLogger(zapr.NewLogger(controllerLogger.WithContext().Desugar()))
+	klog.SetLogger(ctrl.Log)
 	setupLog = ctrl.Log.WithName("setup")
 
 	// if the enable-http2 flag is false (the default), http/2 should be disabled

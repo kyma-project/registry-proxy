@@ -22,3 +22,4 @@ icons:
   - name: module-icon
     #TODO: Provide icon for registry-proxy
     link: https://raw.githubusercontent.com/kyma-project/kyma/refs/heads/main/docs/assets/logo_icon.svg
+team: kyma/Otters

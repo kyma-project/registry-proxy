@@ -1,0 +1,98 @@
+# Kubernetes ClusterRole aggregation hierarchy: admin ⊃ edit ⊃ view.
+# Only list rules unique to each role; the test merges upward.
+#
+# "forbidden" lists rules that must NOT exist in the ClusterRole.
+# The test will fail if any forbidden rule is found. Forbidden permissions are per-role only and do NOT inherit upward.
+admin:
+  rules: []
+  forbidden: []
+
+edit:
+  rules:
+    # kyma-registryproxy-edit
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - registryproxies
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - registryproxies/status
+      verbs:
+        - get
+
+    # kyma-connection-edit
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - connections
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - connections/status
+      verbs:
+        - get
+  forbidden:
+    - apiGroups:
+        - ""
+      resources:
+        - namespaces
+      verbs:
+        - create
+
+view:
+  rules:
+    # kyma-registryproxy-view
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - registryproxies
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - registryproxies/status
+      verbs:
+        - get
+
+    # kyma-connection-view
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - connections
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - connections/status
+      verbs:
+        - get
+  forbidden:
+    - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get

@@ -1,24 +1,28 @@
 {{- if .Values.rbac.enable }}
-# permissions for end users to view registryproxies.
+# permissions for end users to edit connections.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-  name: registry-proxy-controller-viewer-role
+  name: kyma-connection-edit
 rules:
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - registryproxies
+      - connections
     verbs:
+      - create
+      - delete
       - get
       - list
+      - patch
+      - update
       - watch
   - apiGroups:
       - operator.kyma-project.io
     resources:
-      - registryproxies/status
+      - connections/status
     verbs:
       - get
 {{- end -}}

@@ -5,6 +5,7 @@ kind: ClusterRole
 metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
   name: kyma-connection-view
 rules:
   - apiGroups:

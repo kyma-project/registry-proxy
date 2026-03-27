@@ -95,7 +95,7 @@ jobs:
           RP_IMG: ${{ inputs.rp_image }}
       - uses: kyma-project/manager-toolkit/.github/actions/test-rbac-propagation@main
         with:
-          config: tests/rbac/config.yaml
+          config: ${{ github.workspace }}/tests/rbac/config.yaml
       - run: make run-integration-test-registry-proxy
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

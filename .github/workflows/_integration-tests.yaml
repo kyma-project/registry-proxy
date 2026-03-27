@@ -88,6 +88,11 @@ jobs:
           make -C components/operator install-registry-proxy-operator
           kubectl create namespace kyma-system || true
           kubectl apply -f config/samples/default-registry-proxy-cr.yaml
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          OPERATOR_IMG: ${{ inputs.operator_image }}
+          CONNECTION_IMG: ${{ inputs.connection_image }}
+          RP_IMG: ${{ inputs.rp_image }}
       - uses: kyma-project/manager-toolkit/.github/actions/test-rbac-propagation@main
         with:
           config: tests/rbac/config.yaml

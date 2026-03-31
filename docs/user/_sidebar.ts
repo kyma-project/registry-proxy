@@ -1,5 +1,6 @@
 export default [
   { text: 'Registry Proxy Recommendations', link: './00-10-recommendations.md' },
+  { text: 'Cluster Roles', link: './00-80-cluster-roles' },
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create Kyma Registry Proxy Connection and a Target Deployment', link: './tutorials/01-10-registry-proxy-connection.md' }
     ] },

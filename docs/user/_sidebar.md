@@ -1,6 +1,7 @@
 <!-- markdown-link-check-disable -->
 * [Back to Kyma Home](/)
 * [Registry Proxy Module](/registry-proxy/user/README.md)
+* [Cluster Roles](/registry-proxy/user/00-80-cluster-roles.md)
 * [Registry Proxy Recommendations](/registry-proxy/user/00-10-recommendations.md)
 * [Tutorials](/registry-proxy/user/tutorials/README.md)
   * [Create Kyma Registry Proxy Connection and a Target Deployment](/registry-proxy/user/tutorials/01-10-registry-proxy-connection.md)

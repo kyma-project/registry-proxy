@@ -9,8 +9,8 @@ With the `kyma-registry-proxy-edit` ClusterRole, you can edit the Registry Proxy
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
-| operator.kyma-project.io | registryproxies | create, delete, get, list, patch, update, watch |
-| operator.kyma-project.io | registryproxies/status | get |
+| `operator.kyma-project.io` | `registryproxies` | `create`, `delete`, `get`, `list`, `patch`, `update`, `watch` |
+| `operator.kyma-project.io` | `registryproxies/status` | `get` |
 
 ## Registry Proxy View ClusterRole
 
@@ -18,8 +18,8 @@ With the `kyma-registry-proxy-view` ClusterRole, you can view the Registry Proxy
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
-| operator.kyma-project.io | registryproxies | get, list, watch |
-| operator.kyma-project.io | registryproxies/status | get |
+| `operator.kyma-project.io` | `registryproxies` | `get`, `list`, `watch` |
+| `operator.kyma-project.io` | `registryproxies/status` | `get` |
 
 ## Connection Edit ClusterRole
 
@@ -27,8 +27,8 @@ With the `kyma-connection-edit` ClusterRole, you can edit the Connection resourc
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
-| operator.kyma-project.io | connections | create, delete, get, list, patch, update, watch |
-| operator.kyma-project.io | connections/status | get |
+| `operator.kyma-project.io` | `connections` | `create`, `delete`, `get`, `list`, `patch`, `update`, `watch` |
+| `operator.kyma-project.io` | `connections/status` | `get` |
 
 ## Connection View ClusterRole
 
@@ -36,8 +36,8 @@ With the `kyma-connection-view` ClusterRole, you can view the Connection resourc
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
-| operator.kyma-project.io | connections | get, list, watch |
-| operator.kyma-project.io | connections/status | get |
+| `operator.kyma-project.io` | `connections` | `get`, `list`, `watch` |
+| `operator.kyma-project.io` | `connections/status` | `get` |
 
 ## Role Aggregation
 

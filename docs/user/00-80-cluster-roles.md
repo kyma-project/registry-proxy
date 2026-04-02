@@ -1,10 +1,11 @@
-# Cluster Roles
+# ClusterRoles
 
-The Registry Proxy module includes several ClusterRoles that are used to manage permissions for the Registry Proxy operator and to aggregate permissions for end users. This document describes all ClusterRoles bundled with the Registry Proxy module.
+Learn about ClusterRoles in the Registry Proxy module.
+The Registry Proxy module includes several ClusterRoles that are used to manage permissions for the Registry Proxy operator and to aggregate permissions for end users.
 
 ## Registry Proxy Edit ClusterRole
 
-The `kyma-registry-proxy-edit` ClusterRole allows users to edit Registry Proxy resources.
+With the `kyma-registry-proxy-edit` ClusterRole, you can edit the Registry Proxy resources. For the available options, see the following table:
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
@@ -13,7 +14,7 @@ The `kyma-registry-proxy-edit` ClusterRole allows users to edit Registry Proxy r
 
 ## Registry Proxy View ClusterRole
 
-The `kyma-registry-proxy-view` ClusterRole allows users to view Registry Proxy resources.
+With the `kyma-registry-proxy-view` ClusterRole, you can view the Registry Proxy resources. For the available options, see the following table:
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
@@ -22,7 +23,7 @@ The `kyma-registry-proxy-view` ClusterRole allows users to view Registry Proxy r
 
 ## Connection Edit ClusterRole
 
-The `kyma-connection-edit` ClusterRole allows users to edit Connection resources.
+With the `kyma-connection-edit` ClusterRole, you can edit the Connection resources.
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
@@ -31,7 +32,7 @@ The `kyma-connection-edit` ClusterRole allows users to edit Connection resources
 
 ## Connection View ClusterRole
 
-The `kyma-connection-view` ClusterRole allows users to view Connection resources.
+With the `kyma-connection-view` ClusterRole, you can view the Connection resources. For the available options, see the following table:
 
 | API Group | Resources | Verbs |
 |-----------|-----------|-------|
@@ -40,12 +41,12 @@ The `kyma-connection-view` ClusterRole allows users to view Connection resources
 
 ## Role Aggregation
 
-The Registry Proxy module uses Kubernetes [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to automatically extend the default `edit` and `view` ClusterRoles with Registry Proxy-specific permissions.
+The Registry Proxy module uses the Kubernetes [role aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles) to automatically extend the default `edit` and `view` ClusterRoles with Registry Proxy-specific permissions.
 
 - **kyma-registry-proxy-edit**: Aggregated to `edit` ClusterRole
 - **kyma-registry-proxy-view**: Aggregated to `view` ClusterRole
 - **kyma-connection-edit**: Aggregated to `edit` ClusterRole
 - **kyma-connection-view**: Aggregated to `view` ClusterRole
 
-This means that users who are granted the default Kubernetes `edit` or `view` ClusterRoles automatically receive the corresponding Registry Proxy permissions without requiring additional role bindings.
+This means that if you have the default Kubernetes `edit` or `view` ClusterRoles, you automatically receive the corresponding Registry Proxy permissions without requiring additional role bindings.
 

@@ -6,13 +6,13 @@ require (
 	github.com/go-logr/logr v1.4.3
 	github.com/go-logr/zapr v1.3.0
 	github.com/google/uuid v1.6.0
-	github.com/kyma-project/manager-toolkit/installation/base v0.260323.101933-4244775
-	github.com/kyma-project/manager-toolkit/installation/chart v0.260323.101933-4244775
+	github.com/kyma-project/manager-toolkit/installation/base v0.260429.203803-de5537e
+	github.com/kyma-project/manager-toolkit/installation/chart v0.260429.203522-8cabdc3
 	github.com/kyma-project/manager-toolkit/logging v0.260128.123422-9ec1c8b
 	github.com/onsi/ginkgo/v2 v2.28.3
 	github.com/onsi/gomega v1.40.0
 	github.com/stretchr/testify v1.11.1
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	istio.io/api v1.29.2
 	istio.io/client-go v1.29.2
 	k8s.io/api v0.35.4

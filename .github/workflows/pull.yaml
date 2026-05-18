@@ -4,7 +4,6 @@ on:
     types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
-  id-token: write # This is required for requesting the JWT token
   contents: read # This is required for actions/checkout
 
 jobs:
@@ -14,8 +13,19 @@ jobs:
   gitleaks:
     uses: ./.github/workflows/_gitleaks.yaml
 
+  select-environment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.pull_request.author_association != 'COLLABORATOR' && github.event.pull_request.author_association != 'OWNER' && 'restricted' || 'internal' }}
+    steps:
+      - name: Approved
+        run: echo "Build approved, environment selected"
+
   builds:
+    needs: select-environment
     uses: ./.github/workflows/_build.yaml
+    permissions:
+      id-token: write # This is required for requesting the JWT token
+      contents: read # This is required for actions/checkout
     with:
       purpose: "dev"
       img_directory: "dev"

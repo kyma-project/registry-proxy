@@ -41,8 +41,8 @@ func main() {
 		Namespace: fmt.Sprintf("rp-%s", uuid.New().String()),
 
 		ConnectionName:  "connection-test",
-		ProxyURL:        "http://dockerregistry.kyma-system.svc.cluster.local:5000",
-		TargetHost:      "dockerregistry.kyma-system.svc.cluster.local:5000",
+		ProxyURL:        "http://dockerregistry.docker-registry.svc.cluster.local:5000",
+		TargetHost:      "dockerregistry.docker-registry.svc.cluster.local:5000",
 		TaggedImageName: "alpine:3.21.3",
 		TestPod:         "connection-test-pod",
 		Ctx:             ctx,

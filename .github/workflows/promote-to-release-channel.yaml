@@ -14,8 +14,8 @@ env:
   GH_ENTERPRISE_TOKEN: ${{ secrets.ENT_BOT_TOKEN }}
   ENT_BOT_USERNAME: kyma-otter-serviceuser
   ENT_BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
-  GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
-  RP_REPO_URL: ${{ secrets.RP_REPO_URL }}
+  GH_TOOLS_REPO_URL: ${{ vars.GH_TOOLS_DOMAIN }}
+  RP_REPO_URL: ${{ vars.RP_REPO_URL }}
 
 jobs:
   promote-rp:

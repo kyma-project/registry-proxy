@@ -1,0 +1,6 @@
+name: kyma-project.io/module/registry-proxy
+team: kyma/otters-dev
+images:
+  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-connection:main
+  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-controller:main
+  - europe-docker.pkg.dev/kyma-project/prod/registry-proxy-operator:main

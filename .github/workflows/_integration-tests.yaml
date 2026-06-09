@@ -20,6 +20,8 @@ jobs:
   operator-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
+    environment: secrets
+
     steps:
       - uses: actions/checkout@v6
         with:
@@ -56,9 +58,12 @@ jobs:
           RP_IMG: ${{ inputs.rp_image }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
+
   registry-proxy-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
+    environment: secrets
+
     steps:
       - uses: actions/checkout@v6
         with:

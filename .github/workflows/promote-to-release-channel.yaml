@@ -8,19 +8,19 @@ on:
         default: ""
         required: true
 
-env:
-  MODULE_VERSION: ${{ github.event.inputs.rp_tag }}
-  # needed by gh cli for GitHub enterprise
-  GH_ENTERPRISE_TOKEN: ${{ secrets.ENT_BOT_TOKEN }}
-  ENT_BOT_USERNAME: kyma-otter-serviceuser
-  ENT_BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
-  GH_TOOLS_REPO_URL: ${{ vars.GH_TOOLS_DOMAIN }}
-  RP_REPO_URL: ${{ vars.RP_REPO_URL }}
-
 jobs:
   promote-rp:
     name: Get, render and push rp assets
     runs-on: ubuntu-latest
+    environment: secrets
+    env:
+      MODULE_VERSION: ${{ github.event.inputs.rp_tag }}
+      # needed by gh cli for GitHub enterprise
+      GH_ENTERPRISE_TOKEN: ${{ secrets.ENT_BOT_TOKEN }}
+      ENT_BOT_USERNAME: kyma-otter-serviceuser
+      ENT_BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
+      GH_TOOLS_REPO_URL: ${{ vars.GH_TOOLS_DOMAIN }}
+      RP_REPO_URL: ${{ vars.RP_REPO_URL }}
 
     steps:
       - name: Checkout code

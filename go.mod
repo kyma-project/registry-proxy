@@ -13,8 +13,8 @@ require (
 	github.com/onsi/gomega v1.42.1
 	github.com/stretchr/testify v1.11.1
 	go.uber.org/zap v1.28.0
-	istio.io/api v1.30.1
-	istio.io/client-go v1.30.1
+	istio.io/api v1.30.2
+	istio.io/client-go v1.30.2
 	k8s.io/api v0.35.6
 	k8s.io/apiextensions-apiserver v0.35.6
 	k8s.io/apimachinery v0.35.6

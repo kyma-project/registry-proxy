@@ -3,7 +3,7 @@ module github.com/kyma-project/registry-proxy
 go 1.25.5
 
 require (
-	github.com/go-logr/logr v1.4.3
+	github.com/go-logr/logr v1.4.4
 	github.com/go-logr/zapr v1.3.0
 	github.com/google/uuid v1.6.0
 	github.com/kyma-project/manager-toolkit/installation/base v0.260521.143230-2b28ea6

@@ -10,7 +10,7 @@ import (
 
 // nolint:unused
 var requeueResult = &ctrl.Result{
-	Requeue: true,
+	RequeueAfter: time.Minute,
 }
 
 func nextState(next fsm.StateFn) (fsm.StateFn, *ctrl.Result, error) {

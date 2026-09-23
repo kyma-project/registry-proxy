@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/kyma-project/registry-proxy/components/operator/api/v1alpha1"
 	"github.com/kyma-project/registry-proxy/components/operator/fsm"
@@ -86,7 +87,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer(context.Background(), &m)
 		require.Nil(t, err)
-		require.Equal(t, &ctrl.Result{Requeue: true}, result)
+		require.Equal(t, &ctrl.Result{RequeueAfter: time.Minute}, result)
 		require.Nil(t, next)
 	})
 }

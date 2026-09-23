@@ -20,11 +20,13 @@ import (
 
 	"github.com/go-logr/zapr"
 	"github.com/kyma-project/manager-toolkit/logging/logger"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
@@ -124,6 +126,20 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "5cd742b4.kyma-project.io",
+		// The operator's manifest cache reads Secrets by key through the manager
+		// client (manager-toolkit chart.SecretManifestCache, wired below to
+		// mgr.GetClient()). A cached Secret read backs Secrets with a cluster-wide
+		// informer that holds every Secret in the cluster in memory, OOM-killing the
+		// operator under load (issue #139). The operator only reads these Secrets by
+		// name/namespace and never watches Secrets for events, so send Secret reads
+		// straight to the API server instead of caching them. Chart install/verify
+		// reads Deployments/StatefulSets/CRDs/arbitrary CRs through the same cached
+		// client, so scope out only Secrets, not the whole cache.
+		Client: ctrlclient.Options{
+			Cache: &ctrlclient.CacheOptions{
+				DisableFor: []ctrlclient.Object{&corev1.Secret{}},
+			},
+		},
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
 		// when the Manager ends. This requires the binary to immediately end when the
 		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly

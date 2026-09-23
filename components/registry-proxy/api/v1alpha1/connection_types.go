@@ -4,6 +4,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // ConnectionSpec defines the desired state of Connection.
@@ -99,6 +100,18 @@ const (
 	LabelName       = "app.kubernetes.io/name"
 	LabelPartOf     = "app.kubernetes.io/part-of"
 )
+
+// ManagedByValue is the value stamped under LabelManagedBy on every resource
+// (Deployment, Service, Pod, ...) the registry-proxy controller creates.
+const ManagedByValue = "registry-proxy"
+
+// ManagedBySelector matches the resources this controller manages. It is used to
+// restrict the manager's informer cache (cache.Options.ByObject) to those objects,
+// so the controller's memory does not grow with the number of unrelated Pods in the
+// cluster. See issue #139.
+func ManagedBySelector() labels.Selector {
+	return labels.SelectorFromSet(labels.Set{LabelManagedBy: ManagedByValue})
+}
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status

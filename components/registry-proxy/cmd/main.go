@@ -21,11 +21,15 @@ import (
 
 	"github.com/kyma-project/manager-toolkit/logging/logger"
 	securityclientv1 "istio.io/client-go/pkg/apis/security/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/klog/v2"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlcache "sigs.k8s.io/controller-runtime/pkg/cache"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/filters"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
@@ -138,6 +142,19 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "4cd742b4.kyma-project.io",
+		// Restrict the informer caches to the resources this controller manages.
+		// Without this, Owns(&corev1.Pod{}) in SetupWithManager backs Pods with a
+		// cluster-wide informer that holds every Pod in the cluster in memory,
+		// OOM-killing the controller under load (issue #139). The Deployment, Service
+		// and Pod objects the controller creates all carry
+		// LabelManagedBy=ManagedByValue (resources.labels()).
+		Cache: ctrlcache.Options{
+			ByObject: map[ctrlclient.Object]ctrlcache.ByObject{
+				&corev1.Pod{}:        {Label: v1alpha1.ManagedBySelector()},
+				&appsv1.Deployment{}: {Label: v1alpha1.ManagedBySelector()},
+				&corev1.Service{}:    {Label: v1alpha1.ManagedBySelector()},
+			},
+		},
 		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
 		// when the Manager ends. This requires the binary to immediately end when the
 		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly

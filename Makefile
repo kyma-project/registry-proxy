@@ -115,6 +115,10 @@ unit-tests: ## Run unit tests
 .PHONY: cluster-info
 cluster-info:
 	make -C tests/registry-proxy cluster-info
+.PHONY: build-for-codeql
+build-for-codeql: ## Build all binaries for CodeQL analysis.
+	go build -o /dev/null ./...
+
 ##@ Actions
 .PHONY: module-config
 module-config:

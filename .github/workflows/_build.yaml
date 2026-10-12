@@ -23,17 +23,17 @@ on:
         required: false
         type: string
         default: ""
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
 jobs:
   compute-tags:
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - if: ${{ !startsWith(github.event_name, 'pull_request') }}
         name: Get the latest tag
         id: get_tag

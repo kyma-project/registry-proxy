@@ -5,6 +5,9 @@ on:
       - main
     types: [opened, edited, synchronize, reopened, ready_for_review]
 
+permissions:
+  contents: read # This is required for actions/checkout
+
 jobs:
   select-environment:
     runs-on: ubuntu-latest
